@@ -1,0 +1,79 @@
+<script>
+$(document).ready(function() {
+  $('#samples-tbl').dataTable({"iDisplayLength": 10});
+});
+</script>
+
+<div class="row">
+  <h1 id="nav-tabs">Project [% project.project_name %]</h1>
+  <div class="bs-component">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
+      <li><a href="#desc" data-toggle="tab">Description</a></li>
+      <li><a href="#samples" data-toggle="tab">Samples ([% project.samples.size OR '0' %])</a></li>
+    </ul>
+
+    <div id="tabContent" class="tab-content">
+      <div class="tab-pane fade active in" id="info">
+        <p>
+        <table class="table">
+          <tr>
+            <th>PI</th>
+            <td>[% project.pi %]</td>
+          </tr>
+          <tr>
+            <th>Institution</th>
+            <td>[% project.institution OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Project Code</th>
+            <td>[% project.project_code %]</td>
+          </tr>
+          <tr>
+            <th>Project Type</th>
+            <td>[% project.project_type %]</td>
+          </tr>
+        </table>
+        </p>
+      </div>
+
+      <div class="tab-pane fade" id="desc">
+        <div class="col-lg-6">
+        <p>[% project.description.replace('\n\n', '<p>') OR 'N/A' %]</p>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="samples">
+        <p>
+        [% IF project.samples.size > 0 %]
+          [% SET fields = ["sample_acc", "sample_type", "sample_volume", "volume_unit", "filter_min", "filter_max", "sample_description", "sample_name", "comments", "taxon_id", "collection_start_time", "collection_stop_time", "biomaterial_name", "description", "material_acc", "site_name", "latitude", "longitude", "altitude", "site_depth", "site_description", "country_name", "region", "habitat_name", "host_taxon_id", "host_description", "host_organism", "library_acc", "sequencing_method", "dna_type", "num_of_reads", "material_id"] %]
+          <table id="samples-tbl" class="display" cellspacing="0" width="100%">
+           <thead>
+           <tr>
+             [% FOREACH field IN fields %]
+               <th>[% field.replace('_', ' ').ucfirst %]</th>
+             [% END %]
+           </tr>
+           </thead>
+
+           <tbody>
+           [% FOREACH sample IN project.samples %]
+             <tr>
+             [% FOREACH field IN fields %]
+               <td>[% sample.$field %]</td>
+             [% END %]
+             </tr>
+           [% END %]
+           </tbody>
+
+          </table>
+        [% ELSE %]
+          No samples.
+        [% END %]
+        <p>
+      </div>
+    </div>
+  <div id="source-button" class="btn btn-primary btn-xs" style="display: none;">&lt; &gt;</div></div>
+</div>
+
+</div>

@@ -1,0 +1,32 @@
+<script>
+$(document).ready(function() {
+  $('#projects').dataTable({"iDisplayLength": 10});
+});
+</script>
+
+<div class="row">
+  <h1>Projects</h1>
+  [% USE Comma %]
+  [% IF projects.size > 0 %]
+  <table id="projects" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Project code</th>
+        <th>Project name</th>
+        <th>Num samples</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH project IN projects %]
+      <tr>
+        <td><a href="/project/view/[% project.project_id %]">[% project.project_code %]</a></td>
+        <td>[% project.project_name | truncate(50) %]</td>
+        <td align="right">[% project.num_samples OR '0' | comma %]</td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    No projects.
+  [% END %]
+</div>

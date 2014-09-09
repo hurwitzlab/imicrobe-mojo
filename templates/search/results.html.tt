@@ -1,0 +1,20 @@
+<div class="row">
+<h1>Search Results</h1>
+
+<div class="well text-center">
+Found [% results.size %] record[% IF results.size == 1; ''; ELSE; 's'; END %] 
+for &quot;[% query %].&quot;
+</div>
+
+[% IF results.size > 0 %]
+  <div class="col-lg-4">&nbsp;</div>
+  <div class="col-lg-4">
+    <ul>
+    [% FOREACH result IN results %]
+      <li><a href="/project/view/[% result.primary_key %]">[% result.object.project_name %]</a>
+      </p>
+    [% END %]
+    </ul>
+  </div>
+[% END %]
+</div>
