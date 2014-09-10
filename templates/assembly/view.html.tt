@@ -1,0 +1,18 @@
+<div class="row">
+  <h2 id="nav-tabs">Assembly: [% assembly.assembly_name OR 'Unknown assembly' %]</h2>
+  <table class="table">
+    <tr>
+      <th>Project</th>
+      <td><a href="/project/view/[% assembly.project_id %]">[% assembly.project_name %]</a></td>
+    </tr>
+    <tr>
+      <th>Code</th>
+      <td>[% assembly.assembly_code %]</td>
+    </tr>
+    <tr>
+      <th>Organism</th>
+      <td>[% assembly.organism %]</td>
+    </tr>
+  </table>
+  </p>
+</div>

@@ -1,0 +1,18 @@
+[% SET fields = [ 'sample_acc', 'sample_type', 'sample_volume', 'volume_unit', 'filter_min', 'filter_max', 'sample_description', 'sample_name', 'comments', 'taxon_id', 'collection_start_time', 'collection_stop_time', 'biomaterial_name', 'description', 'material_acc', 'site_name', 'latitude', 'longitude', 'altitude', 'site_depth', 'site_description', 'country_name', 'region', 'habitat_name', 'host_taxon_id', 'host_description', 'host_organism', 'library_acc', 'sequencing_method', 'dna_type', 'num_of_reads', 'material_id' ] %]
+
+<div class="row">
+  <h2 id="nav-tabs">Sample: [% sample.sample_acc %]</h2>
+  <table class="table">
+    <tr>
+      <th>Project</th>
+      <td><a href="/project/view/[% sample.project_id %]">[% sample.project_name %]</a></td>
+    </tr>
+    [% FOREACH field IN fields %]
+      <tr>
+        <th>[% field.replace('_', ' ').ucfirst %]</th>
+        <td>[% sample.$field %]</td>
+      </tr>
+    [% END %]
+  </table>
+  </p>
+</div>

@@ -1,3 +1,9 @@
+[% SET name_fields = {
+  'assembly' => 'assembly_name',
+  'project'  => 'project_name',
+  'pub'      => 'title',
+  'sample'   => 'sample_acc'
+} %]
 <div class="row">
 <h1>Search Results</h1>
 
@@ -7,11 +13,13 @@ for &quot;[% query %].&quot;
 </div>
 
 [% IF results.size > 0 %]
-  <div class="col-lg-4">&nbsp;</div>
-  <div class="col-lg-4">
+  <br>
+  <div class="col-lg-2"></div>
+  <div class="col-lg-8">
     <ul>
     [% FOREACH result IN results %]
-      <li><a href="/project/view/[% result.primary_key %]">[% result.object.project_name %]</a>
+      [% SET table = result.table_name; SET name_field = name_fields.$table; SET name = result.object.$name_field %]
+      <li><a href="/[% result.table_name %]/view/[% result.primary_key %]">[% result.table_name.ucfirst %]: [% name %]</a>
       </p>
     [% END %]
     </ul>
