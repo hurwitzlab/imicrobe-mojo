@@ -6,7 +6,7 @@ use DBI;
 
 # ----------------------------------------------------------------------
 sub db {
-    DBI->connect('dbi:mysql:imicrobe', 'kclark', '', {RaiseError=>1} );
+    DBI->connect('dbi:mysql:imicrobe', 'imicrobe', '', {RaiseError => 1} );
 }
 
 # ----------------------------------------------------------------------

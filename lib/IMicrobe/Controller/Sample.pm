@@ -10,7 +10,7 @@ sub list {
     my $self = shift;
     my $project_id = $self->param('project_id') or die 'No project id';
     #my $dbh = IMicrobe::DB->new->dbh;
-    my $dbh = DBI->connect('dbi:mysql:imicrobe', 'kclark', '', {RaiseError=>1});
+    my $dbh = DBI->connect('dbi:mysql:imicrobe', 'imicrobe', '', {RaiseError=>1});
     my $samples = $dbh->selectall_arrayref(
         'select * from sample where project_id=?', 
         { Columns => {} }, 
