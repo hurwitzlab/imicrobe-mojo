@@ -1,4 +1,10 @@
+<div class="row">
 <h1>iMicrobe</h1>
+Here is the new iMicrobe site.  Here you can:
 <ul>
-  <li><a href="/project/list">Project List</a></li>
+  <li><a href="/project/list">View all projects</a></li>
+  <li><a href="/publication/list">View all publications</a></li>
+  <li><a href="/assembly/list">View all assemblies</a></li>
+  <li><a href="/search?query=gos">Search for something</a></li>
 </ul>
+</div>

@@ -59,6 +59,11 @@ sub view {
         $project_id
     );
 
+    $project->{'assemblies'} = $dbh->selectall_arrayref(
+        'select * from assembly where project_id=?', { Columns => {} }, 
+        $project_id
+    );
+
     $self->respond_to(
         json => sub {
             $self->render( json => $project );

@@ -1,0 +1,34 @@
+<script>
+$(document).ready(function() {
+  $('#assemblies').dataTable({"iDisplayLength": 10});
+});
+</script>
+
+<div class="row">
+  <h1>Projects</h1>
+  [% USE Comma %]
+  [% IF assemblies.size > 0 %]
+  <table id="assemblies" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH assembly IN assemblies %]
+      <tr>
+        <td><a href="/project/view/[% assembly.project_id %]">[% assembly.project_name | truncate(70) %]</a></td>
+        <td><a href="/assembly/view/[% assembly.assembly_id %]">[% assembly.assembly_name %]</a></td>
+        <td>[% assembly.assembly_code %]</td>
+        <td>[% assembly.organism OR 'Unknown' %]</td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    No assemblies.
+  [% END %]
+</div>

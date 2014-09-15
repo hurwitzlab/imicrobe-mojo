@@ -11,16 +11,18 @@ $(document).ready(function() {
   <table id="projects" class="display" cellspacing="0" width="100%">
     <thead>
       <tr>
-        <th>Project code</th>
-        <th>Project name</th>
-        <th>Num samples</th>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Type</th>
+        <th>&#35; Samples</th>
       </tr>
     </thead>
     <tbody>
     [% FOREACH project IN projects %]
       <tr>
-        <td><a href="/project/view/[% project.project_id %]">[% project.project_code %]</a></td>
-        <td>[% project.project_name | truncate(50) %]</td>
+        <td><a href="/project/view/[% project.project_id %]">[% project.project_name | truncate(70) %]</a></td>
+        <td>[% project.project_code %]</td>
+        <td>[% project.project_type OR 'Unknown' %]</td>
         <td align="right">[% project.num_samples OR '0' | comma %]</td>
       </tr>
     [% END %]

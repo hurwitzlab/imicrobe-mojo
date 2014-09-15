@@ -1,0 +1,18 @@
+<div class="row">
+  <h2 id="nav-tabs">Publication: [% pub.title %]</h2>
+  <table class="table">
+    <tr>
+      <th>Author</th>
+      <td>[% pub.author %]</td>
+    </tr>
+    <tr>
+      <th>Journal</th>
+      <td>[% pub.journal %]</td>
+    </tr>
+    <tr>
+      <th>Code</th>
+      <td>[% pub.pub_code %]</td>
+    </tr>
+  </table>
+  </p>
+</div>
