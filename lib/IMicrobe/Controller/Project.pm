@@ -6,10 +6,42 @@ use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
-sub list {
+sub browse {
     my $self     = shift;
     my $dbh      = IMicrobe::DB->new->dbh;
     my $projects = $dbh->selectall_arrayref(
+        q[
+            select   count(*) as count, p.project_type
+            from     project p 
+            group by 2
+            order by 2
+        ],
+        { Columns => {} }
+    );
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => $projects );
+        },
+
+        html => sub {
+            $self->layout('default');
+
+            $self->render( projects => $projects );
+        },
+
+        txt => sub {
+            $self->render( text => dump($projects) );
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
+sub list {
+    my $self         = shift;
+    my $project_type = $self->param('project_type') || '';
+    my $dbh          = IMicrobe::DB->new->dbh;
+    my $sql          = sprintf(
         q[
             select    p.project_id, p.project_name, p.project_code,
                       p.pi, p.institution,
@@ -19,10 +51,15 @@ sub list {
             from      project p 
             left join sample s
             on        p.project_id=s.project_id
+            %s
             group by  1
         ],
-        { Columns => {} }
+        $project_type 
+        ? sprintf("where p.project_type=%s", $dbh->quote($project_type))
+        : ''
     );
+
+    my $projects = $dbh->selectall_arrayref($sql, { Columns => {} });
 
     $self->respond_to(
         json => sub {

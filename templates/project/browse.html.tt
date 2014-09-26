@@ -1,0 +1,18 @@
+[% USE Comma %]
+<div class="row">
+<h1>Browse Projects</h1>
+<table class="table">
+  <tr>
+    <th>Project Type</th>
+    <th>Count</th>
+    <th>&nbsp;</th>
+  </tr>
+  [% FOREACH project IN projects %]
+      <tr>
+        <td>[% project.project_type %]</td>
+        <td align="right">[% project.count | comma %]</td>
+        <td align="center"><a href="/project/list?project_type=[% project.project_type %]">View</a></td>
+      </tr>
+  [% END %]
+</table>
+</div>

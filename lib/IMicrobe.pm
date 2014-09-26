@@ -23,6 +23,8 @@ sub startup {
 
     $r->get('/assembly/view/:assembly_id')->to('assembly#view');
 
+    $r->get('/project/browse')->to('project#browse');
+
     $r->get('/project/list')->to('project#list');
 
     $r->get('/project/view/:project_id')->to('project#view');
