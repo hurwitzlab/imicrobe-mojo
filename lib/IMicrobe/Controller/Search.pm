@@ -1,20 +1,16 @@
 package IMicrobe::Controller::Search;
 
+use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 use DBI;
-
-# ----------------------------------------------------------------------
-sub db {
-    DBI->connect('dbi:mysql:imicrobe', 'imicrobe', '', {RaiseError=>1} );
-}
 
 # ----------------------------------------------------------------------
 sub results {
     my $self  = shift;
     my $req   = $self->req;
     my $query = $req->param('query') || '';
-    my $dbh   = db();
+    my $dbh   = IMicrobe::DB->new->dbh;
 
     my @results;
     if ($query) {
@@ -22,6 +18,7 @@ sub results {
             "select * from search where match (search_text) against (%s)",
             $dbh->quote($query)
         );
+        print STDERR $sql, "\n";
 
         my $data = $dbh->selectall_arrayref($sql, { Columns => {} });
 
@@ -40,7 +37,7 @@ sub results {
 
     $self->respond_to(
         json => sub {
-            $self->render( json => \@results );
+            $self->render( json => { query => $query, results => \@results });
         },
 
         html => sub {

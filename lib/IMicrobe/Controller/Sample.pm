@@ -1,19 +1,16 @@
 package IMicrobe::Controller::Sample;
 
+use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 use DBI;
 
-sub dbh {
-    return DBI->connect('dbi:mysql:imicrobe', 'imicrobe', '', {RaiseError=>1});
-}
-
 # ----------------------------------------------------------------------
 sub list {
-    my $self = shift;
+    my $self       = shift;
     my $project_id = $self->param('project_id') or die 'No project id';
-    my $dbh = dbh();
-    my $samples = $dbh->selectall_arrayref(
+    my $dbh        = IMicrobe::DB->new->dbh;
+    my $samples    = $dbh->selectall_arrayref(
         'select * from sample where project_id=?', 
         { Columns => {} }, 
         $project_id
@@ -36,10 +33,10 @@ sub list {
 
 # ----------------------------------------------------------------------
 sub view {
-    my $self = shift;
+    my $self      = shift;
     my $sample_id = $self->param('sample_id') or die 'No sample id';
-    my $dbh = dbh();
-    my $sth = $dbh->prepare(
+    my $dbh       = IMicrobe::DB->new->dbh;
+    my $sth       = $dbh->prepare(
         q[
             select s.*, p.*
             from   sample s, project p

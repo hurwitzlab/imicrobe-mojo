@@ -1,8 +1,8 @@
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
 <ShortName>iMicrobe</ShortName>
 <Description>Search iMicrobe</Description>
-<Url type="text/html" method="get" template="http://imicrobe.iplantcollaborative.org/search?query={searchTerms}"/>
-<Image height="16" width="16" type="image/vnd.microsoft.icon">http://imicrobe.iplantcollaborative.org/img/favicon.ico</Image>
-<moz:SearchForm>http://imicrobe.iplantcollaborative.org/search</moz:SearchForm>
-<Url type="application/opensearchdescription+xml" rel="self" template="http://imicrobe.iplantcollaborative.org/opensearch.xml"/>
+<Url type="text/html" method="get" template="http://data.imicrobe.us/search?query={searchTerms}"/>
+<Image height="16" width="16" type="image/vnd.microsoft.icon">http://data.imicrobe.us/img/favicon.ico</Image>
+<moz:SearchForm>http://data.imicrobe.us/search</moz:SearchForm>
+<Url type="application/opensearchdescription+xml" rel="self" template="http://data.imicrobe.us/opensearch.xml"/>
 </OpenSearchDescription>

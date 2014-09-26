@@ -14,16 +14,24 @@ $(document).ready(function() {
         <th>Title</th>
         <th>Author</th>
         <th>Journal</th>
-        <th>Code</th>
+        <th>Date</th>
+        <th>PubMed</th>
       </tr>
     </thead>
     <tbody>
     [% FOREACH pub IN pubs %]
       <tr>
-        <td><a href="/publication/view/[% pub.pub_id %]">[% pub.title OR 'Untitled' %]</a></td>
+        <td><a href="/publication/view/[% pub.publication_id %]">[% pub.title OR 'Untitled' %]</a></td>
         <td>[% pub.author OR 'Unknown' %]</td>
         <td>[% pub.journal OR 'Unknown' %]</td>
-        <td>[% pub.pub_code %]</td>
+        <td>[% pub.pub_date OR 'NA' %]</td>
+        <td>
+          [% IF pub.pubmed_id %]
+            <a href="http://www.ncbi.nlm.nih.gov/pubmed/?term=[% pub.pubmed_id %]">[% pub.pubmed_id %]</a>
+          [% ELSE %]
+            &nbsp;
+          [% END %]
+        </td>
       </tr>
     [% END %]
     </tbody>

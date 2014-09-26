@@ -13,7 +13,11 @@ sub startup {
     my $r = $self->routes;
 
     # Normal route to controller
-    $r->get('/')->to('welcome#home');
+    $r->get('/')->to('welcome#index');
+
+    $r->get('/index')->to('welcome#index');
+
+    $r->get('/info')->to('welcome#info');
 
     $r->get('/assembly/list')->to('assembly#list');
 

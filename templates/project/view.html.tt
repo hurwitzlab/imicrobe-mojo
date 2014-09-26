@@ -5,6 +5,8 @@ $(document).ready(function() {
 });
 </script>
 
+[% SET iplant="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_projects/" %]
+
 <div class="row">
   <h2 id="nav-tabs">Project: [% project.project_name OR 'Unknown project' %]</h2>
   <div class="bs-component">
@@ -35,6 +37,23 @@ $(document).ready(function() {
             <th>Project Type</th>
             <td>[% project.project_type %]</td>
           </tr>
+          <tr>
+            <th>Read File</th>
+            <td>[% IF project.read_file %]<a target="_blank" href="[% iplant %][% project.read_file %]"><img src="/img/iplant.png">&nbsp;[% project.read_file %]</a>[% ELSE %]&nbsp;[% END %]</td>
+          </tr>
+          <tr>
+            <th>Metadata File</th>
+            <td>[% IF project.meta_file %]<a target="_blank" href="[% iplant %][% project.meta_file %]"><img src="/img/iplant.png">&nbsp;[% project.meta_file %]</a>[% ELSE %]&nbsp;[% END %]</td>
+          </tr>
+          <tr>
+            <th>Assembly File</th>
+            <td>[% IF project.assembly_file %]<a target="_blank" href="[% iplant %][% project.assembly_file %]"><img src="/img/iplant.png">&nbsp;[% project.assembly_file %]</a>[% ELSE %]&nbsp;[% END %]</td>
+          </tr>
+          <tr>
+            <th>Peptide File</th>
+            <td>[% IF project.peptide_file %]<a target="_blank" href="[% iplant %][% project.peptide_file %]"><img src="/img/iplant.png">&nbsp;[% project.peptide_file %]</a>[% ELSE %]&nbsp;[% END %]</td>
+          </tr>
+          <tr>
         </table>
         </p>
       </div>

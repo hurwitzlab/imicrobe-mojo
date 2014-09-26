@@ -1,23 +1,20 @@
 package IMicrobe::Controller::Project;
 
+use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
-sub db {
-    DBI->connect('dbi:mysql:imicrobe', 'imicrobe', '', {RaiseError => 1} );
-}
-
-# ----------------------------------------------------------------------
 sub list {
-    my $self = shift;
-    my $dbh  = db();
+    my $self     = shift;
+    my $dbh      = IMicrobe::DB->new->dbh;
     my $projects = $dbh->selectall_arrayref(
         q[
             select    p.project_id, p.project_name, p.project_code,
                       p.pi, p.institution,
                       p.project_type, p.description, 
+                      read_file, meta_file, assembly_file, peptide_file,
                       count(s.sample_id) as num_samples
             from      project p 
             left join sample s
@@ -46,12 +43,18 @@ sub list {
 
 # ----------------------------------------------------------------------
 sub view {
-    my $self = shift;
+    my $self       = shift;
     my $project_id = $self->param('project_id') or die 'No project id';
-    my $dbh = db();
 
-    my $sth = $dbh->prepare('select * from project where project_id=?');
+    my $dbh = IMicrobe::DB->new->dbh;
+    my $sql = sprintf(
+        'select * from project where %s=?',
+        $project_id =~ /\D+/ ? 'project_code' : 'project_id'
+    );
+    my $sth = $dbh->prepare($sql);
+    
     $sth->execute($project_id);
+
     my $project = $sth->fetchrow_hashref;
 
     $project->{'samples'} = $dbh->selectall_arrayref(

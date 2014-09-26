@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="/img/favicon.ico">
-    <link rel="search" type="application/opensearchdescription+xml" href="http://imicrobe.iplantcollaborative.org/opensearch.xml" title="iMicrobe Search" />
+    <link rel="search" type="application/opensearchdescription+xml" href="http://data.imicrobe.us/opensearch.xml" title="iMicrobe Search" />
 
-    <title>[% title OR 'iMicrobe' %]</title>
+    <title>[% title OR 'iMicrobe Data Commons' %]</title>
 
     <link href="/css/readable.min.css" rel="stylesheet">
     <link href="/css/imicrobe.css" rel="stylesheet">

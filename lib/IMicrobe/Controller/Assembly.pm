@@ -1,18 +1,14 @@
 package IMicrobe::Controller::Assembly;
 
+use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
-sub db {
-    DBI->connect('dbi:mysql:imicrobe', 'kclark', '', {RaiseError=>1} );
-}
-
-# ----------------------------------------------------------------------
 sub list {
-    my $self = shift;
-    my $dbh  = db();
+    my $self       = shift;
+    my $dbh        = IMicrobe::DB->new->dbh;
     my $assemblies = $dbh->selectall_arrayref(
         q[
             select a.assembly_id, a.assembly_code, a.assembly_name,
@@ -42,9 +38,9 @@ sub list {
 
 # ----------------------------------------------------------------------
 sub view {
-    my $self = shift;
+    my $self        = shift;
     my $assembly_id = $self->param('assembly_id') or die 'No assembly id';
-    my $dbh = db();
+    my $dbh         = IMicrobe::DB->new->dbh;
 
     my $sth = $dbh->prepare(
         q[
