@@ -8,6 +8,7 @@ sub startup {
     # Documentation browser under "/perldoc"
     $self->plugin('PODRenderer');
     $self->plugin('tt_renderer');
+    $self->plugin('JSONConfig', { file => 'imicrobe.json' });
 
     # Router
     my $r = $self->routes;

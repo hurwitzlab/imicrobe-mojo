@@ -12,7 +12,7 @@ $(document).ready(function() {
     <thead>
       <tr>
         <th>Name</th>
-        <th>Type</th>
+        <th>Domain of Life</th>
         <th>&#35;&nbsp;Samples</th>
         <th>Reads</th>
         <th>Metadata</th>
@@ -25,7 +25,19 @@ $(document).ready(function() {
     [% FOREACH project IN projects %]
       <tr>
         <td><a href="/project/view/[% project.project_id %]">[% project.project_name | truncate(70) %]</a></td>
-        <td>[% project.project_type OR 'Unknown' %]</td>
+        <td>
+          [% 
+            IF project.domains.size > 0; 
+              SET d=[]; 
+              FOREACH domain IN project.domains;
+                d.push("<a href=\"/project/list?domain=${domain}\">$domain</a>");
+              END;
+              d.join(', ');
+            ELSE;
+              'Unknown';
+            END;
+          %]
+        </td>
         <td align="right">[% project.num_samples OR '0' | comma %]</td>
         <td align="center">[% IF project.read_file %]<a target="_blank" href="[% iplant %][% project.read_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
         <td align="center">[% IF project.meta_file %]<a target="_blank" href="[% iplant %][% project.meta_file %]"><img src="/img/file_meta.png"></a>[% ELSE %]&nbsp;[% END %]</td>

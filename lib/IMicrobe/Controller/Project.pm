@@ -11,8 +11,10 @@ sub browse {
     my $dbh      = IMicrobe::DB->new->dbh;
     my $projects = $dbh->selectall_arrayref(
         q[
-            select   count(*) as count, p.project_type
-            from     project p 
+            select   count(*) as count, d.domain_name
+            from     project p, domain d, project_to_domain p2d
+            where    p.project_id=p2d.project_id
+            and      p2d.domain_id=d.domain_id
             group by 2
             order by 2
         ],
@@ -38,28 +40,48 @@ sub browse {
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self         = shift;
-    my $project_type = $self->param('project_type') || '';
-    my $dbh          = IMicrobe::DB->new->dbh;
-    my $sql          = sprintf(
-        q[
-            select    p.project_id, p.project_name, p.project_code,
-                      p.pi, p.institution,
-                      p.project_type, p.description, 
-                      read_file, meta_file, assembly_file, peptide_file,
-                      count(s.sample_id) as num_samples
-            from      project p 
-            left join sample s
-            on        p.project_id=s.project_id
-            %s
-            group by  1
-        ],
-        $project_type 
-        ? sprintf("where p.project_type=%s", $dbh->quote($project_type))
-        : ''
-    );
+    my $self = shift;
+    my $dbh  = IMicrobe::DB->new->dbh;
+    my $sql  = q[
+        select    p.project_id, p.project_name, p.project_code,
+                  p.pi, p.institution,
+                  p.project_type, p.description, 
+                  read_file, meta_file, assembly_file, peptide_file,
+                  count(s.sample_id) as num_samples
+        from      project p
+        left join sample s
+        on        p.project_id=s.project_id
+        left join project_to_domain p2d
+        on        p.project_id=p2d.project_id
+        left join domain d
+        on        p2d.domain_id=d.domain_id
+        %s
+    ];
+
+    if (my $domain = $self->param('domain')) {
+        $sql = sprintf($sql, 
+            sprintf('where d.domain_name=%s', $dbh->quote($domain))
+        );
+    }
+    else {
+        $sql = sprintf($sql, '');
+    }
+
+    $sql .= 'group by 1';
 
     my $projects = $dbh->selectall_arrayref($sql, { Columns => {} });
+    for my $project (@$projects) {
+        $project->{'domains'} = $dbh->selectcol_arrayref(
+            q[
+                select d.domain_name 
+                from   project_to_domain p2d, domain d
+                where  p2d.project_id=?
+                and    p2d.domain_id=d.domain_id
+            ],
+            {},
+            $project->{'project_id'}
+        );
+    }
 
     $self->respond_to(
         json => sub {
@@ -93,6 +115,17 @@ sub view {
     $sth->execute($project_id);
 
     my $project = $sth->fetchrow_hashref;
+
+    $project->{'domains'} = $dbh->selectcol_arrayref(
+        q[
+            select d.domain_name 
+            from   project_to_domain p2d, domain d
+            where  p2d.project_id=?
+            and    p2d.domain_id=d.domain_id
+        ],
+        {},
+        $project_id
+    );
 
     $project->{'samples'} = $dbh->selectall_arrayref(
         'select * from sample where project_id=?', { Columns => {} }, 

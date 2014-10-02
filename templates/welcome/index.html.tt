@@ -2,6 +2,7 @@
   <div class="row">
     <h1>Data Commons</h1>
     <ul>
+      <li><a href="/project/browse">Browse projects by type</a></li>
       <li><a href="/project/list">View all projects</a></li>
       <li><a href="/publication/list">View all publications</a></li>
       <li><a href="/assembly/list">View all assemblies</a></li>

@@ -1,0 +1,8 @@
+{
+    "hypnotoad": {
+        "listen": [
+            "http://*:3000"
+        ],
+        "workers": "10"
+    }
+}
