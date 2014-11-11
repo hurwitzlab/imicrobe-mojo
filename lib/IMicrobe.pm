@@ -30,6 +30,8 @@ sub startup {
 
     $r->get('/project/view/:project_id')->to('project#view');
 
+    $r->get('/pubchase/list')->to('pubchase#list');
+
     $r->get('/publication/list')->to('publication#list');
 
     $r->get('/publication/view/:pub_id')->to('publication#view');
