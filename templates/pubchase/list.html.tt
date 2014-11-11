@@ -1,0 +1,34 @@
+<script>
+$(document).ready(function() {
+  $('#pubs').dataTable({"iDisplayLength": 10});
+});
+</script>
+
+<div class="row">
+  <h1>Pubchase Recommendations</h1>
+  [% USE Comma %]
+  [% IF pubs.size > 0 %]
+  <table id="pubs" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Authors</th>
+        <th>Journal</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH pub IN pubs %]
+      <tr>
+        <td><a href="http://www.pubchase.com/article/[% pub.article_id %]">[% pub.title OR 'Untitled' %]</a></td>
+        <td>[% pub.list_of_authors OR 'Unknown' | truncate(40) %]</td>
+        <td>[% pub.journal_title OR 'Unknown' %]</td>
+        <td>[% pub.article_date OR 'Unknown' %]</td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    No pubs.
+  [% END %]
+</div>
