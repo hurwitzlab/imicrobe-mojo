@@ -5,7 +5,7 @@ $(document).ready(function() {
 </script>
 
 <div class="row">
-  <h1>Projects</h1>
+  <h1>Assemblies</h1>
   [% USE Comma %]
   [% IF assemblies.size > 0 %]
   <table id="assemblies" class="display" cellspacing="0" width="100%">
@@ -15,6 +15,9 @@ $(document).ready(function() {
         <th>Name</th>
         <th>Code</th>
         <th>Type</th>
+        <th>CDS</th>
+        <th>NT</th>
+        <th>Pep</th>
       </tr>
     </thead>
     <tbody>
@@ -24,6 +27,9 @@ $(document).ready(function() {
         <td><a href="/assembly/view/[% assembly.assembly_id %]">[% assembly.assembly_name %]</a></td>
         <td>[% assembly.assembly_code %]</td>
         <td>[% assembly.organism OR 'Unknown' %]</td>
+        <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><img src="/img/file_gz.png"</a>[% ELSE %]&nbsp;[% END %]</td>
+        <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><img src="/img/file_gz.png"</a>[% ELSE %]&nbsp;[% END %]</td>
       </tr>
     [% END %]
     </tbody>

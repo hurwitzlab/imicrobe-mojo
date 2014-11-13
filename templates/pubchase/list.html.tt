@@ -21,7 +21,7 @@ $(document).ready(function() {
     [% FOREACH pub IN pubs %]
       <tr>
         <td><a href="http://www.pubchase.com/article/[% pub.article_id %]">[% pub.title OR 'Untitled' %]</a></td>
-        <td>[% pub.list_of_authors OR 'Unknown' | truncate(40) %]</td>
+        <td>[% pub.authors OR 'Unknown' | truncate(40) %]</td>
         <td>[% pub.journal_title OR 'Unknown' %]</td>
         <td>[% pub.article_date OR 'Unknown' %]</td>
       </tr>

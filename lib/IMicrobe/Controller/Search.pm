@@ -13,16 +13,22 @@ sub results {
     my $dbh   = IMicrobe::DB->new->dbh;
 
     my @results;
+    my %types;
     if ($query) {
         my $sql = sprintf(
             "select * from search where match (search_text) against (%s)",
             $dbh->quote($query)
         );
-        print STDERR $sql, "\n";
+
+        if (my $type = $req->param('type')) {
+            $sql .= sprintf(" and table_name=%s", $dbh->quote($type));
+        }
 
         my $data = $dbh->selectall_arrayref($sql, { Columns => {} });
 
         for my $r (@$data) {
+            $types{ $r->{'table_name'} }++;
+
             my $sql = sprintf('select * from %s where %s=?', 
                 $r->{'table_name'}, $r->{'table_name'} . '_id'
             );
@@ -37,13 +43,21 @@ sub results {
 
     $self->respond_to(
         json => sub {
-            $self->render( json => { query => $query, results => \@results });
+            $self->render(json => { 
+                query   => $query, 
+                results => \@results,
+                types   => \%types,
+            });
         },
 
         html => sub {
             $self->layout('default');
 
-            $self->render( results => \@results, query => $query );
+            $self->render(
+                results => \@results,
+                query   => $query,
+                types   => \%types
+            );
         },
 
         txt => sub {

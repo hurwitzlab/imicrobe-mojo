@@ -1,15 +1,39 @@
 [% SET name_fields = {
-  'assembly' => 'assembly_name',
-  'project'  => 'project_name',
-  'pub'      => 'title',
-  'sample'   => 'sample_acc'
+  'assembly'    => 'assembly_name',
+  'project'     => 'project_name',
+  'publication' => 'title',
+  'sample'      => 'sample_acc'
 } %]
 <div class="row">
 <h1>Search Results</h1>
 
-<div class="well text-center">
-Found [% results.size %] record[% IF results.size == 1; ''; ELSE; 's'; END %] 
-for &quot;[% query %].&quot;
+<div class="well well-sm text-center">
+  [% IF query %]
+  Found [% results.size %] record[% IF results.size == 1; ''; ELSE; 's'; END %] 
+  for &quot;[% query %].&quot;
+  [% ELSE %]
+    Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=virus">human</a>&quot; or &quot;<a href="/search?query=virus">ocean</a>&quot;
+  [% END %]
+
+  <form class="form-inline" role="form">
+    <div class="form-group">
+    <input type="text" class="form-control" name="query" value="[% query %]">
+    [% IF types.size > 1 %]
+      <select name="type" class="form-control">
+        <option value="">--Restrict by type--</option>
+        [% FOREACH type IN types.keys.sort %]
+        <option value="[% type %]">[% type %] ([% types.$type %])</option>
+        [% END %]
+      </select>
+    [% END %]
+    <button type="submit" class="btn btn-default">Search</button>
+  </div>
+  </form>
+
+  [% IF c.req.param('type') %]
+    <br/>
+    <span class="glyphicon glyphicon-remove-circle"></span>&nbsp;<a href="[% c.req.url.path %]?query=[% query %]">[% c.req.param('type') %]</a>
+  [% END %]
 </div>
 
 [% IF results.size > 0 %]
@@ -19,9 +43,9 @@ for &quot;[% query %].&quot;
     <ul>
     [% FOREACH result IN results %]
       [% SET table = result.table_name; SET name_field = name_fields.$table; SET name = result.object.$name_field %]
-      <li><a href="/[% result.table_name %]/view/[% result.primary_key %]">[% result.table_name.ucfirst %]: [% name %]</a>
+      <li><a href="/[% table %]/view/[% result.primary_key %]">[% table | ucfirst %]: [% name %]</a></li>
       </p>
-    [% END %]
+     [% END %]
     </ul>
   </div>
 [% END %]

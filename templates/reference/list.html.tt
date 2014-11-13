@@ -1,0 +1,30 @@
+<script>
+$(document).ready(function() {
+  $('#refs').dataTable({"iDisplayLength": 25});
+});
+</script>
+
+<div class="row">
+  <h1>Reference Data Sets</h1>
+  [% USE Comma %]
+  [% IF refs.size > 0 %]
+  <table id="refs" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH ref IN refs %]
+      <tr>
+        <td>[% ref.name OR 'Untitled' %]</a></td>
+        <td><a href="[% ref.url %]">[% ref.file %]</a></td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    No pubs.
+  [% END %]
+</div>

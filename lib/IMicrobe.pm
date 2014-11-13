@@ -24,6 +24,8 @@ sub startup {
 
     $r->get('/assembly/view/:assembly_id')->to('assembly#view');
 
+    $r->get('/combined_assembly/list')->to('combined_assembly#list');
+
     $r->get('/project/browse')->to('project#browse');
 
     $r->get('/project/list')->to('project#list');
@@ -35,6 +37,8 @@ sub startup {
     $r->get('/publication/list')->to('publication#list');
 
     $r->get('/publication/view/:pub_id')->to('publication#view');
+
+    $r->get('/reference/list')->to('reference#list');
 
     $r->get('/sample/list/:project_id')->to('sample#list');
 

@@ -1,13 +1,71 @@
+<div class="jumbotron">
+  <div class="container">
+    <table>
+      <tr>
+        <td><h1>Interactive Data Commons</h1></td>
+        <td><img src="/img/imicrobe-m-square-200.png"></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          An interactive query tool for microbial data in the
+          <a href="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe">iPlant Data Store</a> that can be used with tools in the
+          <a href="http://www.iplantcollaborative.org/ci/discovery-environment">iPlant Discovery Environment</a>.
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
 <div class="container">
+  <!-- Example row of columns -->
   <div class="row">
-    <h1>Data Commons</h1>
-    <ul>
-      <li><a href="/project/browse">Browse projects by type</a></li>
-      <li><a href="/project/list">View all projects</a></li>
-      <li><a href="/publication/list">View all publications</a></li>
-      <li><a href="/assembly/list">View all assemblies</a></li>
-      <li><a href="/pubchase/list">View recommended articles</a></li>
-      <li><a href="/search?query=ocean">Search for something</a></li>
-    </ul>
+    <div class="col-md-4">
+      <h2>Search</h2>
+      <p>
+      From any page, enter your query in the upper-right-hand search box.
+      Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=virus">human</a>&quot; or &quot;<a href="/search?query=virus">ocean</a>.&quot;  You can limit the results to projects or
+      publications or whatever you like.
+   </div>
+    <div class="col-md-4">
+      <h2>Browse</h2>
+      You can browse all our data interactively:
+      <ul>
+      <li><a href="/project/browse">Browse projects by domain of life</a>
+      <li><a href="/project/list">View all projects</a>
+      <li><a href="/publication/list">View all publications</a>
+      <li><a href="/assembly/list">View all assemblies</a>
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h2>Read</h2>
+      <p>
+      The <a href="/publication/list">publications list</a> shows all the 
+      papers associated with data in iMicrobe.
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <h2>Discover</h2>
+      <p>
+      Use <a href="http://wiki.imicrobe.us/index.php/IMicrobe_Bioinformatics_Tools">iMicrobe's bioinformatics tool</a> in the
+      <a href="http://www.iplantcollaborative.org/ci/discovery-environment">iPlant
+        Disovery Environment</a> with data in the <a href="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe">iPlant Data Store</a>.
+    </div>
+    <div class="col-md-4">
+      <h2>Featured</h2>
+      <p>
+      <ul>
+        <li><a href="/project/view/104">The MMETSP project</a></li>
+        <li><a href="/project/view/26">Global Ocean Sampling Expedition</a></li>
+        <li><a href="/project/view/94">Pacific Ocean Virome</a></li>
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h2>Recommended</h2>
+      <p>
+      Our <a href="/pubchase/list">reading list</a> is 
+      updated weekly by the <a href="http://pubchase.com">PubChase</a> 
+      recommendation algorigthm.
+    </div>
   </div>
 </div>

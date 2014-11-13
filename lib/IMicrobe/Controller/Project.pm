@@ -137,6 +137,28 @@ sub view {
         $project_id
     );
 
+    my $cmb_asm = $dbh->selectall_arrayref(
+        'select * from combined_assembly where project_id=?', 
+        { Columns => {} }, 
+        $project_id
+    );
+    
+    for my $asm (@$cmb_asm) {
+        $asm->{'samples'} = $dbh->selectall_arrayref(
+            q[
+                select s.sample_id, s.sample_name
+                from   combined_assembly_to_sample c2s,
+                       sample s
+                where  c2s.combined_assembly_id=?
+                and    c2s.sample_id=s.sample_id
+            ], 
+            { Columns => {} }, 
+            $asm->{'combined_assembly_id'}
+        );
+    }
+
+    $project->{'combined_assemblies'} = $cmb_asm;
+
     $self->respond_to(
         json => sub {
             $self->render( json => $project );
