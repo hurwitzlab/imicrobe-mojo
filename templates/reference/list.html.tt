@@ -5,7 +5,7 @@ $(document).ready(function() {
 </script>
 
 <div class="row">
-  <h1>Reference Data Sets</h1>
+  <h1>[% title %]</h1>
   [% USE Comma %]
   [% IF refs.size > 0 %]
   <table id="refs" class="display" cellspacing="0" width="100%">

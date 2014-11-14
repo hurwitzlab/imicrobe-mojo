@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+[%- DEFAULT title='Data Commons' -%]
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -7,7 +8,7 @@
     <link rel="icon" href="/img/favicon.ico">
     <link rel="search" type="application/opensearchdescription+xml" href="http://data.imicrobe.us/opensearch.xml" title="iMicrobe Search" />
 
-    <title>[% title OR 'iMicrobe Data Commons' %]</title>
+    <title>iMicrobe [% title %]</title>
 
     <link href="/css/readable.min.css" rel="stylesheet">
     <link href="/css/imicrobe.css" rel="stylesheet">
@@ -38,6 +39,7 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Browse<span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="/project/list">Projects</a></li>
+                <li><a href="/project/browse">Domains of Life</a></li>
                 <li><a href="/assembly/list">Assemblies</a></li>
                 <li><a href="/combined_assembly/list">Combined Assemblies</a></li>
                 <li><a href="/publication/list">Publications</a></li>
@@ -58,7 +60,18 @@
 
     <div class="container">
       [% content %]
-    </div><!-- /.container -->
+    </div>
+
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-56769725-3', 'auto');
+    ga('send', 'pageview');
+
+    </script>
   </body>
 </html>
 

@@ -54,6 +54,7 @@ sub results {
             $self->layout('default');
 
             $self->render(
+                title   => "Search results for $query",
                 results => \@results,
                 query   => $query,
                 types   => \%types

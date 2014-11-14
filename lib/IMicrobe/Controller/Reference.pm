@@ -30,7 +30,7 @@ sub list {
         html => sub {
             $self->layout('default');
 
-            $self->render( refs => \@refs );
+            $self->render( refs => \@refs, title => 'Reference Data Sets' );
         },
 
         txt => sub {

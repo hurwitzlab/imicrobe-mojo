@@ -1,3 +1,5 @@
+[% USE Comma %]
+
 <script>
 $(document).ready(function() {
   $('#projects').dataTable({"iDisplayLength": 10});
@@ -5,8 +7,12 @@ $(document).ready(function() {
 </script>
 
 <div class="row">
-  <h1>Projects</h1>
-  [% USE Comma %]
+  <h1>[% title %]</h1>
+  [% IF domain %]
+    <div class="well well-sm text-center">
+    <a href="[% c.req.url.path %]"><span class="glyphicon glyphicon-remove-circle"></span>&nbsp;[% domain %] only</a>
+    </div>
+  [% END %]
   [% IF projects.size > 0 %]
   <table id="projects" class="display" cellspacing="0" width="100%">
     <thead>

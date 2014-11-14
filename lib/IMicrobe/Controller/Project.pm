@@ -29,7 +29,10 @@ sub browse {
         html => sub {
             $self->layout('default');
 
-            $self->render( projects => $projects );
+            $self->render( 
+                projects => $projects,
+                title    => 'Projects by Domain of Life',
+            );
         },
 
         txt => sub {
@@ -40,9 +43,10 @@ sub browse {
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
-    my $sql  = q[
+    my $self   = shift;
+    my $dbh    = IMicrobe::DB->new->dbh;
+    my $domain = $self->param('domain') || '';
+    my $sql    = q[
         select    p.project_id, p.project_name, p.project_code,
                   p.pi, p.institution,
                   p.project_type, p.description, 
@@ -58,7 +62,7 @@ sub list {
         %s
     ];
 
-    if (my $domain = $self->param('domain')) {
+    if ($domain) {
         $sql = sprintf($sql, 
             sprintf('where d.domain_name=%s', $dbh->quote($domain))
         );
@@ -91,7 +95,11 @@ sub list {
         html => sub {
             $self->layout('default');
 
-            $self->render( projects => $projects );
+            $self->render( 
+                projects => $projects, 
+                domain   => $domain,
+                title    => 'Projects',
+            );
         },
 
         txt => sub {
@@ -167,7 +175,10 @@ sub view {
         html => sub {
             $self->layout('default');
 
-            $self->render( project => $project );
+            $self->render( 
+                title   => sprintf("Project: %s", $project->{'project_name'}),
+                project => $project,
+            );
         },
 
         txt => sub {

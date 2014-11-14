@@ -1,8 +1,9 @@
 [% SET name_fields = {
-  'assembly'    => 'assembly_name',
-  'project'     => 'project_name',
-  'publication' => 'title',
-  'sample'      => 'sample_acc'
+  'assembly'          => 'assembly_name',
+  'project'           => 'project_name',
+  'publication'       => 'title',
+  'sample'            => 'sample_name'
+  'combined_assembly' => 'assembly_name',
 } %]
 <div class="row">
 <h1>Search Results</h1>
@@ -18,6 +19,9 @@
   <form class="form-inline" role="form">
     <div class="form-group">
     <input type="text" class="form-control" name="query" value="[% query %]">
+    [% IF c.req.param('type') %]
+      <input type="hidden" name="type" value="[% c.req.param('type') %]">
+    [% END %]
     [% IF types.size > 1 %]
       <select name="type" class="form-control">
         <option value="">--Restrict by type--</option>

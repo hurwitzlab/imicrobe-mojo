@@ -140,7 +140,9 @@ $(document).ready(function() {
            [% SET ca_url = "http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_mmetsp_ncgr/combined_assemblies/" %]
            [% FOREACH assembly IN project.combined_assemblies %]
              <tr>
-               <td>[% assembly.assembly_name %]</td>
+               <td>
+                 <a href="/combined_assembly/view/[% assembly.combined_assembly_id %]">[% assembly.assembly_name %]</a>
+               </td>
                <td>[% assembly.phylum %]</td>
                <td>[% assembly.class %]</td>
                <td>[% assembly.family %]</td>
@@ -161,13 +163,13 @@ $(document).ready(function() {
                </td>
                <td>
                  [% IF assembly.annotations_file %]
-                   <a href="[% ca_url %][% assembly.annotations_file %]"><img src="/img/file_gz.png">&nbsp;Annotations</a><br/>
+                   <a href="[% ca_url %][% assembly.annotations_file %]"><img src="/img/file_gz.png">&nbsp;Annot</a><br/>
                  [% END %]
                  [% IF assembly.peptides_file %]
-                   <a href="[% ca_url %][% assembly.peptides_file %]"><img src="/img/file_gz.png">&nbsp;Peptides</a><br/>
+                   <a href="[% ca_url %][% assembly.peptides_file %]"><img src="/img/file_gz.png">&nbsp;Pep</a><br/>
                  [% END %]
                  [% IF assembly.nucleotides_file %]
-                   <a href="[% ca_url %][% assembly.nucleotides_file %]"><img src="/img/file_gz.png">&nbsp;Nucleotides</a><br/>
+                   <a href="[% ca_url %][% assembly.nucleotides_file %]"><img src="/img/file_gz.png">&nbsp;NT</a><br/>
                  [% END %]
                  [% IF assembly.cds_file %]
                    <a href="[% ca_url %][% assembly.cds_file %]"><img src="/img/file_gz.png">&nbsp;CDS</a>

@@ -28,7 +28,10 @@ sub list {
         html => sub {
             $self->layout('default');
 
-            $self->render( assemblies => $assemblies );
+            $self->render( 
+                assemblies => $assemblies,
+                title      => 'Assemblies',
+            );
         },
 
         txt => sub {
@@ -64,7 +67,12 @@ sub view {
         html => sub {
             $self->layout('default');
 
-            $self->render( assembly => $assembly );
+            $self->render( 
+                assembly => $assembly,
+                title    => sprintf('Assembly: %s', 
+                    $assembly->{'assembly_name'} || $assembly->{'organism'}
+                ),
+            );
         },
 
         txt => sub {

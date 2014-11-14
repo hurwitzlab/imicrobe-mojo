@@ -26,7 +26,7 @@ sub list {
         html => sub {
             $self->layout('default');
 
-            $self->render( pubs => $pubs );
+            $self->render( pubs => $pubs, title => 'Publications' );
         },
 
         txt => sub {
@@ -55,7 +55,11 @@ sub view {
         html => sub {
             $self->layout('default');
 
-            $self->render( pub => $pub );
+            $self->render( 
+                pub   => $pub,
+                title => 
+                    sprintf('Publication: %s', $pub->{'title'} || 'Untitled'),
+            );
         },
 
         txt => sub {

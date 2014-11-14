@@ -27,7 +27,10 @@ sub list {
         html => sub {
             $self->layout('default');
 
-            $self->render( pubs => $pubs );
+            $self->render( 
+                pubs  => $pubs,
+                title => 'Pubchase Recommendations',
+            );
         },
 
         txt => sub {

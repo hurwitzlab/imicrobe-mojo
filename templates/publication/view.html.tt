@@ -1,6 +1,10 @@
 <div class="row">
-  <h2 id="nav-tabs">Publication: [% pub.title %]</h2>
+  <h1>[% title | truncate(50) %]</h1>
   <table class="table">
+    <tr>
+      <th>Title</th>
+      <td>[% pub.title %]</td>
+    </tr>
     <tr>
       <th>Author</th>
       <td>[% pub.author %]</td>
