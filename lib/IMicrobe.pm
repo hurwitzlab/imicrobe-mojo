@@ -26,6 +26,8 @@ sub startup {
 
     $r->get('/combined_assembly/list')->to('combined_assembly#list');
 
+    $r->get('/combined_assembly/view/:combined_assembly_id')->to('combined_assembly#view');
+
     $r->get('/project/browse')->to('project#browse');
 
     $r->get('/project/list')->to('project#list');
