@@ -47,6 +47,7 @@
                 <li><a href="/pubchase/list">Recommended Reading</a></li>
               </ul>
             </li>
+            <li><a href="/feedback">Feedback</a></li>
           </ul>
           <form class="navbar-form navbar-right" role="search" action="/search" method="GET">
             <div class="form-group">
