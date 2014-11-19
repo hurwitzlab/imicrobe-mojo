@@ -16,6 +16,10 @@ sub startup {
     # Normal route to controller
     $r->get('/')->to('welcome#index');
 
+    #$r->get('/admin/edit_project/:project_id')->to('admin#edit_project');
+
+    #$r->post('/admin/update_project')->to('admin#update_project');
+
     $r->get('/index')->to('welcome#index');
 
     $r->get('/info')->to('welcome#info');
@@ -46,11 +50,30 @@ sub startup {
 
     $r->get('/reference/list')->to('reference#list');
 
-    $r->get('/sample/list/:project_id')->to('sample#list');
+    $r->get('/sample/list')->to('sample#list');
 
     $r->get('/sample/view/:sample_id')->to('sample#view');
 
     $r->get('/search')->to('search#results');
+
+    $self->hook(
+        before_render => sub {
+            my ($c, $args) = @_;
+
+            # Make sure we are rendering the exception template
+            return unless my $template = $args->{'template'};
+            #return unless $template eq 'exception';
+
+            # Switch to JSON rendering if content negotiation allows it
+            if ($template eq 'exception' && $c->accepts('json')) {
+                $args->{'json'} = { exception => $c->stash('exception') }
+            }
+            elsif ($c->accepts('html')) {
+                $args->{'title'} = ucfirst $template;
+                $c->layout('default');
+            }
+        }
+    );
 }
 
 1;
