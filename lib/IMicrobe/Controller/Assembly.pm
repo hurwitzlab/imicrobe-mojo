@@ -43,7 +43,7 @@ sub list {
 # ----------------------------------------------------------------------
 sub view {
     my $self        = shift;
-    my $assembly_id = $self->param('assembly_id') or die 'No assembly id';
+    my $assembly_id = $self->param('assembly_id');
     my $dbh         = IMicrobe::DB->new->dbh;
 
     my $sth = $dbh->prepare(
@@ -58,6 +58,10 @@ sub view {
     );
     $sth->execute($assembly_id);
     my $assembly = $sth->fetchrow_hashref;
+
+    if (!$assembly) {
+        return $self->reply->exception("Bad assembly id ($assembly_id)");
+    }
 
     $self->respond_to(
         json => sub {

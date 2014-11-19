@@ -60,9 +60,20 @@ sub list {
 # ----------------------------------------------------------------------
 sub view {
     my $self        = shift;
-    my $assembly_id = $self->param('combined_assembly_id') 
-                      or die 'No combined assembly id';
+    my $assembly_id = $self->param('combined_assembly_id');
     my $dbh         = IMicrobe::DB->new->dbh;
+
+    if ($assembly_id =~ /^\D/) {
+        my $sql = q[
+            select combined_assembly_id 
+            from   combined_assembly 
+            where  assembly_name=?
+        ];
+
+        if (my $id = $dbh->selectrow_array($sql, {}, $assembly_id)) {
+            $assembly_id = $id;
+        }
+    }
 
     my $sth = $dbh->prepare(
         q[
@@ -79,6 +90,11 @@ sub view {
     );
     $sth->execute($assembly_id);
     my $assembly = $sth->fetchrow_hashref;
+
+    if (!$assembly) {
+        return 
+        $self->reply->exception("Bad combined assembly id ($assembly_id)");
+    }
 
     $assembly->{'samples'} = $dbh->selectall_arrayref(
         q[

@@ -15,7 +15,7 @@ sub list {
         map { $_->{'url'} = $url . $_->{'file'}; $_ }
         @{$dbh->selectall_arrayref(
             q[
-                select   file, name
+                select   file, name, build_date, revision, length, seq_count
                 from     reference
                 order by 2
             ],

@@ -1,29 +1,36 @@
 package IMicrobe::Controller::Feedback;
 
 use IMicrobe::DB;
-use Mojo::Base 'Mojolicious::Controller';
-use Data::Dump 'dump';
-use Readonly;
 use Captcha::reCAPTCHA;
+use Data::Dump 'dump';
 use Email::Valid;
+use HTML::LinkExtractor;
+use IMicrobe::Config;
 use Mail::Sendmail;
 use Mail::SpamAssassin;
-use HTML::LinkExtractor;
+use Mojo::Base 'Mojolicious::Controller';
+use Readonly;
 
 Readonly my $DOUBLE_NEWLINE => "\n\n";
 Readonly my $COMMENTS_MAX   => 10_000;
 Readonly my $MAX_URLS       => 5;
-Readonly my $RECIPIENTS     => 'kyclark@gmail.com';
+Readonly my $RECIPIENTS     
+    => 'project-6969156-76a72db1651b0b95588548e9@basecamp.com';
 
 # -------------------------------------------------------
 sub captcha_keys {
-    my $self         = shift;
-    my $req          = $self->req;
-    my $conf         = $self->config;
-    my %captcha_keys = %{ $conf->{'feedback'}{'captcha_keys'} || {} }
-                       or die 'No captcha keys';
+    my $self  = shift;
+    my $conf  = $self->config;
+    my $cfile = $conf->{'captcha_conf'} || die 'No Captcha conf';
+    my $cconf = IMicrobe::Config->new(filename => $cfile);
+    my $keys  = $cconf->get('keys') || die 'No Captcha keys';
 
-    return \%captcha_keys;
+    if (ref $keys eq 'HASH') {
+        return $keys;
+    }
+    else {
+        die 'Bad Captcha key format';
+    }
 }
 
 # ----------------------------------------------------------------------
@@ -123,20 +130,20 @@ sub submit {
         }
 
         my $message = join $DOUBLE_NEWLINE,
-            "URL         : $problem_url",
-            "Subject     : $subject",
-            "Name        : $user_name",
-            "Email       : $user_email",
-            'Comments    : ',
+            "Subject : $subject",
+            "URL     : $problem_url",
+            "Name    : $user_name",
+            "Email   : $user_email",
+            'Comments: ',
             $comments,
         ;
 
         my %mail_args  = (
-            'Subject'  => $subject,
+            'Subject'  => "Discussion: $subject",
             'To'       => $RECIPIENTS,
-            'From'     => 'feedback@imicrobe.us',
+            'From'     => $user_email,
             'Cc'       => $user,
-            'Reply-To' => "$user_email, $RECIPIENTS",
+            'Reply-To' => $RECIPIENTS,
         );
 
         sendmail(

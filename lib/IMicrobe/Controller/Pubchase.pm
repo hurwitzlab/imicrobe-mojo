@@ -9,6 +9,9 @@ use DBI;
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;
+    my $last = $dbh->selectrow_array(
+        'select rec_date from pubchase_rec order by rec_date desc limit 1'
+    );
     my $pubs = $dbh->selectall_arrayref(
         q[
             select   pubchase_id, article_id, title, journal_title, 
@@ -21,15 +24,16 @@ sub list {
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $pubs );
+            $self->render(json => { last_update => $last, pubs => $pubs });
         },
 
         html => sub {
             $self->layout('default');
 
             $self->render( 
-                pubs  => $pubs,
-                title => 'Pubchase Recommendations',
+                pubs        => $pubs,
+                title       => 'Pubchase Recommendations',
+                last_update => $last,
             );
         },
 

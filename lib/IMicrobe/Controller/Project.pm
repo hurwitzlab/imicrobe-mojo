@@ -45,7 +45,7 @@ sub browse {
 sub list {
     my $self   = shift;
     my $dbh    = IMicrobe::DB->new->dbh;
-    my $domain = $self->param('domain') || '';
+    my $domain = lc($self->param('domain') || '');
     my $sql    = q[
         select    p.project_id, p.project_name, p.project_code,
                   p.pi, p.institution,
@@ -63,9 +63,18 @@ sub list {
     ];
 
     if ($domain) {
-        $sql = sprintf($sql, 
-            sprintf('where d.domain_name=%s', $dbh->quote($domain))
-        );
+        my %valid = 
+            map { $_, 1 } 
+            @{ $dbh->selectcol_arrayref('select domain_name from domain') };
+
+        if ($valid{$domain}) {
+            $sql = sprintf($sql, 
+                sprintf('where d.domain_name=%s', $dbh->quote($domain))
+            );
+        }
+        else {
+            return $self->reply->exception("Bad domain ($domain)");
+        }
     }
     else {
         $sql = sprintf($sql, '');
@@ -111,18 +120,21 @@ sub list {
 # ----------------------------------------------------------------------
 sub view {
     my $self       = shift;
-    my $project_id = $self->param('project_id') or die 'No project id';
+    my $project_id = $self->param('project_id');
 
     my $dbh = IMicrobe::DB->new->dbh;
     my $sql = sprintf(
         'select * from project where %s=?',
         $project_id =~ /\D+/ ? 'project_code' : 'project_id'
     );
-    my $sth = $dbh->prepare($sql);
-    
-    $sth->execute($project_id);
 
+    my $sth = $dbh->prepare($sql);
+    $sth->execute($project_id);
     my $project = $sth->fetchrow_hashref;
+
+    if (!$project) {
+        return $self->reply->exception("Bad project id ($project_id)");
+    }
 
     $project->{'domains'} = $dbh->selectcol_arrayref(
         q[

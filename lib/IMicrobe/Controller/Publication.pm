@@ -38,7 +38,7 @@ sub list {
 # ----------------------------------------------------------------------
 sub view {
     my $self   = shift;
-    my $pub_id = $self->param('pub_id') or die 'No pub id';
+    my $pub_id = $self->param('pub_id');
     my $dbh    = IMicrobe::DB->new->dbh;
 
     my $sth = $dbh->prepare('select * from publication where publication_id=?');
@@ -46,6 +46,10 @@ sub view {
     $sth->execute($pub_id);
 
     my $pub = $sth->fetchrow_hashref;
+
+    if (!$pub) {
+        return $self->reply->exception("Bad publication id ($pub_id)");
+    }
 
     $self->respond_to(
         json => sub {
