@@ -1,29 +1,342 @@
-[% SET fields = [ 'sample_name', 'sample_acc', 'sample_type', 'sample_volume', 'volume_unit', 'filter_min', 'filter_max', 'sample_description', 'comments', 'taxon_id', 'collection_start_time', 'collection_stop_time', 'biomaterial_name', 'description', 'material_acc', 'site_name', 'latitude', 'longitude', 'altitude', 'site_depth', 'site_description', 'country_name', 'region', 'habitat_name', 'host_taxon_id', 'host_description', 'host_organism', 'library_acc', 'sequencing_method', 'dna_type', 'num_of_reads', 'material_id', 'additional_citations', 'ammonium', 'assembly_accession_number', 'axenic', 'chlorophyll', 'clonal', 'co2', 'collection_date', 'collection_time', 'combined_assembly_name', 'country', 'date_of_experiment', 'day_portion_of_day_night_cycle_in_hours', 'depth', 'dissolved_oxygen', 'doc', 'elevation', 'envo_term_for_habitat_primary_term', 'envo_term_for_habitat_secondary_term', 'external_sample_id', 'filter_fraction_maximum', 'filter_fraction_minimum', 'genus', 'growth_medium', 'habitat', 'habitat_description', 'importance', 'investigation_type', 'light', 'list_of_amino_acids_and_concentrations_with_units', 'modifications_to_growth_medium', 'ncgr_sample_id', 'night_portion_of_day_night_cycle_in_hours', 'nitrate', 'other_collection_site_info', 'other_environmental_metadata_available', 'other_experimental_metadata_available', 'ph', 'phosphate', 'poc', 'prelim_ncbi_taxon_id', 'pressure', 'prey_organism_if_applicable', 'primary_citation', 'principle_investigator', 'salinity', 'sample_accession_number', 'sample_collection_site', 'sample_material', 'silicate', 'species', 'strain', 'temperature', 'total_fe', 'trace_elements', 'urea', 'volume_filtered' ] %]
+[%-
+SET other_fields = [ 
+ 'sample_volume',
+ 'volume_unit',
+ 'filter_min',
+ 'filter_max',
+ 'comments',
+ 'taxon_id',
+ 'collection_start_time',
+ 'collection_stop_time',
+ 'biomaterial_name',
+ 'material_acc',
+ 'site_name',
+ 'altitude',
+ 'site_depth',
+ 'site_description',
+ 'country_name',
+ 'region',
+ 'habitat_name',
+ 'host_taxon_id',
+ 'host_description',
+ 'host_organism',
+ 'library_acc',
+ 'sequencing_method',
+ 'dna_type',
+ 'num_of_reads',
+ 'material_id',
+ 'ammonium',
+ 'axenic',
+ 'chlorophyll',
+ 'co2',
+ 'collection_time',
+ 'dissolved_oxygen',
+ 'doc',
+ 'elevation',
+ 'envo_term_for_habitat_primary_term',
+ 'envo_term_for_habitat_secondary_term',
+ 'filter_fraction_maximum',
+ 'filter_fraction_minimum',
+ 'habitat_description',
+ 'list_of_amino_acids_and_concentrations_with_units',
+ 'nitrate',
+ 'phosphate',
+ 'poc',
+ 'prelim_ncbi_taxon_id',
+ 'pressure',
+ 'prey_organism_if_applicable',
+ 'principle_investigator',
+ 'silicate',
+ 'total_fe',
+ 'trace_elements',
+ 'urea',
+ 'volume_filtered' ] 
+-%]
+
+[%-
+  SET download_files = [];
+  FOREACH ft IN ['reads', 'annotations', 'peptides', 'contigs', 'cds']; 
+    SET file = ft _ '_file';
+    IF sample.$file;
+      download_files.push({ ft = ft, file = sample.$file });
+    END;
+  END;
+-%]
 
 <div class="row">
   <h1 id="nav-tabs">Sample: [% sample.sample_name %]</h1>
-  <table class="table">
-    <tr>
-      <th>Project</th>
-      <td><a href="/project/view/[% sample.project_id %]">[% sample.project_name %]</a></td>
-    </tr>
-    [% FOREACH field IN fields %]
-      <tr>
-        <th>[% field.replace('_', ' ').ucfirst %]</th>
-        <td>[% sample.$field %]</td>
-      </tr>
-    [% END %]
-    <tr>
-      <th>18s_rrna</th>
-      <td>
+  <div class="bs-component">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
+      <li><a href="#desc" data-toggle="tab">Description</a></li>
+      <li><a href="#downloads" data-toggle="tab">Downloads ([% download_files.size OR '0' %])</a></li>
+      <li><a href="#env" data-toggle="tab">Environment</a></li>
+      <li><a href="#exp" data-toggle="tab">Experiment</a></li>
+      <li><a href="#18s_rrna" data-toggle="tab">18s rRNA</a></li>
+      <li><a href="#other" data-toggle="tab">Other</a></li>
+    </ul>
+
+    <div id="tabContent" class="tab-content">
+      <div class="tab-pane fade active in" id="info">
+        <br/>
+        <table class="table">
+          <tr>
+            <th>Sample Name</th>
+            <td>[% sample.sample_name %]</td>
+          </tr>
+          <tr>
+            <th>Sample Type</th>
+            <td>[% sample.sample_type %]</td>
+          </tr>
+          <tr>
+            <th>Project</th>
+            <td>
+              <a href="/project/view/[% sample.project_id %]">[% sample.project_name %]</a>
+            </td>
+          </tr>
+          <tr>
+            <th>PI</th>
+            <td>
+              [% sample.pi OR 'N/A' %]
+            </td>
+          </tr>
+          <tr>
+            <th>External Sample ID</th>
+            <td>
+              [% sample.external_sample_id OR 'N/A' %]
+            </td>
+          </tr>
+          [% IF sample.ncgr_sample_id %]
+            <tr>
+              <th>NCGR Sample ID</th>
+              <td>
+                [% sample.ncgr_sample_id %]
+              </td>
+            </tr>
+          [% END %]
+          [% IF sample.mmetsp_id %]
+            <tr>
+              <th>MMETSP ID</th>
+              <td>
+                [% sample.mmetsp_id %]
+              </td>
+            </tr>
+          [% END %]
+          <tr>
+            <th>Sample Accession</th>
+            <td>[% sample.sample_acc OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Assembly</th>
+            <td>
+              [% IF sample.assembly_accession_number %]
+                <a href="/assembly/view/[% sample.assembly_accession_number %]">[% sample.assembly_accession_number %]</a> 
+              [% ELSE %]
+                N/A
+              [% END %]
+            </td>
+          </tr>
+          [% IF sample.combined_assembly_name %]
+            <tr>
+              <th>Combined Assembly</th>
+              <td>
+                <a href="/combined_assembly/view/[% sample.combined_assembly_name %]">[% sample.combined_assembly_name %]</a> 
+              </td>
+            </tr>
+          [% END %]
+          <tr>
+            <th>Genus</th>
+            <td>[% sample.genus OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Species</th>
+            <td>[% sample.species OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Strain</th>
+            <td>[% sample.strain OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Clonal</th>
+            <td>[% sample.clonal OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Importance of organism and transcriptomes</th>
+            <td>[% sample.importance OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Additional citations and references</th>
+            <td>[% sample.additional_citations OR 'N/A' %]</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="env">
+        <br/>
+        <table class="table">
+          <tr>
+            <th>Primary citation for organism's characterization, if available</th>
+            <td>
+              [% IF sample.primary_citation.match('^https?://') %]
+                <a href="[% sample.primary_citation %]">[% sample.primary_citation %]</a>
+              [% ELSE %]
+                [% sample.primary_citation OR 'N/A' %]
+              [% END %]
+            </td>
+          </tr>
+          <tr>
+            <th>Latitude</th>
+            <td>[% sample.latitude OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Longitude</th>
+            <td>[% sample.longitude OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Depth (m)</th>
+            <td>[% sample.depth OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Salinity (psu)</th>
+            <td>[% sample.environmental_salinity OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Temperature (&deg;C)</th>
+            <td>[% sample.environmental_temperature OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Collection Date</th>
+            <td>[% sample.collection_date OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Sample Collection Site</th>
+            <td>[% sample.sample_collection_site OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Other Collection Site Info</th>
+            <td>[% sample.other_collection_site_info OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Sample Material</th>
+            <td>[% sample.sample_material OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Other Envionmental Metadata</th>
+            <td>[% sample.other_environmental_metadata_available OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Habitat</th>
+            <td>[% sample.habitat OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Country</th>
+            <td>[% sample.country OR 'N/A' %]</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="exp">
+        <br/>
+        <table class="table">
+          <tr>
+            <th>Date of Experiment</th>
+            <td>[% sample.date_of_experiment OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Growth Medium</th>
+            <td>[% sample.growth_medium OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Modifications to Growth Medium</th>
+            <td>[% sample.modifications_to_growth_medium OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Salinity (psu)</th>
+            <td>[% sample.experimental_salinity OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Temperature (&deg;C)</th>
+            <td>[% sample.experimental_temperature OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>pH</th>
+            <td>[% sample.ph OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Light (&micro;mol photons / m2 / sec)</th>
+            <td>[% sample.light OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Day portion of day:night cycle in hours</th>
+            <td>[% sample.day_portion_of_day_night_cycle_in_hours OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Night portion of day:night cycle in hours</th>
+            <td>[% sample.night_portion_of_day_night_cycle_in_hours OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Investigation Type</th>
+            <td>[% sample.investigation_type OR 'N/A' %]</td>
+          </tr>
+          <tr>
+            <th>Other Experimental Metadata</th>
+            <td>[% sample.other_experimental_metadata_available OR 'N/A' %]</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="desc">
+        <br/>
+        <div class="col-lg-6">
+
+        <p>
+          <b>Description</b><br/>
+          [% sample.description.replace('\n\n', '<p>') OR 'N/A' %]
+        </p>
+
+        <p>
+          <b>Sample Description</b><br/>
+          [% sample.sample_description.replace('\n\n', '<p>') OR 'N/A' %]
+        </p>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="downloads">
+        <br/>
+        [% IF download_files.size > 0 %]
+          <ul>
+            [% FOREACH f IN download_files %]
+            <li><a href="[% f.file %]"><img src="/img/file_gz.png">&nbsp;[% f.ft.ucfirst %]</a>
+            [% END %]
+          </ul>
+        [% ELSE %]
+          None.
+        [% END %]
+        </p>
+      </div>
+
+      <div class="tab-pane fade" id="18s_rrna">
+        <br/>
         [% SET seq = '18s_rrna' %]
         [% IF sample.$seq %]
           <pre>[% sample.$seq.chunk(50).join("\n") %]</pre>
         [% ELSE %]
           N/A
         [% END %]
-      </td>
-    </tr>
-  </table>
-  </p>
+      </div>
+
+      <div class="tab-pane fade" id="other">
+        <br/>
+        <table class="table">
+          [% FOREACH field IN other_fields %]
+            <tr>
+              <th>[% field.replace('_', ' ').ucfirst %]</th>
+              <td>[% sample.$field OR 'N/A' %]</td>
+            </tr>
+          [% END %]
+        </table>
+      </div>
+    </div>
+  </div>
+  <div id="source-button" class="btn btn-primary btn-xs" style="display: none;">&lt; &gt;</div></div>
 </div>
