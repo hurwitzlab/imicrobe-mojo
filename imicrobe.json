@@ -5,11 +5,5 @@
         ],
         "workers": "10"
     },
-    "feedback": {
-        "captcha_dir": "/usr/local/imicrobe/public/tmp/captcha",
-        "captcha_keys": {
-            "public": "6LdAx_0SAAAAAIgnwpa_Sl4EWgTLu4VtfX6g5vAz",
-            "private": "6LdAx_0SAAAAAKoLKe9jTLzHNxTQbpki8Gk3CrQD"
-        }
-    }
+    "captcha_conf": "/usr/local/imicrobe/configs/web/captcha.yaml"
 }
