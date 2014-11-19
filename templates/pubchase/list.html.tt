@@ -32,3 +32,7 @@ $(document).ready(function() {
     No pubs.
   [% END %]
 </div>
+
+<div class="text-center">
+[% IF last_update %]<em>Last updated: [% last_update %]</em>[% END %]
+</div>
