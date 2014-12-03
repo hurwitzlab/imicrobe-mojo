@@ -1,0 +1,24 @@
+<div class="text-center">
+<a class="btn btn-default" href="/admin/edit_project/[% project.project_id %]">Back To Project</a>
+</div>
+
+<br/>
+<table class="table table-striped">
+  <tr>
+    <th>Title</th>
+    <th>&nbsp;</td>
+    <th>&nbsp;</td>
+  </tr>
+  [% FOREACH page IN pages %]
+    <tr>
+      <td>
+        [% page.title %]
+      </td>
+      <td>
+        <a href="/admin/edit_project_page/[% page.project_page_id %]">Edit</a>
+      </td>
+      <td>
+        <a href="/admin/delete_project_page/[% page.project_page_id %]">Delete</a>
+      </td>
+  [% END %]
+</table>

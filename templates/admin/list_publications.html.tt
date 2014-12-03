@@ -1,0 +1,38 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#publications-tbl').dataTable({"iDisplayLength": 50});
+});
+</script>
+
+<h1>Projects</h1>
+
+[% IF pubs.size > 0 %]
+<table id="publications-tbl" class="display" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Journal</th>
+      <th>Date</th>
+      <th>Project</th>
+    </tr>
+  </thead>
+  <tbody>
+    [% FOREACH p IN pubs %]
+    <tr>
+      <td>
+        <a href="/admin/view_publication/[% p.publication_id %]">[% p.title %]</a>
+      </td>
+      <td>[% p.author %]</td>
+      <td>[% p.journal %]</td>
+      <td>[% p.pub_date OR 'NA' %]</td>
+      <td>
+        [% IF p.project_id %]<a href="/admin/view_project/[% p.project_id %]">View</a>[% ELSE %]N/A[% END %]
+      </td>
+    </tr>
+    [% END %]
+  </tbody>
+</table>
+[% ELSE %]
+  No publications.
+[% END %]

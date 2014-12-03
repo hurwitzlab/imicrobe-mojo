@@ -1,5 +1,14 @@
+<div class="container">
+<div class="text-center">
+<a class="btn btn-default" href="/admin/edit_project_page?project_id=[% project.project_id %]">Create Project Page</a>
+
+[% IF num_pages > 0 %]
+<a class="btn btn-default" href="/admin/view_project_pages?project_id=[% project.project_id %]">View Project Pages ([% num_pages %])</a>
+[% END %]
+</div>
+
 <div class="row">
-  <h2>Project: [% project.project_name OR 'Unknown project' %]</h2>
+  <h3>Edit Project</h3>
   <form role="form" method="post" action="/admin/update_project">
   <div class="form-group">
     <label for="project_name">Project Name</label>
@@ -26,5 +35,9 @@
     <textarea id="description" name="description" class="form-control" rows="10">[% project.description %]</textarea>
   </div>
   <input type="hidden" name="project_id" value="[% project_id %]">
+  <div class="text-center">
   <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
 </form>
+</div>
+</div>
