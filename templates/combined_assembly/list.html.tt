@@ -70,8 +70,10 @@ $(document).ready(function() {
        </tr>
      [% END %]
      </tbody>
-
     </table>
+    <div class="text-center">
+      <a class="btn btn-primary download-btn" href="/combined_assembly/list.tab?download=combined-assembly-list">Download</a>
+    </div>
   [% ELSE %]
     No assemblies.
   [% END %]

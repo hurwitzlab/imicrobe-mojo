@@ -11,12 +11,14 @@
     <title>iMicrobe [% title %]</title>
 
     <link href="/css/readable.min.css" rel="stylesheet">
-    <link href="/css/imicrobe.css" rel="stylesheet">
     <link href="/css/jquery.dataTables.css" rel="stylesheet">
+    <link href="/css/carousel.css" rel="stylesheet">
+    <link href="/css/imicrobe.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/jquery.min.js"></script>
+    <script src="/js/underscore-min.js"></script>
     <script src="/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8"></script>
   </head>
 
   <body>

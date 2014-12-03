@@ -1,4 +1,6 @@
-[% SET name_fields = {
+[% 
+  USE Comma;
+  SET name_fields = {
   'assembly'          => 'assembly_name',
   'project'           => 'project_name',
   'publication'       => 'title',
@@ -10,8 +12,8 @@
 
 <div class="well well-sm text-center">
   [% IF query %]
-  Found [% results.size %] record[% IF results.size == 1; ''; ELSE; 's'; END %] 
-  for &quot;[% query %].&quot;
+  Found [% results.size | comma %] record[% IF results.size == 1; ''; ELSE; 's'; END %] 
+  for &quot;[% query %].&quot;<br/>
   [% ELSE %]
     Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=virus">human</a>&quot; or &quot;<a href="/search?query=virus">ocean</a>&quot;
   [% END %]
@@ -47,10 +49,13 @@
     <ul>
     [% FOREACH result IN results %]
       [% SET table = result.table_name; SET name_field = name_fields.$table; SET name = result.object.$name_field %]
-      <li><a href="/[% table %]/view/[% result.primary_key %]">[% table | ucfirst %]: [% name %]</a></li>
+      <li><a href="[% result.url %]">[% table | ucfirst %]: [% name %]</a></li>
       </p>
      [% END %]
     </ul>
+    <div class="text-center">
+      <a class="btn btn-primary download-btn" href="/search.tab?[% c.req.url.query({'download' = 'search'}).query %]">Download</a>
+    </div>
   </div>
 [% END %]
 </div>

@@ -36,6 +36,8 @@ sub results {
             my $sth = $dbh->prepare($sql);
             $sth->execute($r->{'primary_key'});
             $r->{'object'} = $sth->fetchrow_hashref();
+            $r->{'url'}    = join '/', 
+                '', $r->{'table_name'}, 'view', $r->{'primary_key'};
 
             push @results, $r;
         }
@@ -63,6 +65,23 @@ sub results {
 
         txt => sub {
             $self->render( text => dump(\@results) );
+        },
+
+        tab => sub {
+            my $text = '';
+
+            if (@results) {
+                my @flds = sort keys %{ $results[0] };
+                my @data = (join "\t", @flds);
+                for my $res (@results) {
+                    push @data, join "\t", 
+                        map { ref $res->{$_} ? '-' : $res->{$_} // '' } 
+                        @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
         },
     );
 }

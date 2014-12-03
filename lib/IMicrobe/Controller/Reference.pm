@@ -36,6 +36,21 @@ sub list {
         txt => sub {
             $self->render( text => dump(\@refs) );
         },
+
+        tab => sub {
+            my $text = '';
+
+            if (@refs) {
+                my @flds = sort keys %{ $refs[0] };
+                my @data = (join "\t", @flds);
+                for my $ref (@refs) {
+                    push @data, join "\t", map { $ref->{$_} // '' } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
+        },
     );
 }
 

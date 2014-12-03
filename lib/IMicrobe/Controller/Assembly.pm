@@ -7,18 +7,21 @@ use DBI;
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self       = shift;
-    my $dbh        = IMicrobe::DB->new->dbh;
-    my $assemblies = $dbh->selectall_arrayref(
-        q[
-            select a.assembly_id, a.assembly_code, a.assembly_name,
-                   a.organism, a.cds_file, a.nt_file, a.pep_file,
-                   p.project_id, p.project_name
-            from   assembly a, project p
-            where  a.project_id=p.project_id
-        ],
-        { Columns => {} }
-    );
+    my $self = shift;
+    my $dbh  = IMicrobe::DB->new->dbh;
+    my $sql  = q[
+        select a.assembly_id, a.assembly_code, a.assembly_name,
+               a.organism, a.cds_file, a.nt_file, a.pep_file,
+               p.project_id, p.project_name
+        from   assembly a, project p
+        where  a.project_id=p.project_id
+    ];
+
+    if (my $project_id = $self->req->param('project_id')) {
+        $sql .= sprintf('and a.project_id=%s', $dbh->quote($project_id));
+    }
+
+    my $assemblies = $dbh->selectall_arrayref($sql, { Columns => {} });
 
     $self->respond_to(
         json => sub {
@@ -36,6 +39,21 @@ sub list {
 
         txt => sub {
             $self->render( text => dump($assemblies) );
+        },
+
+        tab => sub {
+            my $text = '';
+
+            if (@$assemblies) {
+                my @flds = sort keys %{ $assemblies->[0] };
+                my @data = (join "\t", @flds);
+                for my $asm (@$assemblies) {
+                    push @data, join "\t", map { $asm->{$_} // '' } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
         },
     );
 }

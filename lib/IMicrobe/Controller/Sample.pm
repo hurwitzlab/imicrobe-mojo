@@ -7,21 +7,25 @@ use DBI;
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self    = shift;
-    my $dbh     = IMicrobe::DB->new->dbh;
-    my $samples = $dbh->selectall_arrayref(
-        q[
-            select s.sample_id, s.sample_name, s.sample_type,
-                   s.reads_file, s.annotations_file, s.peptides_file, 
-                   s.contigs_file, s.cds_file,
-                   s.phylum, s.class, s.family, s.genus, s.species, 
-                   s.strain, s.clonal, s.axenic, s.pcr_amp, s.pi,
-                   p.project_id, p.project_name
-            from   sample s, project p
-            where  s.project_id=p.project_id
-        ],
-        { Columns => {} }
-    );
+    my $self = shift;
+    my $dbh  = IMicrobe::DB->new->dbh;
+    my $sql  = q[
+        select s.sample_id, s.sample_name, s.sample_type,
+               s.reads_file, s.annotations_file, s.peptides_file, 
+               s.contigs_file, s.cds_file,
+               s.phylum, s.class, s.family, s.genus, s.species, 
+               s.strain, s.clonal, s.axenic, s.pcr_amp, s.pi,
+               s.latitude, s.longitude,
+               p.project_id, p.project_name
+        from   sample s, project p
+        where  s.project_id=p.project_id
+    ];
+
+    if (my $project_id = $self->req->param('project_id')) {
+        $sql .= sprintf('and s.project_id=%s', $dbh->quote($project_id));
+    }
+
+    my $samples = $dbh->selectall_arrayref($sql, { Columns => {} });
 
     $self->respond_to(
         json => sub {
@@ -35,6 +39,21 @@ sub list {
 
         txt => sub {
             $self->render( text => dump($samples) );
+        },
+
+        tab => sub {
+            my $text = '';
+
+            if (@$samples) {
+                my @flds = sort keys %{ $samples->[0] };
+                my @data = (join "\t", @flds);
+                for my $sample (@$samples) {
+                    push @data, join "\t", map { $sample->{$_} // '' } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
         },
     );
 }
@@ -70,6 +89,17 @@ sub view {
     if (!$sample) {
         return $self->reply->exception("Bad sample id ($sample_id)");
     }
+
+    $sample->{'attrs'} = $dbh->selectall_arrayref(
+        q'
+            select t.type, a.attr_value, t.url_template
+            from   sample_attr_type t, sample_attr a
+            where  a.sample_id=?
+            and    a.sample_attr_type_id=t.sample_attr_type_id
+        ', 
+        { Columns => {} },
+        $sample_id
+    );
 
     $self->respond_to(
         json => sub {

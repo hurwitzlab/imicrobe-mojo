@@ -40,6 +40,21 @@ sub list {
         txt => sub {
             $self->render( text => dump($pubs) );
         },
+
+        tab => sub {
+            my $text = '';
+
+            if (@$pubs) {
+                my @flds = sort keys %{ $pubs->[0] };
+                my @data = (join "\t", @flds);
+                for my $pub (@$pubs) {
+                    push @data, join "\t", map { $pub->{$_} // '' } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
+        },
     );
 }
 

@@ -3,7 +3,7 @@ package IMicrobe::Controller::Welcome;
 use Data::Dump 'dump';
 use Mojo::Base 'Mojolicious::Controller';
 
-# This action will render a template
+# ----------------------------------------------------------------------
 sub index {
     my $self = shift;
 
@@ -28,6 +28,13 @@ sub index {
             $self->render( text => dump(\@routes) );
         },
     );
+}
+
+# ----------------------------------------------------------------------
+sub carousel {
+    my $self = shift;
+    $self->layout('default');
+    $self->render();
 }
 
 1;

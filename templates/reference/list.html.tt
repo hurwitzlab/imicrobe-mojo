@@ -33,7 +33,10 @@ $(document).ready(function() {
     [% END %]
     </tbody>
   </table>
+  <div class="text-center">
+    <a class="btn btn-primary download-btn" href="/reference/list.tab?download=reference-list">Download</a>
+  </div>
   [% ELSE %]
-    No pubs.
+    No references.
   [% END %]
 </div>

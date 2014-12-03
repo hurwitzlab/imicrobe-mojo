@@ -28,6 +28,9 @@ $(document).ready(function() {
     [% END %]
     </tbody>
   </table>
+  <div class="text-center">
+    <a class="btn btn-primary download-btn" href="/pubchase/list.tab?download=pubchase-list">Download</a>
+  </div>
   [% ELSE %]
     No pubs.
   [% END %]

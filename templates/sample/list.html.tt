@@ -59,8 +59,10 @@ $(document).ready(function() {
        </tr>
      [% END %]
      </tbody>
-
     </table>
+    <div class="text-center">
+    <a class="btn btn-primary download-btn" href="/sample/list.tab?download=sample-list">Download</a>
+    </div>
   [% ELSE %]
     No samples.
   [% END %]

@@ -7,21 +7,24 @@ use DBI;
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self       = shift;
-    my $dbh        = IMicrobe::DB->new->dbh;
-    my $assemblies = $dbh->selectall_arrayref(
-        q[
-            select a.combined_assembly_id, a.assembly_name,
-                   a.phylum, a.class, a.family,
-                   a.genus, a.species, a.strain, a.pcr_amp,
-                   a.annotations_file, a.peptides_file,
-                   a.nucleotides_file, a.cds_file,
-                   p.project_id, p.project_name
-            from   combined_assembly a, project p
-            where  a.project_id=p.project_id
-        ],
-        { Columns => {} }, 
-    );
+    my $self = shift;
+    my $dbh  = IMicrobe::DB->new->dbh;
+    my $sql  = q[
+        select a.combined_assembly_id, a.assembly_name,
+               a.phylum, a.class, a.family,
+               a.genus, a.species, a.strain, a.pcr_amp,
+               a.annotations_file, a.peptides_file,
+               a.nucleotides_file, a.cds_file,
+               p.project_id, p.project_name
+        from   combined_assembly a, project p
+        where  a.project_id=p.project_id
+    ];
+
+    if (my $project_id = $self->param('project_id')) {
+        $sql .= sprintf('and a.project_id=%s', $dbh->quote($project_id));
+    }
+
+    my $assemblies = $dbh->selectall_arrayref($sql, { Columns => {} });
     
     for my $asm (@$assemblies) {
         $asm->{'samples'} = $dbh->selectall_arrayref(
@@ -35,6 +38,9 @@ sub list {
             { Columns => {} }, 
             $asm->{'combined_assembly_id'}
         );
+
+        $asm->{'sample_names'} = join ', ', 
+            map { $_->{'sample_name'} } @{ $asm->{'samples'} };
     }
 
     $self->respond_to(
@@ -53,6 +59,27 @@ sub list {
 
         txt => sub {
             $self->render( text => dump($assemblies) );
+        },
+
+        tab => sub {
+            my $text = '';
+
+            if (@$assemblies) {
+                my @flds = sort keys %{ $assemblies->[0] };
+                my @data = (join "\t", @flds);
+                for my $asm (@$assemblies) {
+                    push @data, join "\t", 
+                        map { s/[\r\n]//g; $_ }
+                        map { 
+                            ref $asm->{$_} eq 'ARRAY' 
+                            ? '-'
+                            : $asm->{$_} // '' 
+                        } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
         },
     );
 }

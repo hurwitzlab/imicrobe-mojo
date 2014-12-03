@@ -55,6 +55,9 @@ $(document).ready(function() {
     [% END %]
     </tbody>
   </table>
+  <div class="text-center">
+    <a class="btn btn-primary download-btn" href="/project/list.tab?[% c.req.url.query({'download' = 'projects-list'}).query %]">Download</a>
+  </div>
   [% ELSE %]
     No projects.
   [% END %]
