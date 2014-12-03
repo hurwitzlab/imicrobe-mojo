@@ -14,7 +14,7 @@
       <tr>
         <td>[% project.domain_name %]</td>
         <td align="right">[% project.count | comma %]</td>
-        <td align="center"><a href="/project/list?domain=[% project.domain_name %]">View</a></td>
+        <td align="center"><a href="[% project.url %]">View</a></td>
       </tr>
   [% END %]
   </tbody>

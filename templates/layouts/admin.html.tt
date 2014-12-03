@@ -14,13 +14,13 @@
     <link href="/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
     <link href="/css/carousel.css" rel="stylesheet" type="text/css" />
     <link href="/css/imicrobe.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="/jquery-ui/jquery-ui.min.css">
+    <link rel="stylesheet" href="/js/jquery-ui/jquery-ui.min.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/underscore-min.js"></script>
     <script src="/js/jquery.dataTables.min.js"></script>
-    <script src="/jquery-ui/jquery-ui.min.js"></script>
+    <script src="/js/jquery-ui/jquery-ui.min.js"></script>
 
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8"></script>
   </head>

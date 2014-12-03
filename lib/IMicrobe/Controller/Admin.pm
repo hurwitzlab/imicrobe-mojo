@@ -5,10 +5,58 @@ use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 
 # ----------------------------------------------------------------------
-sub index {
-    my $self = shift;
+sub create_project_page {
+    my $self       = shift;
+    my $project_id = $self->param('project_id')    or die 'No project id';
+    my $title      = $self->param('title')         or die 'No title';
+    my $contents   = $self->param('contents')      or die 'No contents';
+    my $order      = $self->param('display_order') || '1';
+    my $format     = $self->param('format')        || 'html';
+    my $db         = IMicrobe::DB->new;
+    my $schema     = $db->schema;
+
+    my $Page          = $schema->resultset('ProjectPage')->create({
+        project_id    => $project_id,
+        title         => $title,
+        contents      => $contents,
+        display_order => $order,
+        format        => lc $format,
+    });
+
+    return $self->redirect_to("/admin/view_project_pages/$project_id");
+}
+
+# ----------------------------------------------------------------------
+sub create_project_page_form {
+    my $self       = shift;
+    my $project_id = $self->param('project_id');
+    my $db         = IMicrobe::DB->new;
+    my $Project    = $db->schema->resultset('Project')->find($project_id);
+
     $self->layout('admin');
-    $self->render;
+    $self->render(project => $Project);
+}
+
+# ----------------------------------------------------------------------
+sub delete_project_page {
+    my $self       = shift;
+    my $pp_id      = $self->param('project_page_id');
+    my $db         = IMicrobe::DB->new;
+    my $schema     = $db->schema;
+    my $Page       = $schema->resultset('ProjectPage')->find($pp_id);
+    my $project_id = $Page->project_id;
+
+    $Page->delete();
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => { result  => 'ok' });
+        },
+
+        html => sub {
+            return $self->redirect_to("/admin/edit_project/$project_id");
+        },
+    );
 }
 
 # ----------------------------------------------------------------------
@@ -54,6 +102,13 @@ sub edit_project_page {
         title   => 'Create Project Page',
         page    => $Page,
     );
+}
+
+# ----------------------------------------------------------------------
+sub index {
+    my $self = shift;
+    $self->layout('admin');
+    $self->render;
 }
 
 # ----------------------------------------------------------------------
@@ -120,6 +175,7 @@ sub update_project_page {
     my $title      = $self->param('title')           or die 'No title';
     my $contents   = $self->param('contents')        or die 'No contents';
     my $order      = $self->param('display_order')   || '1';
+    my $format     = $self->param('format')          || 'html';
     my $db         = IMicrobe::DB->new;
     my $schema     = $db->schema;
 
@@ -127,17 +183,11 @@ sub update_project_page {
     $Page->title($title);
     $Page->contents($contents);
     $Page->display_order($order);
+    $Page->format(lc $format);
     $Page->update();
 
-#        $Page = $schema->resultset('ProjectPage')->create({
-#            project_id    => $project_id,
-#            title         => $title,
-#            contents      => $contents,
-#            display_order => $order,
-#        });
-
     my $project_id = $Page->project_id;
-    return $self->redirect_to("/admin/edit_project/$project_id");
+    return $self->redirect_to("/admin/view_project_pages/$project_id");
 }
 
 # ----------------------------------------------------------------------
@@ -181,14 +231,16 @@ sub view_project_pages {
     my $self       = shift;
     my $project_id = $self->param('project_id');
     my $db         = IMicrobe::DB->new;
+    my $Project    = $db->schema->resultset('Project')->find($project_id);
     my $pages      = $db->dbh->selectall_arrayref(
         'select * from project_page where project_id=?', 
         { Columns => {} }, 
         $project_id
     );
 
+
     $self->layout('admin');
-    $self->render(pages => $pages);
+    $self->render(pages => $pages, project => $Project);
 }
 
 # ----------------------------------------------------------------------

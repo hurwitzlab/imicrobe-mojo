@@ -9,7 +9,7 @@ var map;
 function initialize() {
   var center = new google.maps.LatLng(0, 0);
   map = new google.maps.Map(document.getElementById("map-canvas"), 
-    { zoom: 1, center: center });
+    { zoom: 2, center: center });
 
   $.getJSON(
     '/sample/list.json?project_id=[% project.project_id %]',

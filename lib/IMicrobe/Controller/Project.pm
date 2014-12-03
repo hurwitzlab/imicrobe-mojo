@@ -9,34 +9,40 @@ use DBI;
 sub browse {
     my $self     = shift;
     my $dbh      = IMicrobe::DB->new->dbh;
-    my $projects = $dbh->selectall_arrayref(
-        q[
-            select   count(*) as count, d.domain_name
-            from     project p, domain d, project_to_domain p2d
-            where    p.project_id=p2d.project_id
-            and      p2d.domain_id=d.domain_id
-            group by 2
-            order by 2
-        ],
-        { Columns => {} }
-    );
+    my @projects = map { 
+            $_->{'url'} = 
+                sprintf('/project/list?domain=%s', $_->{'domain_name'});
+            $_;
+        }
+        @{ 
+            $dbh->selectall_arrayref(
+            q[
+                select   count(*) as count, d.domain_name
+                from     project p, domain d, project_to_domain p2d
+                where    p.project_id=p2d.project_id
+                and      p2d.domain_id=d.domain_id
+                group by 2
+                order by 2
+            ],
+            { Columns => {} }
+        )};
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $projects );
+            $self->render( json => \@projects );
         },
 
         html => sub {
             $self->layout('default');
 
             $self->render( 
-                projects => $projects,
+                projects => \@projects,
                 title    => 'Projects by Domain of Life',
             );
         },
 
         txt => sub {
-            $self->render( text => dump($projects) );
+            $self->render( text => dump(\@projects) );
         },
     );
 }
@@ -162,42 +168,14 @@ sub view {
         $project_id
     );
 
-#    $project->{'samples'} = $dbh->selectall_arrayref(
-#        'select * from sample where project_id=?', { Columns => {} }, 
-#        $project_id
-#    );
-#
-#    $project->{'assemblies'} = $dbh->selectall_arrayref(
-#        'select * from assembly where project_id=?', { Columns => {} }, 
-#        $project_id
-#    );
-#
-#    my $cmb_asm = $dbh->selectall_arrayref(
-#        'select * from combined_assembly where project_id=?', 
-#        { Columns => {} }, 
-#        $project_id
-#    );
-#    
-#    for my $asm (@$cmb_asm) {
-#        $asm->{'samples'} = $dbh->selectall_arrayref(
-#            q[
-#                select s.sample_id, s.sample_name
-#                from   combined_assembly_to_sample c2s,
-#                       sample s
-#                where  c2s.combined_assembly_id=?
-#                and    c2s.sample_id=s.sample_id
-#            ], 
-#            { Columns => {} }, 
-#            $asm->{'combined_assembly_id'}
-#        );
-#    }
-#
-#    $project->{'combined_assemblies'} = $cmb_asm;
-
     $self->respond_to(
         json => sub {
-            $Project->result_class('DBIx::Class::ResultClass::HashRefInflator');
-            $self->render( json => $Project );
+            $self->render( json => { 
+                project => { $Project->get_inflated_columns() },
+                samples => [ 
+                    map { {$_->get_inflated_columns()} } $Project->samples->all
+                ], 
+            });
         },
 
         html => sub {
@@ -211,7 +189,12 @@ sub view {
         },
 
         txt => sub {
-            $self->render( text => dump($Project) );
+            $self->render( text => dump({
+                project => { $Project->get_inflated_columns() },
+                samples => [ 
+                    map { {$_->get_inflated_columns()} } $Project->samples->all
+                ], 
+            }));
         },
     );
 }

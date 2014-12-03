@@ -5,9 +5,8 @@ use Mojo::Base 'Mojolicious';
 sub startup {
     my $self = shift;
 
-    # Documentation browser under "/perldoc"
-    $self->plugin('PODRenderer');
     $self->plugin('tt_renderer');
+
     $self->plugin('JSONConfig', { file => 'imicrobe.json' });
 
     # Router
@@ -22,6 +21,12 @@ sub startup {
 
     $r->get('/admin/list_publications')->to('admin#list_publications');
 
+    $r->post('/admin/create_project_page')->to('admin#create_project_page');
+
+    $r->get('/admin/create_project_page_form/:project_id')->to('admin#create_project_page_form');
+
+    $r->post('/admin/delete_project_page/:project_page_id')->to('admin#delete_project_page');
+
     $r->get('/admin/edit_project_page/:project_page_id')->to('admin#edit_project_page');
 
     $r->post('/admin/update_project_page')->to('admin#update_project_page');
@@ -30,7 +35,7 @@ sub startup {
 
     $r->get('/admin/view_project/:project_id')->to('admin#view_project');
 
-    $r->get('/admin/view_project_pages')->to('admin#view_project_pages');
+    $r->get('/admin/view_project_pages/:project_id')->to('admin#view_project_pages');
 
     $r->get('/admin/view_publication/:publication_id')->to('admin#view_publication');
 
@@ -41,8 +46,6 @@ sub startup {
     $r->get('/carousel')->to('welcome#carousel');
 
     $r->get('/index')->to('welcome#index');
-
-    $r->get('/info')->to('welcome#info');
 
     $r->get('/assembly/list')->to('assembly#list');
 

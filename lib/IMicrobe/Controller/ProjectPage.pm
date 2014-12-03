@@ -3,6 +3,7 @@ package IMicrobe::Controller::ProjectPage;
 use strict;
 use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
+use Data::Dump 'dump';
 
 # ----------------------------------------------------------------------
 sub view {
@@ -17,7 +18,7 @@ sub view {
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $Page );
+            $self->render( json => { $Page->get_inflated_columns() } );
         },
 
         html => sub {
@@ -30,7 +31,7 @@ sub view {
         },
 
         txt => sub {
-            $self->render( text => dump($Page) );
+            $self->render( text => dump({$Page->get_inflated_columns()}) );
         },
     );
 }

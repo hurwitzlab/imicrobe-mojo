@@ -4,7 +4,7 @@ $(document).ready(function() {
 });
 </script>
 
-<h1>Projects</h1>
+<h1>Publications</h1>
 
 [% IF pubs.size > 0 %]
 <table id="publications-tbl" class="display" cellspacing="0" width="100%">

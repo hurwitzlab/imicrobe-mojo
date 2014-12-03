@@ -39,8 +39,17 @@ sub form {
     my $captcha_keys = $self->captcha_keys;
     my $captcha      = Captcha::reCAPTCHA->new;
     my $captcha_html = $captcha->get_html($captcha_keys->{'public'});
-    $self->layout('default');
-    $self->render(title => 'Feedback', captcha => $captcha_html);
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => 'Send an email to "imicrobe@imicrobe.us"' );
+        },
+
+        html => sub {
+            $self->layout('default');
+            $self->render(title => 'Feedback', captcha => $captcha_html);
+        }
+    );
 }
 
 # ----------------------------------------------------------------------

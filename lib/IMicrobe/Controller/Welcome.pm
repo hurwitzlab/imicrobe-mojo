@@ -8,6 +8,7 @@ sub index {
     my $self = shift;
 
     my @routes = sort (
+        grep { !/\/admin/ }
         grep { /\S+/ }
         map  { $_->to_string   }
         grep { $_->is_endpoint }
