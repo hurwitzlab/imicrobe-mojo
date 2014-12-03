@@ -16,9 +16,29 @@ sub startup {
     # Normal route to controller
     $r->get('/')->to('welcome#index');
 
-    #$r->get('/admin/edit_project/:project_id')->to('admin#edit_project');
+    $r->get('/admin')->to('admin#index');
 
-    #$r->post('/admin/update_project')->to('admin#update_project');
+    $r->get('/admin/list_projects')->to('admin#list_projects');
+
+    $r->get('/admin/list_publications')->to('admin#list_publications');
+
+    $r->get('/admin/edit_project_page/:project_page_id')->to('admin#edit_project_page');
+
+    $r->post('/admin/update_project_page')->to('admin#update_project_page');
+
+    $r->get('/admin/edit_project/:project_id')->to('admin#edit_project');
+
+    $r->get('/admin/view_project/:project_id')->to('admin#view_project');
+
+    $r->get('/admin/view_project_pages')->to('admin#view_project_pages');
+
+    $r->get('/admin/view_publication/:publication_id')->to('admin#view_publication');
+
+    $r->post('/admin/update_project')->to('admin#update_project');
+
+    $r->post('/admin/update_publication')->to('admin#update_publication');
+
+    $r->get('/carousel')->to('welcome#carousel');
 
     $r->get('/index')->to('welcome#index');
 
@@ -41,6 +61,8 @@ sub startup {
     $r->get('/project/list')->to('project#list');
 
     $r->get('/project/view/:project_id')->to('project#view');
+
+    $r->get('/project_page/view/:project_page_id')->to('project_page#view');
 
     $r->get('/pubchase/list')->to('pubchase#list');
 
@@ -71,6 +93,26 @@ sub startup {
             elsif ($c->accepts('html')) {
                 $args->{'title'} = ucfirst $template;
                 $c->layout('default');
+            }
+        }
+    );
+
+    $self->hook(
+        after_dispatch => sub {
+            my $c = shift;
+            if ( defined $c->param('download') ) {
+                $c->res->headers->add(
+                    'Content-type' => 'application/force-download' );
+
+                (my $file = $c->req->url->path) =~ s{.+/}{};
+                my $name = $c->param('download') || '';
+
+                if ($name =~ /\D/) {
+                    $file = $name;
+                }
+
+                $c->res->headers->add(
+                    'Content-Disposition' => qq[attachment; filename=$file] );
             }
         }
     );
