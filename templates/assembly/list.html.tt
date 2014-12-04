@@ -38,7 +38,7 @@ $(document).ready(function() {
     </tbody>
   </table>
   <div class="text-center">
-  <a class="btn btn-primary download-btn" href="/assembly/list.tab?download=assembly-list">Download</a>
+  <a class="btn btn-primary download-btn" href="/download">Download</a>
   </div>
   [% ELSE %]
     No assemblies.

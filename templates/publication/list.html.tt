@@ -40,7 +40,7 @@ $(document).ready(function() {
     </tbody>
   </table>
   <div class="text-center">
-    <a class="btn btn-primary download-btn" href="/publication/list.tab?download=publication-list">Download</a>
+    <a class="btn btn-primary download-btn" href="/download">Download</a>
   </div>
   [% ELSE %]
     No pubs.

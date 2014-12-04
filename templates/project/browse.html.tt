@@ -11,7 +11,7 @@
   <tbody>
   [% FOREACH project IN projects %]
       <tr>
-        <td><a href="[% url %]">[% project.domain_name %]</a></td>
+        <td><a href="[% project.url %]">[% project.domain_name %]</a></td>
         <td align="right">[% project.count | comma %]</td>
       </tr>
   [% END %]

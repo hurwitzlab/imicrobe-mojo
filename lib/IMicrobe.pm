@@ -61,6 +61,10 @@ sub startup {
 
     $r->get('/combined_assembly/view/:combined_assembly_id')->to('combined_assembly#view');
 
+    $r->get('/download')->to('download#format');
+
+    $r->post('/download/get')->to('download#get');
+
     $r->get('/feedback')->to('feedback#form');
 
     $r->post('/feedback/submit')->to('feedback#submit');
@@ -111,15 +115,15 @@ sub startup {
 
             return unless my $template = $args->{'template'};
 
-            if ($c->accepts('json')) {
+            if ($c->accepts('html')) {
+                $args->{'title'} = ucfirst $template;
+                $c->layout('default');
+            }
+            elsif ($c->accepts('json')) {
                 $args->{'json'} = {
                     status    => $args->{'status'},
                     exception => $args->{'exception'},
                 };
-            }
-            elsif ($c->accepts('html')) {
-                $args->{'title'} = ucfirst $template;
-                $c->layout('default');
             }
         }
     );
