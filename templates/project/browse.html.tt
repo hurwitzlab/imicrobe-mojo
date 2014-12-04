@@ -6,15 +6,13 @@
   <tr>
     <th>Domain of Life</th>
     <th>Count</th>
-    <th>&nbsp;</th>
   </tr>
   </thead>
   <tbody>
   [% FOREACH project IN projects %]
       <tr>
-        <td>[% project.domain_name %]</td>
+        <td><a href="[% url %]">[% project.domain_name %]</a></td>
         <td align="right">[% project.count | comma %]</td>
-        <td align="center"><a href="[% project.url %]">View</a></td>
       </tr>
   [% END %]
   </tbody>

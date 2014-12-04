@@ -48,6 +48,45 @@ sub browse {
 }
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                browse => {
+                    results => 'a list of the number of projects associated '
+                            .  'with a domain of life'
+                },
+
+                list => {
+                    params => {
+                        domain => {
+                            type => 'str',
+                            desc => 'a domain of life to which '
+                                 .  'projects belong',
+                            required => 'false',
+                        }
+                    },
+                    results => 'a list of combined assemblies',
+                },
+
+                view => {
+                    params => {
+                        project_id => {
+                            type     => 'int',
+                            desc     => 'the project id',
+                            required => 'true'
+                        }
+                    },
+                    results => 'the details of a project',
+                }
+            });
+        }
+    );
+}
+
+# ----------------------------------------------------------------------
 sub list {
     my $self   = shift;
     my $dbh    = IMicrobe::DB->new->dbh;

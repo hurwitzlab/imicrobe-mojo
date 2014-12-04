@@ -6,6 +6,40 @@ use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                list => {
+                    params => {
+                        project_id => {
+                            type => 'int',
+                            desc => 'value of the project id to which the '
+                                 .  'combined assemblies belong',
+                            required => 'false',
+                        }
+                    },
+                    results => 'a list of combined assemblies',
+                },
+
+                view => {
+                    params => {
+                        combined_assembly_id => {
+                            type     => 'int',
+                            desc     => 'the combined assembly id',
+                            required => 'true'
+                        }
+                    },
+                    results => 'the details of a combined assembly',
+                }
+            });
+        }
+    );
+}
+
+# ----------------------------------------------------------------------
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;

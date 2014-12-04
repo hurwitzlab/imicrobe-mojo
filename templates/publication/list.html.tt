@@ -1,6 +1,9 @@
 <script>
 $(document).ready(function() {
-  $('#pubs').dataTable({"iDisplayLength": 10});
+  $('#pubs').dataTable({
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 10
+  });
 });
 </script>
 

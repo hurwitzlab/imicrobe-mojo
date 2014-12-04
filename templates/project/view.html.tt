@@ -1,8 +1,13 @@
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#samples-tbl').dataTable({"iDisplayLength": 10});
-  $('#assemblies-tbl').dataTable({"iDisplayLength": 10});
-  $('#combined-assemblies-tbl').dataTable({"iDisplayLength": 10});
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 10
+  };
+
+  $('#combined-assemblies-tbl').dataTable(dt_opts);
+  $('#assemblies-tbl').dataTable(dt_opts);
+  $('#samples-tbl').dataTable(dt_opts);
 });
 
 var map;

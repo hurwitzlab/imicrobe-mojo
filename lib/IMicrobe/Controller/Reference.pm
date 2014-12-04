@@ -6,6 +6,21 @@ use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                list => {
+                    results => 'a list of reference genomes',
+                },
+            });
+        }
+    );
+}
+
+# ----------------------------------------------------------------------
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;

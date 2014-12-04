@@ -6,6 +6,28 @@ use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                view => {
+                    params => {
+                        project_page_id => {
+                            type     => 'int',
+                            desc     => 'the project page id',
+                            required => 'true'
+                        }
+                    },
+                    results => 'the details of a project page',
+                }
+            });
+        }
+    );
+}
+
+# ----------------------------------------------------------------------
 sub view {
     my $self  = shift;
     my $pp_id = $self->param('project_page_id');

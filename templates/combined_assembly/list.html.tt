@@ -2,7 +2,10 @@
 
 <script>
 $(document).ready(function() {
-  $('#assemblies-tbl').dataTable({"iDisplayLength": 10});
+  $('#assemblies-tbl').dataTable({
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 10
+  });
 });
 </script>
 

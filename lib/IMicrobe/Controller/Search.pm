@@ -6,6 +6,29 @@ use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                search => {
+                    params => {
+                        query => {
+                            type => 'str',
+                            desc  => 'a string to search',
+                            required => 'true',
+                        }
+                    },
+                    results => 'a list of matching documents',
+                }
+            });
+        },
+    );
+
+}
+
+# ----------------------------------------------------------------------
 sub results {
     my $self  = shift;
     my $req   = $self->req;

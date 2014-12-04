@@ -9,12 +9,11 @@ sub startup {
 
     $self->plugin('JSONConfig', { file => 'imicrobe.json' });
 
-    # Router
     my $r = $self->routes;
 
-    # Normal route to controller
-    $r->get('/')->to('welcome#index');
-
+    # 
+    # Admin endpoints
+    # 
     $r->get('/admin')->to('admin#index');
 
     $r->get('/admin/list_projects')->to('admin#list_projects');
@@ -43,13 +42,20 @@ sub startup {
 
     $r->post('/admin/update_publication')->to('admin#update_publication');
 
-    $r->get('/carousel')->to('welcome#carousel');
+    #
+    # User endpoints
+    #
+    $r->get('/')->to('welcome#index');
 
-    $r->get('/index')->to('welcome#index');
+    $r->get('/assembly/info')->to('assembly#info');
 
     $r->get('/assembly/list')->to('assembly#list');
 
     $r->get('/assembly/view/:assembly_id')->to('assembly#view');
+
+    #$r->get('/carousel')->to('welcome#carousel');
+
+    $r->get('/combined_assembly/info')->to('combined_assembly#info');
 
     $r->get('/combined_assembly/list')->to('combined_assembly#list');
 
@@ -59,21 +65,37 @@ sub startup {
 
     $r->post('/feedback/submit')->to('feedback#submit');
 
+    $r->get('/index')->to('welcome#index');
+
+    $r->get('/info')->to('welcome#index');
+
+    $r->get('/project/info')->to('project#info');
+
     $r->get('/project/browse')->to('project#browse');
 
     $r->get('/project/list')->to('project#list');
 
     $r->get('/project/view/:project_id')->to('project#view');
 
+    $r->get('/project_page/info')->to('project_page#info');
+
     $r->get('/project_page/view/:project_page_id')->to('project_page#view');
+
+    $r->get('/pubchase/info')->to('pubchase#info');
 
     $r->get('/pubchase/list')->to('pubchase#list');
 
+    $r->get('/publication/info')->to('publication#info');
+
     $r->get('/publication/list')->to('publication#list');
 
-    $r->get('/publication/view/:pub_id')->to('publication#view');
+    $r->get('/publication/view/:publication_id')->to('publication#view');
+
+    $r->get('/reference/info')->to('reference#info');
 
     $r->get('/reference/list')->to('reference#list');
+
+    $r->get('/sample/info')->to('sample#info');
 
     $r->get('/sample/list')->to('sample#list');
 
@@ -81,17 +103,19 @@ sub startup {
 
     $r->get('/search')->to('search#results');
 
+    $r->get('/search/info')->to('search#info');
+
     $self->hook(
         before_render => sub {
             my ($c, $args) = @_;
 
-            # Make sure we are rendering the exception template
             return unless my $template = $args->{'template'};
-            #return unless $template eq 'exception';
 
-            # Switch to JSON rendering if content negotiation allows it
-            if ($template eq 'exception' && $c->accepts('json')) {
-                $args->{'json'} = { exception => $c->stash('exception') }
+            if ($c->accepts('json')) {
+                $args->{'json'} = {
+                    status    => $args->{'status'},
+                    exception => $args->{'exception'},
+                };
             }
             elsif ($c->accepts('html')) {
                 $args->{'title'} = ucfirst $template;

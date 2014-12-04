@@ -6,6 +6,22 @@ use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                list => {
+                    results => 'the articles recommended by PubChase.com',
+                }
+            });
+        }
+    );
+}
+
+
+# ----------------------------------------------------------------------
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;

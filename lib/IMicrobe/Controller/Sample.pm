@@ -6,6 +6,40 @@ use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                list => {
+                    params => {
+                        project_id => {
+                            type => 'int',
+                            desc => 'value of the project id to which the '
+                                 .  'samples belong',
+                            required => 'false',
+                        }
+                    },
+                    results => 'a list of samples',
+                },
+
+                view => {
+                    params => {
+                        sample_id => {
+                            type => 'int',
+                            desc => 'the sample id',
+                            required => 'true'
+                        }
+                    },
+                    results => 'the details of a sample',
+                }
+            });
+        }
+    );
+}
+
+# ----------------------------------------------------------------------
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;

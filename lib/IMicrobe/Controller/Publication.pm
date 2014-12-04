@@ -6,6 +6,32 @@ use Data::Dump 'dump';
 use DBI;
 
 # ----------------------------------------------------------------------
+sub info {
+    my $self = shift;
+
+    $self->respond_to(
+        json => sub {
+            $self->render(json => { 
+                list => {
+                    results => 'a list of publications',
+                },
+
+                view => {
+                    params => {
+                        publication_id => {
+                            type     => 'int',
+                            desc     => 'the publication id',
+                            required => 'true'
+                        }
+                    },
+                    results => 'the details of a publication',
+                }
+            });
+        }
+    );
+}
+
+# ----------------------------------------------------------------------
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;
@@ -53,7 +79,7 @@ sub list {
 # ----------------------------------------------------------------------
 sub view {
     my $self   = shift;
-    my $pub_id = $self->param('pub_id');
+    my $pub_id = $self->param('publication_id');
     my $dbh    = IMicrobe::DB->new->dbh;
 
     my $sth = $dbh->prepare('select * from publication where publication_id=?');
