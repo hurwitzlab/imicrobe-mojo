@@ -24,6 +24,9 @@
     <div class="item">
       <div class="container text-center">
         <img src="/img/diatoms.png" height="500">
+        <div class="carousel-caption text-center">
+          <p><a class="btn btn-lg btn-primary" href="/search?query=diatoms&type=project" role="button">Diatoms!</a></p>
+        </div>
       </div>
     </div>
     <div class="item">
@@ -48,6 +51,9 @@
     <div class="item">
       <div class="container text-center">
         <img src="/img/phages.png" height="500">
+        <div class="carousel-caption text-center">
+          <p><a class="btn btn-lg btn-primary" href="/search?query=phage&type=project" role="button">Phages!</a></p>
+        </div>
       </div>
     </div>
   </div>
