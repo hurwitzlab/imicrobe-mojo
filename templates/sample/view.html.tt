@@ -518,6 +518,16 @@ $(document).ready(function() {
             <th>Other Experimental Metadata</th>
             <td>[% sample.other_experimental_metadata_available OR 'N/A' %]</td>
           </tr>
+          [% FOREACH fld IN  [ 'rrna_18s', 'rrna_16s' ] %]
+            [% IF sample.$fld %]
+              <tr>
+                <th>[% fld %]</th>
+                <td>
+                  <pre>[% sample.$fld.chunk(50).join("\n") %]</pre>
+                </td>
+              </tr>
+            [% END %]
+          [% END %]
         </table>
       </div>
 
@@ -543,17 +553,6 @@ $(document).ready(function() {
               <th>[% fld.replace('_', ' ').ucfirst %]</th>
               <td>[% sample.$fld OR 'N/A' %]</td>
             </tr>
-          [% END %]
-
-          [% FOREACH fld IN  [ 'rrna_18s', 'rrna_16s' ] %]
-            [% IF sample.$fld %]
-              <tr>
-                <th>[% fld %]</th>
-                <td>
-                  <pre>[% sample.$fld.chunk(50).join("\n") %]</pre>
-                </td>
-              </tr>
-            [% END %]
           [% END %]
         </table>
       </div>
