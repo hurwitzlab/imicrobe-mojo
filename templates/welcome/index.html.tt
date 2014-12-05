@@ -1,23 +1,67 @@
-<div class="jumbotron">
-  <div class="container">
-    <table>
-      <tr>
-        <td><h1>Interactive Data Commons</h1></td>
-        <td><img src="/img/imicrobe-m-square-200.png"></td>
-      </tr>
-      <tr>
-        <td colspan="2">
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+    <li data-target="#myCarousel" data-slide-to="4"></li>
+  </ol>
+  <div class="carousel-inner" role="listbox">
+    <div class="item active">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Interactive Data Commons</h1>
+          <img src="/img/imicrobe-m-square-200.png">
+          <br/>  
+          <h3>
           An interactive query tool for microbial data in the
           <a href="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe">iPlant Data Store</a> that can be used with tools in the
           <a href="http://www.iplantcollaborative.org/ci/discovery-environment">iPlant Discovery Environment</a>.
-        </td>
-      </tr>
-    </table>
+        </h3>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="container text-center">
+        <img src="/img/diatoms.png" height="500">
+      </div>
+    </div>
+    <div class="item">
+      <div class="container">
+        <img src="/img/samples-map.png" width="1400">
+        <div class="carousel-caption text-center">
+          <p><a class="btn btn-lg btn-primary" href="/project/view/104" role="button">View</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="container">
+        <div class="carousel-caption">
+          <h1>Reading Recommendations</h1>
+          <a href="http://pubchase.com"><img src="/img/pubchase.png"></a>
+          <h3>Every week our reading list is updated with 
+            recommendations from PubChase.</h3>
+          <p><a class="btn btn-lg btn-primary" href="/pubchase/list" role="button">Read</a></p>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="container text-center">
+        <img src="/img/phages.png" height="500">
+      </div>
+    </div>
   </div>
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
 </div>
 
 <div class="container">
-  <!-- Example row of columns -->
   <div class="row">
     <div class="col-md-4">
       <h2>Search</h2>
@@ -65,7 +109,7 @@
       <p>
       Our <a href="/pubchase/list">reading list</a> is 
       updated weekly by the <a href="http://pubchase.com">PubChase</a> 
-      recommendation algorigthm.
+      recommendation algorithm.
     </div>
   </div>
 </div>
