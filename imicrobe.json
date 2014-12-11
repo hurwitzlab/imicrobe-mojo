@@ -5,5 +5,5 @@
         ],
         "workers": "10"
     },
-    "captcha_conf": "/usr/local/imicrobe/configs/web/captcha.yaml"
+    "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml"
 }
