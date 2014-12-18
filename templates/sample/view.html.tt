@@ -199,7 +199,7 @@ SET meta_fields = [
 
 [%-
   SET download_files = [];
-  FOREACH ft IN ['reads', 'annotations', 'peptides', 'contigs', 'cds']; 
+  FOREACH ft IN ['reads', 'annotations', 'peptides', 'contigs', 'cds', 'fastq']; 
     SET file = ft _ '_file';
     IF sample.$file;
       download_files.push({ ft = ft, file = sample.$file });
@@ -534,9 +534,10 @@ $(document).ready(function() {
       <div class="tab-pane fade" id="downloads">
         <br/>
         [% IF download_files.size > 0 %]
+          [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
           <ul>
             [% FOREACH f IN download_files %]
-            <li><a href="[% f.file %]"><img src="/img/file_gz.png">&nbsp;[% f.ft.ucfirst %]</a>
+            <li><a href="[% url %][% f.file %]"><img src="/img/file_gz.png">&nbsp;[% f.ft.ucfirst %]</a>
             [% END %]
           </ul>
         [% ELSE %]

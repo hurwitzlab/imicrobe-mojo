@@ -62,7 +62,8 @@ $(document).ready(function() {
 </script>
 </script>
 
-[% SET iplant="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_projects/" %]
+[% #SET iplant="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_projects/" %]
+[% SET iplant = "http://mirrors.iplantcollaborative.org/browse" %]
 
 [% 
   SET download_files = [];
@@ -257,6 +258,7 @@ $(document).ready(function() {
             <th>Pep</th>
             <th>Contigs</th>
             <th>CDS</th>
+            <th>FASTQ</th>
             <th>Phylum</th>
             <th>Class</th>
             <th>Family </th>
@@ -275,10 +277,10 @@ $(document).ready(function() {
                <td><a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a></td>
 
                <td>[% sample.pi %]</td>
-               [% FOREACH field IN ['reads_file', 'annotations_file', 'peptides_file', 'contigs_file', 'cds_file'] %]
+               [% FOREACH field IN ['reads_file', 'annotations_file', 'peptides_file', 'contigs_file', 'cds_file', 'fastq_file'] %]
                  <td>
                   [% IF sample.$field %]
-                    <a href="[% sample.$field %]"><img src="/img/file_gz.png"></a>
+                    <a href="[% iplant %][% sample.$field %]"><img src="/img/file_gz.png"></a>
                   [% ELSE %]   
                     &nbsp;
                   [% END %]   
@@ -302,11 +304,10 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="downloads">
         <br/>
-        [% SET url = "http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_projects" %]
         [% IF download_files.size > 0 %]
           <ul>
             [% FOREACH f IN download_files %]
-            <li><a href="[% url %]/[% f.file %]"><img src="/img/file_gz.png">&nbsp;[% f.ft.ucfirst %]</a>
+            <li><a href="[% iplant %][% f.file %]"><img src="/img/file_gz.png">&nbsp;[% f.ft.ucfirst %]</a>
             [% END %]
           </ul>
         [% ELSE %]

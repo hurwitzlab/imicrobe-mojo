@@ -189,11 +189,8 @@ sub view {
 
     my $sth = $db->dbh->prepare($sql);
     $sth->execute($id);
-    my $project_id = $sth->fetchrow_hashref;
-
-    if (!$project_id) {
+    my ($project_id) = $sth->fetchrow_array or 
         return $self->reply->exception("Bad project id ($id)");
-    }
 
     my $Project = $db->schema->resultset('Project')->find($project_id);
     my $domains = $db->dbh->selectcol_arrayref(
