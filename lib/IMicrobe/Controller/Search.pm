@@ -30,10 +30,18 @@ sub info {
 
 # ----------------------------------------------------------------------
 sub results {
-    my $self  = shift;
-    my $req   = $self->req;
-    my $query = $req->param('query') || '';
-    my $dbh   = IMicrobe::DB->new->dbh;
+    my $self    = shift;
+    my $req     = $self->req;
+    my $session = $self->session;
+    my $ip      = $self->session('ip')
+               || $self->req->headers->header('X-Forwarded-For');
+    my $id      = $self->session('user_id') || _make_id( $ip );
+    my $query   = $req->param('query') || '';
+    my $db      = IMicrobe::DB->new;
+    my $dbh     = $db->dbh;
+
+    $self->session(user_id => $id);
+    $self->session(ip => $ip);
 
     my @results;
     my %types;
@@ -64,6 +72,13 @@ sub results {
 
             push @results, $r;
         }
+
+        $db->schema->resultset('QueryLog')->create({
+            ip        => $ip,
+            user_id   => $session->{'user_id'},
+            query     => $query,
+            num_found => scalar @results,
+        });
     }
 
     $self->respond_to(
@@ -107,6 +122,17 @@ sub results {
             $self->render( text => $text );
         },
     );
+}
+
+# ----------------------------------------------------------------------
+sub _make_id {
+    my ($c, $ip) = @_;
+    my $md5  = Digest::MD5->new;
+    my $id   = $md5->md5_base64( time, $$, $ip, int(rand(10)) );
+
+    $id =~ tr|+/=|-_.|;  # Make non-word chars URL-friendly
+
+    return $id;
 }
 
 1;
