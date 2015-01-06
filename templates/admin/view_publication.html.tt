@@ -30,8 +30,10 @@
     <input type="text" class="form-control" id="pubmed_id" name="pubmed_id" value="[% pub.pubmed_id %]">
   </div>
   <div class="form-group">
-    <label for="project_id">Project ID</label>
-    <input type="text" class="form-control" id="project_id" name="project_id" value="[% pub.project_id %]">
+    <label for="project">Project</label>
+    [% IF pub.project_id %]
+    <a href="/admin/edit_project/[% pub.project.id %]">[% pub.project.project_name %]</a>
+    [% END %]
   </div>
   <input type="hidden" name="publication_id" value="[% pub.publication_id %]">
   <button type="submit" class="btn btn-primary">Submit</button>

@@ -29,16 +29,21 @@ function initialize() {
             title: sample.sample_name
           });
 
+          var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
+              sample.sample_name + '</a><br/><ul>';
+
+          $.each(
+            ['phylum', 'class', 'family', 'genus', 'species', 'strain'],
+            function(i, fld) {
+              var val = sample[fld];
+              if (val) {
+                desc += '<li>' + fld + ': ' + val;
+              }
+            }
+          );
+
           var infowindow = new google.maps.InfoWindow({
-            content: 
-              '<a href="/sample/view/' + sample.sample_id + '"\>' +
-              sample.sample_name + '</a><br/><ul>' + 
-              '<li>Phylum: ' + sample['phylum'] +
-              '<li>Class: ' + sample['class'] +
-              '<li>Family: ' + sample['family'] +
-              '<li>Genus: ' + sample['genus'] +
-              '<li>Species: ' + sample['species'] +
-              '<li>Strain: ' + sample['strain'] + '</ul>'
+            content: desc
           });
 
           google.maps.event.addListener(marker, 'click', function() {
@@ -62,10 +67,9 @@ $(document).ready(function() {
 </script>
 </script>
 
-[% #SET iplant="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_projects/" %]
-[% SET iplant = "http://mirrors.iplantcollaborative.org/browse" %]
 
 [% 
+  SET iplant = "http://mirrors.iplantcollaborative.org/browse";
   SET download_files = [];
   FOREACH ft IN ['read', 'meta', 'assembly', 'peptide', 'read_pep', 'nt' ]; 
     SET file = ft _ '_file';
@@ -82,12 +86,12 @@ $(document).ready(function() {
       <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
       <li><a href="#desc" data-toggle="tab">Description</a></li>
       <li><a href="#downloads" data-toggle="tab">Downloads ([% download_files.size OR '0' %])</a></li>
-      <li><a href="#samples" data-toggle="tab">Samples ([% project.samples.size OR '0' %])</a></li>
-      <li><a href="#assemblies" data-toggle="tab">Assemblies ([% project.assemblies.size OR '0' %])</a></li>
-      [% IF project.combined_assemblies.size > 0 %]
-      <li><a href="#combined-assemblies" data-toggle="tab">Combined Assemblies ([% project.combined_assemblies.size %])</a></li>
+      <li><a href="#samples" data-toggle="tab">Samples ([% project.samples_rs.count OR '0' %])</a></li>
+      <li><a href="#assemblies" data-toggle="tab">Assemblies ([% project.assemblies_rs.count OR '0' %])</a></li>
+      [% SET num_combined_assemblies = project.combined_assemblies_rs.count; IF num_combined_assemblies > 0 %]
+      <li><a href="#combined-assemblies" data-toggle="tab">Combined Assemblies ([% num_combined_assemblies %])</a></li>
       [% END %]
-      [% IF project.project_pages.size > 0 %]
+      [% IF project.project_pages.count > 0 %]
       <li><a href="#project-pages" data-toggle="tab">Docs</a></li>
       [% END %]
       <li><a href="#map" data-toggle="tab">Samples Map</a></li>
@@ -129,6 +133,18 @@ $(document).ready(function() {
             <th>Project Type</th>
             <td>[% project.project_type %]</td>
           </tr>
+          [% SET num_pubs = project.publications_rs.count; IF num_pubs > 0 %]
+            <tr>
+              <th>Publications ([% num_pubs %])</th>
+              <td>
+                <ul>
+                [% FOREACH pub IN project.publications %]
+                  <li><a href="/publication/view/[% pub.publication_id %]">[% pub.title | truncate(80) %]</a> ([% pub.author | truncate(50) %])</li>
+                [% END %]
+                </ul>
+              </td>
+            </tr>
+          [% END %]
         </table>
         </p>
       </div>
@@ -142,7 +158,7 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="assemblies">
         <br/>
-        [% IF project.assemblies.size > 0 %]
+        [% IF project.assemblies %]
           <table id="assemblies-tbl" class="display" cellspacing="0" width="100%">
            <thead>
            <tr>
@@ -178,7 +194,7 @@ $(document).ready(function() {
         <p>
       </div>
 
-      [% IF project.combined_assemblies.size > 0 %]
+      [% IF project.combined_assemblies %]
         <div class="tab-pane fade" id="combined-assemblies">
         <br/>
             <table id="combined-assemblies-tbl" class="display" cellspacing="0" width="100%">
@@ -198,7 +214,6 @@ $(document).ready(function() {
              </thead>
 
              <tbody>
-             [% SET ca_url = "http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_mmetsp_ncgr/combined_assemblies/" %]
              [% FOREACH assembly IN project.combined_assemblies %]
                <tr>
                  <td>
@@ -224,16 +239,16 @@ $(document).ready(function() {
                  </td>
                  <td>
                    [% IF assembly.annotations_file %]
-                     <a href="[% ca_url %][% assembly.annotations_file %]"><img src="/img/file_gz.png">&nbsp;Annot</a><br/>
+                     <a href="[% iplant %][% assembly.annotations_file %]"><img src="/img/file_gz.png">&nbsp;Annot</a><br/>
                    [% END %]
                    [% IF assembly.peptides_file %]
-                     <a href="[% ca_url %][% assembly.peptides_file %]"><img src="/img/file_gz.png">&nbsp;Pep</a><br/>
+                     <a href="[% iplant %][% assembly.peptides_file %]"><img src="/img/file_gz.png">&nbsp;Pep</a><br/>
                    [% END %]
                    [% IF assembly.nucleotides_file %]
-                     <a href="[% ca_url %][% assembly.nucleotides_file %]"><img src="/img/file_gz.png">&nbsp;NT</a><br/>
+                     <a href="[% iplant %][% assembly.nucleotides_file %]"><img src="/img/file_gz.png">&nbsp;NT</a><br/>
                    [% END %]
                    [% IF assembly.cds_file %]
-                     <a href="[% ca_url %][% assembly.cds_file %]"><img src="/img/file_gz.png">&nbsp;CDS</a>
+                     <a href="[% iplant %][% assembly.cds_file %]"><img src="/img/file_gz.png">&nbsp;CDS</a>
                    [% END %]
                  </td>
                </tr>
@@ -248,47 +263,38 @@ $(document).ready(function() {
       <div class="tab-pane fade" id="samples">
         <br/>
         [% IF project.samples.size > 0 %]
+          [% 
+            SET all_sample_flds = [ 'pi', 'reads_file', 'annotations_file', 'peptides_file', 'contigs_file', 'cds_file', 'fastq_file', 'phylum', 'class', 'family', 'genus', 'species', 'strain', 'clonal', 'axenic', 'pcr_amp' ];
+            SET sample_flds = ['sample_name'];
+            FOREACH fld IN all_sample_flds;
+              IF has_sample_fld.$fld;
+                sample_flds.push(fld);
+              END;
+            END; 
+          %]
           <table id="samples-tbl" class="display" cellspacing="0" width="100%">
            <thead>
            <tr>
-            <th>Name</th>
-            <th>PI</th>
-            <th>Reads</th>
-            <th>Annots</th>
-            <th>Pep</th>
-            <th>Contigs</th>
-            <th>CDS</th>
-            <th>FASTQ</th>
-            <th>Phylum</th>
-            <th>Class</th>
-            <th>Family </th>
-            <th>Genus</th>
-            <th>Species</th>
-            <th>Strain</th>
-            <th>Clonal</th>
-            <th>Axenic</th>
-            <th>PCR Amp</th>
+            [% FOREACH fld IN sample_flds %]
+              <th>[% fld | ucfirst %]</th>
+            [% END %]
            </tr>
            </thead>
 
            <tbody>
            [% FOREACH sample IN project.samples %]
              <tr>
-               <td><a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a></td>
-
-               <td>[% sample.pi %]</td>
-               [% FOREACH field IN ['reads_file', 'annotations_file', 'peptides_file', 'contigs_file', 'cds_file', 'fastq_file'] %]
-                 <td>
-                  [% IF sample.$field %]
-                    <a href="[% iplant %][% sample.$field %]"><img src="/img/file_gz.png"></a>
-                  [% ELSE %]   
-                    &nbsp;
-                  [% END %]   
-                 </td>
-               [% END %]
-               [% FOREACH field IN ['phylum', 'class', 'family', 'genus', 'species', 'strain', 'clonal', 'axenic', 'pcr_amp' ] %]
-               <td>[% sample.$field %]</td>
-               [% END %]
+              [% FOREACH fld IN sample_flds %]
+                <td>
+                [% IF fld == 'sample_name' %]
+                  <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
+                [% ELSIF sample.$fld AND fld.match('_file$') %]
+                  <a href="[% iplant %][% sample.$fld %]"><img src="/img/file_gz.png"></a>
+                [% ELSE %]
+                  [% sample.$fld %]
+                [% END %]
+                </td>
+              [% END %]
              </tr>
            [% END %]
            </tbody>

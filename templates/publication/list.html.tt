@@ -10,7 +10,7 @@ $(document).ready(function() {
 <div class="row">
   <h1>[% title %]</h1>
   [% USE Comma %]
-  [% IF pubs.size > 0 %]
+  [% IF pubs.count > 0 %]
   <table id="pubs" class="display" cellspacing="0" width="100%">
     <thead>
       <tr>
@@ -19,10 +19,11 @@ $(document).ready(function() {
         <th>Journal</th>
         <th>Date</th>
         <th>PubMed</th>
+        <th>Project</th>
       </tr>
     </thead>
     <tbody>
-    [% FOREACH pub IN pubs %]
+    [% WHILE (pub = pubs.next) %]
       <tr>
         <td><a href="/publication/view/[% pub.publication_id %]">[% pub.title OR 'Untitled' %]</a></td>
         <td>[% pub.author OR 'Unknown' %]</td>
@@ -34,6 +35,13 @@ $(document).ready(function() {
           [% ELSE %]
             &nbsp;
           [% END %]
+        </td>
+        <td>
+        [% IF pub.project_id %]
+          <a href="/project/view/[% pub.project_id %]">[% pub.project.project_name OR 'Untitled' %]</a>
+        [% ELSE %]
+          &nbsp;
+        [% END %]
         </td>
       </tr>
     [% END %]

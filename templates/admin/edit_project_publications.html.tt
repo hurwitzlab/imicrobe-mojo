@@ -1,0 +1,31 @@
+<div class="text-center">
+  <a class="btn btn-default" href="/admin/create_project_pub_form/[% project.project_id %]">Create Project Pub</a>
+
+  <a class="btn btn-default" href="/admin/edit_project/[% project.project_id %]">Back To Project</a>
+</div>
+
+<h1>[% title %]</h1>
+[% IF project.publications %]
+  <table class="table">
+    <tr>
+      <th>Title</th>
+      <th>Authors</th>
+      <th>Journal</th>
+      <th>&nbsp;</th>
+    </tr>
+    [% FOREACH pub IN project.publications %]
+      <tr>
+        <td><a href="/publication/view/[% pub.id %]">[% pub.title %]</a></td>
+        <td>[% pub.author | truncate(30) %]</td>
+        <td>[% pub.journal %]</td>
+        <td>
+          <form method="post" action="/admin/delete_project_pub/[% pub.id %]">
+            <button type="submit" class="btn btn-default">Remove</button>
+          </form>
+        </td>
+      </tr>
+    [% END %]
+  </table>
+[% ELSE %]
+  No pubs.
+[% END %]

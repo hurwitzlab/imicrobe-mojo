@@ -1,12 +1,15 @@
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#publications-tbl').dataTable({"iDisplayLength": 50});
+  $('#publications-tbl').dataTable({
+    "iDisplayLength": 50,
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+  });
 });
 </script>
 
 <h1>Publications</h1>
 
-[% IF pubs.size > 0 %]
+[% IF pubs.count > 0 %]
 <table id="publications-tbl" class="display" cellspacing="0" width="100%">
   <thead>
     <tr>
@@ -15,19 +18,23 @@ $(document).ready(function() {
       <th>Journal</th>
       <th>Date</th>
       <th>Project</th>
+      <th>PI</th>
     </tr>
   </thead>
   <tbody>
-    [% FOREACH p IN pubs %]
+    [% WHILE (p = pubs.next) %]
     <tr>
       <td>
         <a href="/admin/view_publication/[% p.publication_id %]">[% p.title %]</a>
       </td>
       <td>[% p.author %]</td>
       <td>[% p.journal %]</td>
-      <td>[% p.pub_date OR 'NA' %]</td>
+      <td>[% p.pub_date OR '&nbsp;' %]</td>
       <td>
-        [% IF p.project_id %]<a href="/admin/view_project/[% p.project_id %]">View</a>[% ELSE %]N/A[% END %]
+        [% IF p.project_id %]<a href="/admin/edit_project/[% p.project_id %]">[% p.project.project_name | truncate(30) %]</a>[% ELSE %]&nbsp;[% END %]
+      </td>
+      <td>
+        [% IF p.project_id %][% p.project.pi | truncate(30) %][% ELSE %]&nbsp;[% END %]
       </td>
     </tr>
     [% END %]

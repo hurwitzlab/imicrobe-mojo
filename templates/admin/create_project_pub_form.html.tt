@@ -1,0 +1,24 @@
+<div class="text-center">
+  <a class="btn btn-default" href="/admin/edit_project/[% project.project_id %]">Back To Project</a>
+</div>
+
+<h3>Link Pub for &quot[% project.project_name | truncate(40) %]&quot;</h3>
+
+<div class="row">
+  <form role="form" method="post" action="/admin/create_project_pub">
+    <div class="form-group">
+      <label for="publication">Publication</label>
+      <select name="publication_id" class="form-control">
+        <option>--Select--</option>
+        [% WHILE (pub = pubs.next) %]
+          <option value="[% pub.id %]">[% pub.title | truncate(90) %] ([% pub.author | truncate(30) %])</option>
+        [% END %]
+      </select>
+    </div>
+
+    <div class="text-center form-group">
+      <input type="hidden" name="project_id" value="[% project.project_id %]">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>

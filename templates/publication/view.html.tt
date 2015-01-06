@@ -31,6 +31,14 @@
         [% END %]
       </td>
     </tr>
+    [% IF pub.project_id %]
+      <tr>
+        <th>Project</th>
+        <td>
+          <a href="/project/view/[% pub.project_id %]">[% pub.project.project_name OR 'Untitled' %]</a>
+        </td>
+      </tr>
+    [% END %]
   </table>
   </p>
 </div>

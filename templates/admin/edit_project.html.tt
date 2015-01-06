@@ -1,8 +1,14 @@
 <div class="text-center">
   <a class="btn btn-default" href="/admin/create_project_page_form/[% project.project_id %]">Create Project Page</a>
 
-  [% IF num_pages > 0 %]
-  <a class="btn btn-default" href="/admin/view_project_pages/[% project.project_id %]">View Project Pages ([% num_pages %])</a>
+  <a class="btn btn-default" href="/admin/create_project_pub_form/[% project.project_id %]">Create Project Pub</a>
+
+[% IF project.publications_rs.count > 0 %]
+  <a class="btn btn-default" href="/admin/edit_project_publications/[% project.project_id %]">Edit Project Pubs ([% project.publications_rs.count %])</a>
+[% END %]
+
+  [% IF project.project_pages_rs.count > 0 %]
+  <a class="btn btn-default" href="/admin/view_project_pages/[% project.project_id %]">View Project Pages ([% project.project_pages_rs.count %])</a>
   [% END %]
 </div>
 

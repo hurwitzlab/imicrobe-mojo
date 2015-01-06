@@ -23,7 +23,7 @@ $(document).ready(function() {
     <tbody>
     [% FOREACH ref IN refs %]
       <tr>
-        <td>[% ref.name OR 'Untitled' %]</td>
+        <td><a href="/reference/view/[% ref.reference_id %]">[% ref.name OR 'Untitled' %]</a></td>
         <td>[% ref.revision %]</td>
         <td>[% ref.build_date %]</td>
         <td align="right">[% ref.seq_count | comma %]</td>

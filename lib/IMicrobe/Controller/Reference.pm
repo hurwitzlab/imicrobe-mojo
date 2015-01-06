@@ -15,6 +15,16 @@ sub info {
                 list => {
                     results => 'a list of reference genomes',
                 },
+                view => {
+                    params => {
+                        reference_id => {
+                            type     => 'int',
+                            desc     => 'the reference id',
+                            required => 'true'
+                        }
+                    },
+                    results => 'the details of a reference',
+                }
             });
         }
     );
@@ -30,7 +40,8 @@ sub list {
         map { $_->{'url'} = $url . $_->{'file'}; $_ }
         @{$dbh->selectall_arrayref(
             q[
-                select   file, name, build_date, revision, length, seq_count
+                select   reference_id, file, name, build_date, 
+                         revision, length, seq_count
                 from     reference
                 order by 2
             ],
@@ -65,6 +76,37 @@ sub list {
             }
 
             $self->render( text => $text );
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
+sub view {
+    my $self         = shift;
+    my $db           = IMicrobe::DB->new;
+    my $reference_id = $self->param('reference_id');
+    my $Reference    = $db->schema->resultset('Reference')->find($reference_id);
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => { 
+                reference => { $Reference->get_inflated_columns() },
+            });
+        },
+
+        html => sub {
+            $self->layout('default');
+
+            $self->render( 
+                title     => sprintf("Reference %s", $Reference->name),
+                reference => $Reference,
+            );
+        },
+
+        txt => sub {
+            $self->render( text => dump({
+                reference => { $Reference->get_inflated_columns() },
+            }));
         },
     );
 }

@@ -4,7 +4,8 @@
 $(document).ready(function() {
   $('#projects').dataTable({
     "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-    "iDisplayLength": 10
+    "iDisplayLength": 10,
+    "stateSave": true
   });
 });
 </script>

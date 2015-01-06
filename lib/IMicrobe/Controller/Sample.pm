@@ -46,7 +46,7 @@ sub list {
     my $sql  = q[
         select s.sample_id, s.sample_name, s.sample_type,
                s.reads_file, s.annotations_file, s.peptides_file, 
-               s.contigs_file, s.cds_file,
+               s.contigs_file, s.cds_file, s.fastq_file,
                s.phylum, s.class, s.family, s.genus, s.species, 
                s.strain, s.clonal, s.axenic, s.pcr_amp, s.pi,
                s.latitude, s.longitude,

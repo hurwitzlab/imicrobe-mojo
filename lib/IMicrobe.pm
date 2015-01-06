@@ -9,6 +9,8 @@ sub startup {
 
     $self->plugin('JSONConfig', { file => 'imicrobe.json' });
 
+    $self->sessions->default_expiration(86400);
+
     my $r = $self->routes;
 
     # 
@@ -22,11 +24,19 @@ sub startup {
 
     $r->post('/admin/create_project_page')->to('admin#create_project_page');
 
+    $r->post('/admin/create_project_pub')->to('admin#create_project_pub');
+
+    $r->get('/admin/create_project_pub_form/:project_id')->to('admin#create_project_pub_form');
+
     $r->get('/admin/create_project_page_form/:project_id')->to('admin#create_project_page_form');
 
     $r->post('/admin/delete_project_page/:project_page_id')->to('admin#delete_project_page');
 
-    $r->get('/admin/edit_project_page/:project_page_id')->to('admin#edit_project_page');
+    $r->post('/admin/delete_project_pub/:publication_id')->to('admin#delete_project_pub');
+
+    $r->get('/admin/edit_project_page/:project_page_id')->to('admin#edit_project_pub');
+
+    $r->get('/admin/edit_project_publications/:project_id')->to('admin#edit_project_publications');
 
     $r->post('/admin/update_project_page')->to('admin#update_project_page');
 
@@ -98,6 +108,8 @@ sub startup {
     $r->get('/reference/info')->to('reference#info');
 
     $r->get('/reference/list')->to('reference#list');
+
+    $r->get('/reference/view/:reference_id')->to('reference#view');
 
     $r->get('/sample/info')->to('sample#info');
 

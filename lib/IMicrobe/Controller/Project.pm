@@ -194,15 +194,30 @@ sub view {
 
     my $Project = $db->schema->resultset('Project')->find($project_id);
     my $domains = $db->dbh->selectcol_arrayref(
-        q[
+        q'
             select d.domain_name 
             from   project_to_domain p2d, domain d
             where  p2d.project_id=?
             and    p2d.domain_id=d.domain_id
-        ],
+        ',
         {},
         $project_id
     );
+
+    my %has_sample_fld = map { $_, 0 } qw(
+        reads_file annotations_file peptides_file contigs_file cds_file 
+        fastq_file phylum class family genus species strain clonal 
+        axenic pcr_amp pi
+    );
+
+    my @samples;
+    for my $Sample ($Project->samples->all) {
+        for my $fld (keys %has_sample_fld) {
+            if (!$has_sample_fld{ $fld }) {
+                $has_sample_fld{ $fld }++ if $Sample->$fld();
+            }
+        }
+    }
 
     $self->respond_to(
         json => sub {
@@ -217,10 +232,11 @@ sub view {
         html => sub {
             $self->layout('default');
 
-            $self->render( 
+            $self->render(
                 title   => sprintf("Project: %s", $Project->project_name),
                 domains => $domains,
                 project => $Project,
+                has_sample_fld => \%has_sample_fld,
             );
         },
 

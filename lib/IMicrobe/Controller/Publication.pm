@@ -33,41 +33,41 @@ sub info {
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
-    my $pubs = $dbh->selectall_arrayref(
-        q[
-            select publication_id, pub_code, pub_date, journal, 
-                   author, title, pubmed_id
-            from   publication
-        ],
-        { Columns => {} }
-    );
+    my $self   = shift;
+    my $db     = IMicrobe::DB->new;
+    my $schema = $db->schema;
+    my $Pubs   = $schema->resultset('Publication');
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $pubs );
+            $self->render( json => [
+                map { {$_->get_inflated_columns()} } $Pubs->all()
+            ]);
         },
 
         html => sub {
             $self->layout('default');
 
-            $self->render( pubs => $pubs, title => 'Publications' );
+            $self->render( pubs => $Pubs, title => 'Publications' );
         },
 
-        txt => sub {
-            $self->render( text => dump($pubs) );
+        txt  => sub {
+            $self->render( text => dump([
+                map { {$_->get_inflated_columns()} } $Pubs->all()
+            ]));
         },
 
         tab => sub {
             my $text = '';
 
-            if (@$pubs) {
-                my @flds = sort keys %{ $pubs->[0] };
+            if ($Pubs->count > 0) {
+                my @flds = $Pubs->result_source->columns;
                 my @data = (join "\t", @flds);
-                for my $pub (@$pubs) {
-                    push @data, join "\t", map { $pub->{$_} // '' } @flds;
+
+                while (my $pub = $Pubs->next) {
+                    push @data, join "\t", map { $pub->$_() // '' } @flds;
                 }
+
                 $text = join "\n", @data;
             }
 
@@ -80,35 +80,31 @@ sub list {
 sub view {
     my $self   = shift;
     my $pub_id = $self->param('publication_id');
-    my $dbh    = IMicrobe::DB->new->dbh;
+    my $db     = IMicrobe::DB->new;
+    my $schema = $db->schema;
+    my $Pub    = $schema->resultset('Publication')->find($pub_id);
 
-    my $sth = $dbh->prepare('select * from publication where publication_id=?');
-
-    $sth->execute($pub_id);
-
-    my $pub = $sth->fetchrow_hashref;
-
-    if (!$pub) {
+    if (!$Pub) {
         return $self->reply->exception("Bad publication id ($pub_id)");
     }
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $pub );
+            $self->render( json => { $Pub->get_inflated_columns } ),
         },
 
         html => sub {
             $self->layout('default');
 
             $self->render( 
-                pub   => $pub,
+                pub   => $Pub,
                 title => 
-                    sprintf('Publication: %s', $pub->{'title'} || 'Untitled'),
+                    sprintf('Publication: %s', $Pub->title || 'Untitled'),
             );
         },
 
         txt => sub {
-            $self->render( text => dump($pub) );
+            $self->render( text => dump({$Pub->get_inflated_columns}) );
         },
     );
 }

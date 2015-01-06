@@ -1,0 +1,41 @@
+[% USE Comma %]
+<div class="text-center">
+<a class="btn btn-default" href="/reference/list">Back to References</a>
+</div>
+
+<div class="row">
+  <h1>[% title | truncate(50) %]</h1>
+  <table class="table">
+    <tr>
+      <th>Name</th>
+      <td>[% reference.name %]</td>
+    </tr>
+    <tr>
+      <th>Data</th>
+      <td>
+        <a href="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_reference_datasets/[% reference.file %]">[% reference.file %]</a>
+      </td>
+    </tr>
+    <tr>
+      <th>Revision</th>
+      <td>[% reference.revision %]</td>
+    </tr>
+    <tr>
+      <th>Length</th>
+      <td>[% reference.length | comma %]</td>
+    </tr>
+    <tr>
+      <th>Sequence Count</th>
+      <td>[% reference.seq_count | comma %]</td>
+    </tr>
+    <tr>
+      <th>Build Date</th>
+      <td>[% reference.build_date %]</td>
+    </tr>
+    <tr>
+      <th>Description</th>
+      <td>[% reference.description %]</td>
+    </tr>
+  </table>
+  </p>
+</div>

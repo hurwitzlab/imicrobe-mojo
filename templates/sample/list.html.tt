@@ -21,11 +21,12 @@ $(document).ready(function() {
        <th>Contigs</th>
        <th>Reads</th>
        <th>CDS</th>
+       <th>FASTQ</th>
      </tr>
      </thead>
 
      <tbody>
-     [% SET url = "http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_mmetsp_ncgr/transcriptomes/" %]
+     [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
      [% FOREACH sample IN samples %]
        <tr>
          <td>
@@ -34,31 +35,15 @@ $(document).ready(function() {
          <td>
            <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
          </td>
-         <td>
-           [% IF sample.annotations_file %]
-             <a href="[% url %][% sample.annotations_file %]"><img src="/img/file_gz.png"></a><br/>
-           [% END %]
-         </td>
-         <td>
-           [% IF sample.peptides_file %]
-             <a href="[% url %][% sample.peptides_file %]"><img src="/img/file_gz.png"></a><br/>
-           [% END %]
-         </td>
-         <td>
-           [% IF sample.contigs_file %]
-             <a href="[% url %][% sample.contigs_file %]"><img src="/img/file_gz.png"></a><br/>
-           [% END %]
-         </td>
-         <td>
-           [% IF sample.reads_file %]
-             <a href="[% url %][% sample.reads_file %]"><img src="/img/file_gz.png"></a><br/>
-           [% END %]
-         </td>
-         <td>
-           [% IF sample.cds_file %]
-             <a href="[% url %][% sample.cds_file %]"><img src="/img/file_gz.png"></a>
-           [% END %]
-         </td>
+         [% FOREACH fld IN [ 'annotations_file', 'peptides_file', 'contigs_file', 'reads_file', 'cds_file', 'fastq_file' ] %]
+           <td>
+             [% IF sample.$fld %]
+               <a href="[% url %][% sample.$fld %]"><img src="/img/file_gz.png"></a><br/>
+             [% ELSE %]
+               &nbsp;
+             [% END %]
+           </td>
+         [% END %]
        </tr>
      [% END %]
      </tbody>
