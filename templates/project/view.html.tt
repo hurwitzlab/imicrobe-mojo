@@ -65,7 +65,6 @@ $(document).ready(function() {
   });
 });
 </script>
-</script>
 
 
 [% 
@@ -177,9 +176,9 @@ $(document).ready(function() {
                <td><a href="/assembly/view/[% assembly.assembly_id %]">[% assembly.assembly_name %]</a></td>
                <td>[% assembly.assembly_code %]</td>
                <td>[% assembly.organism %]</td>
-               <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
-               <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
-               <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
+               <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+               <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+               <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
              </tr>
            [% END %]
            </tbody>
@@ -239,16 +238,16 @@ $(document).ready(function() {
                  </td>
                  <td>
                    [% IF assembly.annotations_file %]
-                     <a href="[% iplant %][% assembly.annotations_file %]"><img src="/img/file_gz.png">&nbsp;Annot</a><br/>
+                   <a href="[% iplant %][% assembly.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Annot</a><br/>
                    [% END %]
                    [% IF assembly.peptides_file %]
-                     <a href="[% iplant %][% assembly.peptides_file %]"><img src="/img/file_gz.png">&nbsp;Pep</a><br/>
+                   <a href="[% iplant %][% assembly.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Pep</a><br/>
                    [% END %]
                    [% IF assembly.nucleotides_file %]
-                     <a href="[% iplant %][% assembly.nucleotides_file %]"><img src="/img/file_gz.png">&nbsp;NT</a><br/>
+                   <a href="[% iplant %][% assembly.nucleotides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;NT</a><br/>
                    [% END %]
                    [% IF assembly.cds_file %]
-                     <a href="[% iplant %][% assembly.cds_file %]"><img src="/img/file_gz.png">&nbsp;CDS</a>
+                   <a href="[% iplant %][% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;CDS</a>
                    [% END %]
                  </td>
                </tr>
@@ -289,7 +288,7 @@ $(document).ready(function() {
                 [% IF fld == 'sample_name' %]
                   <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
                 [% ELSIF sample.$fld AND fld.match('_file$') %]
-                  <a href="[% iplant %][% sample.$fld %]"><img src="/img/file_gz.png"></a>
+                <a href="[% iplant %][% sample.$fld %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
                 [% ELSE %]
                   [% sample.$fld %]
                 [% END %]
@@ -313,7 +312,7 @@ $(document).ready(function() {
         [% IF download_files.size > 0 %]
           <ul>
             [% FOREACH f IN download_files %]
-            <li><a href="[% iplant %][% f.file %]"><img src="/img/file_gz.png">&nbsp;[% f.ft.ucfirst %]</a>
+            <li><a href="[% iplant %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.ft.ucfirst %]</a>
             [% END %]
           </ul>
         [% ELSE %]

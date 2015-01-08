@@ -125,6 +125,31 @@ sub delete_project_pub {
 }
 
 # ----------------------------------------------------------------------
+sub delete_publication {
+    my $self   = shift;
+    my $pub_id = $self->param('publication_id');
+    my $db     = IMicrobe::DB->new;
+    my $schema = $db->schema;
+    my $Pub    = $schema->resultset('Publication')->find($pub_id);
+
+    if (!$Pub) {
+        return $self->reply->exception("Bad publication id ($pub_id)");
+    }
+
+    $Pub->delete;
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => { result  => 'ok' });
+        },
+
+        html => sub {
+            return $self->redirect_to("/admin/list_publications");
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
 sub edit_project {
     my $self       = shift;
     my $project_id = $self->param('project_id');
@@ -191,13 +216,11 @@ sub index {
 # ----------------------------------------------------------------------
 sub list_projects {
     my $self     = shift;
-    my $dbh      = IMicrobe::DB->new->dbh;
-    my $projects = $dbh->selectall_arrayref(
-        'select * from project', { Columns => {} }
-    );
+    my $schema   = IMicrobe::DB->new->schema;
+    my $Projects = $schema->resultset('Project');
 
     $self->layout('admin');
-    $self->render(projects => $projects);
+    $self->render(projects => $Projects);
 }
 
 # ----------------------------------------------------------------------
@@ -320,15 +343,25 @@ sub view_project_pages {
 
 # ----------------------------------------------------------------------
 sub view_publication {
-    my $self           = shift;
-    my $req            = $self->req;
-    my $publication_id = $self->param('publication_id');
+    my $self     = shift;
+    my $req      = $self->req;
+    my $pub_id   = $self->param('publication_id');
+    my $db       = IMicrobe::DB->new;
+    my $Pub      = $db->schema->resultset('Publication')->find($pub_id);
+    my $Projects = $db->schema->resultset('Project')->search(
+        {},
+        { order_by => { -asc => 'project_name' } }
+    );
 
-    my $db  = IMicrobe::DB->new;
-    my $Pub = $db->schema->resultset('Publication')->find($publication_id);
+    if (!$Pub) {
+        return $self->reply->exception("Bad publication id ($pub_id)");
+    }
 
     $self->layout('admin');
-    $self->render(pub => $Pub);
+    $self->render(
+        pub      => $Pub,
+        projects => $Projects, 
+    );
 }
 
 1;

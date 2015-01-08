@@ -11,6 +11,9 @@ $(document).ready(function() {
   <h1>[% title %]</h1>
   [% USE Comma %]
   [% IF samples.size > 0 %]
+    <div class="pull-right">
+      <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+    </div>
     <table id="samples-tbl" class="display" cellspacing="0" width="100%">
      <thead>
      <tr>
@@ -38,7 +41,7 @@ $(document).ready(function() {
          [% FOREACH fld IN [ 'annotations_file', 'peptides_file', 'contigs_file', 'reads_file', 'cds_file', 'fastq_file' ] %]
            <td>
              [% IF sample.$fld %]
-               <a href="[% url %][% sample.$fld %]"><img src="/img/file_gz.png"></a><br/>
+             <a href="[% url %][% sample.$fld %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a><br/>
              [% ELSE %]
                &nbsp;
              [% END %]
@@ -48,9 +51,6 @@ $(document).ready(function() {
      [% END %]
      </tbody>
     </table>
-    <div class="text-center">
-    <a class="btn btn-primary download-btn" href="/download">Download</a>
-    </div>
   [% ELSE %]
     No samples.
   [% END %]

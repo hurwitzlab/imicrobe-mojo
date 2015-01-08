@@ -45,19 +45,19 @@
     </tr>
     <tr>
       <th>Annotations</th>
-      <td>[% IF assembly.annotations_file %]<a href="[% assembly.annotations_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.annotations_file %]<a href="[% assembly.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>Peptides</th>
-      <td>[% IF assembly.peptides_file %]<a href="[% assembly.peptides_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.peptides_file %]<a href="[% assembly.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>CDS</th>
-      <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>NT</th>
-      <td>[% IF assembly.nucleotides_file %]<a href="[% assembly.nucleotides_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.nucleotides_file %]<a href="[% assembly.nucleotides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
   </table>
 </div>

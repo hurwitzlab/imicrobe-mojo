@@ -1,26 +1,39 @@
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#projects-tbl').dataTable({"iDisplayLength": 50});
+  $('#projects-tbl').dataTable({
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50,
+  });
 });
 </script>
 
 <h1>Projects</h1>
 
-[% IF projects.size > 0 %]
+[% IF projects.count > 0 %]
 <table id="projects-tbl" class="display" cellspacing="0" width="100%">
   <thead>
     <tr>
       <th>Name</th>
       <th>PI</th>
+      <th>PubMed</th>
     </tr>
   </thead>
   <tbody>
-    [% FOREACH p IN projects %]
+    [% WHILE (project=projects.next) %]
     <tr>
       <td>
-        <a href="/admin/edit_project/[% p.project_id %]">[% p.project_name %]</a>
+        <a href="/admin/edit_project/[% project.project_id %]">[% project.project_name %]</a>
       </td>
-      <td>[% p.pi %]</td>
+      <td>[% project.pi %]</td>
+      <td>
+        [% 
+          SET pm_ids = []; 
+          FOREACH pub IN project.publications;
+            pm_ids.push("<a href=\"/admin/view_publication/" _ pub.id _ "\">" _ pub.pubmed_id) _ "</a>"; 
+          END; 
+          pm_ids.join(', '); 
+        %]
+      </td>
     </tr>
     [% END %]
   </tbody>

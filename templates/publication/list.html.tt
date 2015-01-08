@@ -11,6 +11,9 @@ $(document).ready(function() {
   <h1>[% title %]</h1>
   [% USE Comma %]
   [% IF pubs.count > 0 %]
+  <div class="pull-right">
+    <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
   <table id="pubs" class="display" cellspacing="0" width="100%">
     <thead>
       <tr>
@@ -47,9 +50,6 @@ $(document).ready(function() {
     [% END %]
     </tbody>
   </table>
-  <div class="text-center">
-    <a class="btn btn-primary download-btn" href="/download">Download</a>
-  </div>
   [% ELSE %]
     No pubs.
   [% END %]

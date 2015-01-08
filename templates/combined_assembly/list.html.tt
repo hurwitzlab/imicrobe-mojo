@@ -13,6 +13,9 @@ $(document).ready(function() {
   <h1>[% title %]</h1>
   [% USE Comma %]
   [% IF assemblies.size > 0 %]
+    <div class="pull-right">
+      <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+    </div>
     <table id="assemblies-tbl" class="display" cellspacing="0" width="100%">
      <thead>
      <tr>
@@ -31,7 +34,7 @@ $(document).ready(function() {
      </thead>
 
      <tbody>
-     [% SET ca_url = "http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_mmetsp_ncgr/combined_assemblies/" %]
+     [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
      [% FOREACH assembly IN assemblies %]
        <tr>
          <td>
@@ -58,25 +61,22 @@ $(document).ready(function() {
          </td>
          <td>
            [% IF assembly.annotations_file %]
-             <a href="[% ca_url %][% assembly.annotations_file %]"><img src="/img/file_gz.png">&nbsp;Annot</a><br/>
+           <a href="[% url %][% assembly.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Annot</a><br/>
            [% END %]
            [% IF assembly.peptides_file %]
-             <a href="[% ca_url %][% assembly.peptides_file %]"><img src="/img/file_gz.png">&nbsp;Pep</a><br/>
+           <a href="[% url %][% assembly.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;Pep</a><br/>
            [% END %]
            [% IF assembly.nucleotides_file %]
-             <a href="[% ca_url %][% assembly.nucleotides_file %]"><img src="/img/file_gz.png">&nbsp;NT</a><br/>
+           <a href="[% url %][% assembly.nucleotides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;NT</a><br/>
            [% END %]
            [% IF assembly.cds_file %]
-             <a href="[% ca_url %][% assembly.cds_file %]"><img src="/img/file_gz.png">&nbsp;CDS</a>
+           <a href="[% url %][% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;CDS</a>
            [% END %]
          </td>
        </tr>
      [% END %]
      </tbody>
     </table>
-    <div class="text-center">
-      <a class="btn btn-primary download-btn" href="/download">Download</a>
-    </div>
   [% ELSE %]
     No assemblies.
   [% END %]

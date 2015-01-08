@@ -1,3 +1,16 @@
+<script>
+function confirmDelete(url, redirect) {
+  var ok = confirm('Are you sure you want to delete this publication?');
+  if (ok) {
+    $.post(url, function() { location.href = redirect; });
+  }
+}
+</script>
+
+<div class="text-center">
+<a class="btn btn-default" onclick="confirmDelete('/admin/delete_publication/[% pub.id %]', '/admin/list_publications')">Delete</a>
+</div>
+
 <div class="row">
   <h1>Edit Publication: [% pub.title | truncate(60) %]</h1>
   <form role="form" method="post" action="/admin/update_publication">
@@ -30,9 +43,18 @@
     <input type="text" class="form-control" id="pubmed_id" name="pubmed_id" value="[% pub.pubmed_id %]">
   </div>
   <div class="form-group">
-    <label for="project">Project</label>
     [% IF pub.project_id %]
-    <a href="/admin/edit_project/[% pub.project.id %]">[% pub.project.project_name %]</a>
+      <label for="project">Project</label>
+      <a href="/admin/edit_project/[% pub.project.id %]">[% pub.project.project_name %]</a>
+      <a class="btn btn-default" onclick="confirmDelete('/admin/delete_project_pub/[% pub.id %]', '/admin/view_publication/[% pub.id %]')">Remove</a>
+    [% ELSE %]
+      <label for="project_id">Project</label>
+      <select name="project_id" class="form-control">
+        <option>--Select--</option>
+        [% WHILE (project = projects.next) %]
+          <option value="[% project.id %]">[% project.project_name %][% IF project.pi %] ([% project.pi %])[% END %]</option>
+        [% END %]
+      </select>
     [% END %]
   </div>
   <input type="hidden" name="publication_id" value="[% pub.publication_id %]">

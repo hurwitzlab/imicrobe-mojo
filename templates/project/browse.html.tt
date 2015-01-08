@@ -1,20 +1,33 @@
 [% USE Comma %]
+<script>
+$(document).ready(function() {
+  $('#domains').dataTable({
+    "bFilter": false,
+  });
+});
+</script>
+
 <div class="row">
-<h1>[% title %]</h1>
-<table class="table table-striped table-hover">
-  <thead>
-  <tr>
-    <th>Domain of Life</th>
-    <th>Count</th>
-  </tr>
-  </thead>
-  <tbody>
-  [% FOREACH project IN projects %]
-      <tr>
-        <td><a href="[% project.url %]">[% project.domain_name %]</a></td>
-        <td align="right">[% project.count | comma %]</td>
-      </tr>
-  [% END %]
-  </tbody>
-</table>
+  <h1>[% title %]</h1>
+
+  <div class="pull-right">
+    <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
+
+  <table class="display" id="domains">
+    <thead>
+    <tr>
+      <th>Domain of Life</th>
+      <th>Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    [% FOREACH project IN projects %]
+        <tr>
+          <td><a href="[% project.url %]">[% project.domain_name %]</a></td>
+          <td align="right">[% project.count | comma %]</td>
+        </tr>
+    [% END %]
+    </tbody>
+  </table>
 </div>

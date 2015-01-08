@@ -41,6 +41,21 @@ sub browse {
             );
         },
 
+        tab => sub {
+            my $text = '';
+
+            if (@projects) {
+                my @flds = sort keys %{ $projects[0] };
+                my @data = (join "\t", @flds);
+                for my $project (@projects) {
+                    push @data, join "\t", map { $project->{$_} } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
+        },
+
         txt => sub {
             $self->render( text => dump(\@projects) );
         },

@@ -11,29 +11,29 @@ $(document).ready(function() {
   <h1>[% title %]</h1>
   [% USE Comma %]
   [% IF pubs.size > 0 %]
-  <table id="pubs" class="display" cellspacing="0" width="100%">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Authors</th>
-        <th>Journal</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody>
-    [% FOREACH pub IN pubs %]
-      <tr>
-        <td><a href="http://www.pubchase.com/article/[% pub.article_id %]">[% pub.title OR 'Untitled' %]</a></td>
-        <td>[% pub.authors OR 'Unknown' | truncate(40) %]</td>
-        <td>[% pub.journal_title OR 'Unknown' %]</td>
-        <td>[% pub.article_date OR 'Unknown' %]</td>
-      </tr>
-    [% END %]
-    </tbody>
-  </table>
-  <div class="text-center">
-    <a class="btn btn-primary download-btn" href="/download">Download</a>
-  </div>
+    <div class="pull-right">
+      <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+    </div>
+    <table id="pubs" class="display" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Authors</th>
+          <th>Journal</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH pub IN pubs %]
+        <tr>
+          <td><a href="http://www.pubchase.com/article/[% pub.article_id %]">[% pub.title OR 'Untitled' %]</a></td>
+          <td>[% pub.authors OR 'Unknown' | truncate(40) %]</td>
+          <td>[% pub.journal_title OR 'Unknown' %]</td>
+          <td>[% pub.article_date OR 'Unknown' %]</td>
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
   [% ELSE %]
     No pubs.
   [% END %]

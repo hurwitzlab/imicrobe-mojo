@@ -11,6 +11,10 @@ $(document).ready(function() {
   <h1>Assemblies</h1>
   [% USE Comma %]
   [% IF assemblies.size > 0 %]
+  <div class="pull-right">
+    <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
+
   <table id="assemblies" class="display" cellspacing="0" width="100%">
     <thead>
       <tr>
@@ -30,16 +34,13 @@ $(document).ready(function() {
           <a href="/assembly/view/[% assembly.assembly_id %]">[% assembly.assembly_name %]</a><br/>[% assembly.assembly_code %]
         </td>
         <td>[% assembly.organism OR 'Unknown' %]</td>
-        <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
-        <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
-        <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
       </tr>
     [% END %]
     </tbody>
   </table>
-  <div class="text-center">
-  <a class="btn btn-primary download-btn" href="/download">Download</a>
-  </div>
   [% ELSE %]
     No assemblies.
   [% END %]

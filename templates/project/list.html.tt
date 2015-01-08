@@ -18,6 +18,9 @@ $(document).ready(function() {
     </div>
   [% END %]
   [% IF projects.size > 0 %]
+  <div class="pull-right">
+    <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
   <table id="projects" class="display" cellspacing="0" width="100%">
     <thead>
       <tr>
@@ -32,7 +35,7 @@ $(document).ready(function() {
       </tr>
     </thead>
     <tbody>
-    [% SET iplant="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_projects/" %]
+    [% SET iplant="http://mirrors.iplantcollaborative.org/browse" %]
     [% FOREACH project IN projects %]
       <tr>
         <td><a href="/project/view/[% project.project_id %]">[% project.project_name | truncate(70) %]</a></td>
@@ -51,17 +54,14 @@ $(document).ready(function() {
           %]
         </td>
         <td align="right">[% project.num_samples OR '0' | comma %]</td>
-        <td align="center">[% IF project.read_file %]<a target="_blank" href="[% iplant %][% project.read_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]&nbsp;[% END %]</td>
-        <td align="center">[% IF project.meta_file %]<a target="_blank" href="[% iplant %][% project.meta_file %]"><img src="/img/file_meta.png"></a>[% ELSE %]&nbsp;[% END %]</td>
-        <td align="center">[% IF project.assembly_file %]<a target="_blank" href="[% iplant %][% project.assembly_file %]"><img src="/img/file_asm.png"></a>[% ELSE %]&nbsp;[% END %]</td>
-        <td align="center">[% IF project.peptide_file %]<a target="_blank" href="[% iplant %][% project.peptide_file %]"><img src="/img/file_pep.png"></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td align="center">[% IF project.read_file %]<a target="_blank" href="[% iplant %][% project.read_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td align="center">[% IF project.meta_file %]<a target="_blank" href="[% iplant %][% project.meta_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td align="center">[% IF project.assembly_file %]<a target="_blank" href="[% iplant %][% project.assembly_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+        <td align="center">[% IF project.peptide_file %]<a target="_blank" href="[% iplant %][% project.peptide_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
       </tr>
     [% END %]
     </tbody>
   </table>
-  <div class="text-center">
-    <a class="btn btn-primary download-btn" href="/download">Download</a>
-  </div>
   [% ELSE %]
     No projects.
   [% END %]

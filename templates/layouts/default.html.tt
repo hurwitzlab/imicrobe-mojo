@@ -12,13 +12,17 @@
 
     <link href="/css/readable.min.css" rel="stylesheet">
     <link href="/css/jquery.dataTables.css" rel="stylesheet">
+    <link href="/css/dataTables.tableTools.css" rel="stylesheet">
     <link href="/css/carousel.css" rel="stylesheet">
     <link href="/css/imicrobe.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/underscore-min.js"></script>
     <script src="/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8&libraries=drawing"></script>
+    <script src="/js/handlebars.js"></script>
+    <script src="/js/bootstrap.youtubepopup.min.js"></script>
+    <script src="/js/dataTables.tableTools.js"></script>
   </head>
 
   <body>
@@ -43,6 +47,7 @@
                 <li><a href="/assembly/list">Assemblies</a></li>
                 <li><a href="/combined_assembly/list">Combined Assemblies</a></li>
                 <li><a href="/sample/list">Samples</a></li>
+                <li><a href="/sample/search">Sample Map Search</a></li>
                 <li><a href="/publication/list">Publications</a></li>
                 <li><a href="/reference/list">Reference Data Sets</a></li>
                 <li><a href="/pubchase/list">Recommended Reading</a></li>

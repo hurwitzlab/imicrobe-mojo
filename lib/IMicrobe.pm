@@ -34,6 +34,8 @@ sub startup {
 
     $r->post('/admin/delete_project_pub/:publication_id')->to('admin#delete_project_pub');
 
+    $r->post('/admin/delete_publication/:publication_id')->to('admin#delete_publication');
+
     $r->get('/admin/edit_project_page/:project_page_id')->to('admin#edit_project_pub');
 
     $r->get('/admin/edit_project_publications/:project_id')->to('admin#edit_project_publications');
@@ -62,8 +64,6 @@ sub startup {
     $r->get('/assembly/list')->to('assembly#list');
 
     $r->get('/assembly/view/:assembly_id')->to('assembly#view');
-
-    #$r->get('/carousel')->to('welcome#carousel');
 
     $r->get('/combined_assembly/info')->to('combined_assembly#info');
 
@@ -114,6 +114,10 @@ sub startup {
     $r->get('/sample/info')->to('sample#info');
 
     $r->get('/sample/list')->to('sample#list');
+
+    $r->get('/sample/search')->to('sample#search');
+
+    $r->get('/sample/search_results')->to('sample#search_results');
 
     $r->get('/sample/view/:sample_id')->to('sample#view');
 

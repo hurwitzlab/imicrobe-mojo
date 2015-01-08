@@ -15,15 +15,15 @@
     </tr>
     <tr>
       <th>CDS</th>
-      <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>NT</th>
-      <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>Peptides</th>
-      <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><img src="/img/file_gz.png"></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
   </table>
   </p>

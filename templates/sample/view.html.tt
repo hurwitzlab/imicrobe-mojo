@@ -212,7 +212,7 @@ $(document).ready(function() {
           [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
           <ul>
             [% FOREACH f IN download_files %]
-            <li><a href="[% url %][% f.file %]"><img src="/img/file_gz.png">&nbsp;[% f.ft.ucfirst %]</a>
+            <li><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.ft.ucfirst %]</a>
             [% END %]
           </ul>
         [% ELSE %]
