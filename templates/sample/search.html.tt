@@ -1,237 +1,161 @@
-<script>
-function initialize() {
-  var center = new google.maps.LatLng(0, 0);
-  var map = new google.maps.Map(document.getElementById("map-canvas"), 
-    { zoom: 2, center: center });
+<script type = "text/javascript">
+var paramType = {};
 
-  var polyOptions = {
-    strokeWeight: 0.5,
-    fillOpacity: 0.45,
-    draggable: true,
-    editable: true
-  };
-
-  var drawingManager = new google.maps.drawing.DrawingManager({
-    drawingControl: true,
-    rectangleOptions: polyOptions,
-    polygonOptions: polyOptions,
-    drawingControlOptions: {
-      position: google.maps.ControlPosition.TOP_CENTER,
-      drawingModes: [
-        google.maps.drawing.OverlayType.CIRCLE,
-        google.maps.drawing.OverlayType.RECTANGLE
-      ]
-    }
+$(document).ready(function() {
+  $("#paramForm").on( "submit", function(event) {
+    event.preventDefault();
+    updateSearchResults($(this).serialize());
   });
-  drawingManager.setMap(map);
 
-  var allShapes = [];
-  var selectedShape;
-  function clearSelection() {
-    if (selectedShape) {
-      selectedShape.setEditable(false);
-      selectedShape = null;
-    }
+  $.get("/sample/search_params.json", function(data) {
+    $.each(data, function(key, value) {   
+      var pname = value[0];
+      var ptype = value[1];
+      paramType[pname] = ptype;
+
+      $('#searchList')
+        .append($("<option></option>")
+        .attr("value", pname)
+        .text(prettyStr(pname))); 
+    });    
+  });
+
+  // See if we have a query string
+  var qs = window.location.search;
+  qs = qs.replace("?", ''); 
+  if (qs) {
+    updateSearchResults(qs);
   }
+});
 
-  function setSelection(shape) {
-    clearSelection();
-    selectedShape = shape;
-    shape.setEditable(true);
-  }
+// --------------------------------------------------
+function prettyStr(s) {
+  s += '';
+  return _.map(s.split("_"), function(str) {
+    return str.charAt(0).toUpperCase() + str.substr(1);
+  }).join(" ");
+}
 
-  function deleteSelectedShape() {
-    if (selectedShape) {
-      selectedShape.setMap(null);
-
-      allShapes = _.filter(allShapes, function(shape) { 
-        return shape !== selectedShape
+// --------------------------------------------------
+function getParamValues(paramName, divId) {
+  $.get('/sample/search_param_values/' + paramName + '.json', function(data) {
+    html = ''
+    if (data.length > 0 && data.length < 1000) {
+      html = '<select name="' + paramName + '" multiple>';
+      $.each(data, function(idx, val) {
+        html += '<option value="' + val + '">' + val + '</option>';
       });
 
-      updateSearchResults();
+      html += '</select>';
     }
+    else {
+      html = '<input name="' + paramName + '"/>';
+    }
+
+    if (html) {
+      $('#' + divId).append(html);
+    }
+  });
+}
+
+// --------------------------------------------------
+function addOption(paramName) {
+  var type = paramType[paramName];
+  var tr   = '<tr><th>' + prettyStr(paramName) + '</th>';
+
+  if (type == 'string') {
+    valsDivId = paramName + '_vals';
+    tr  += '<td><div id="' +  valsDivId + '"></div></td></td><td>';
+    vals = getParamValues(paramName, valsDivId);
+  }
+  else {
+    tr  += '<td>Min: <input name="min_' + paramName + '"/></td>';
+    tr  += '<td>Max: <input name="max_' + paramName + '"/></td>';
   }
 
-  function updateSearchResults() {
-    var areas = _.map(allShapes, function(shape) { 
-      var bounds = shape.getBounds();
-      return bounds.toUrlValue();
-    });
+  tr += '<td><button type="submit" class="btn btn-primary">Search</button></td><td><button class="btn btn-default" onclick="removeTableRow(this)">Remove</button></td></tr>';
 
-    if (areas.length > 0) {
-      $.get('/sample/search_results.json?bounds=' + areas.join(':'),
-        function(data) {
-          data['count']  = data['samples'].length;
-          data['iplant'] = 'http://mirrors.iplantcollaborative.org/browse';
-          var source     = $("#results-tmpl").html();
-          var template   = Handlebars.compile(source);
+  $('#paramTable > tbody:last').append(tr);
+}
+
+// --------------------------------------------------
+function removeTableRow(row) {
+  $(row).closest("tr").remove();
+  $('#paramForm').submit();
+  return false;
+}
+
+// --------------------------------------------------
+function updateSearchResults(formData) {
+  if (formData) {
+    $('#results').html('<div class="well text-center">Loading data</div');
+
+    $.get('/sample/search_results.json?' + formData,
+      function(data) {
+        if (data["samples"].length > 0 ) {
+          data['count'] = data['samples'].length;
+          var source    = $("#results-tmpl").html();
+          var template  = Handlebars.compile(source);
+          data['formData'] = formData;
 
           $('#results').html(template(data));
           $('#samples-tbl').dataTable({
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "iDisplayLength": 50,
-            "bFilter": false,
-            "dom": 'T<"clear">lfrtip',
-            "sSwfPath": "/swf/copy_csv_xls_pdf.swf"
+            "bFilter": false
           });
         }
-      );
-    }
-    else {
-      $('#results').html('');
-    }
+        else {
+          $('#results').html('<div class="well text-center">No results</div>');
+        }
+      }
+    );
   }
-
-  google.maps.event.addListener(
-    drawingManager, 
-    'overlaycomplete', 
-    function(event) {
-      // Switch back to non-drawing mode after drawing a shape.
-      drawingManager.setDrawingMode(null);
-
-      // Add an event listener that selects the newly-drawn shape 
-      // when the user mouses down on it.
-      var newShape = event.overlay;
-      newShape.type = event.type;
-
-      if (event.type == google.maps.drawing.OverlayType.CIRCLE) {
-        google.maps.event.addListener(newShape, 'radius_changed', updateSearchResults);
-        google.maps.event.addListener(newShape, 'center_changed', updateSearchResults);
-      }
-      else if (event.type == google.maps.drawing.OverlayType.RECTANGLE) {
-        google.maps.event.addListener(newShape, 'bounds_changed', updateSearchResults);
-      }
-
-      google.maps.event.addListener(newShape, 'click', function() {
-        setSelection(newShape);
-      });
-
-      setSelection(newShape);
-      allShapes.push(newShape);
-      updateSearchResults();
-    }
-  );
-
-  // Clear the current selection when the drawing mode is changed, 
-  // or when the map is clicked.
-  google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
-  google.maps.event.addListener(map, 'click', clearSelection);
-  google.maps.event.addDomListener(document.getElementById('delete-button'), 'click', deleteSelectedShape);
-
-  $.getJSON(
-    '/sample/search_results.json',
-    function(data) { 
-      $.each(data['samples'], function(i, sample) {
-        if (sample.latitude && sample.longitude) {
-          var pos = new google.maps.LatLng(sample.latitude, sample.longitude);
-
-          var marker = new google.maps.Marker({
-            position: pos,
-            map: map,
-            title: sample.sample_name
-          });
-
-          var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
-              sample.sample_name + '</a><br/><ul>';
-
-          $.each(
-            ['phylum', 'class', 'family', 'genus', 'species', 'strain'],
-            function(i, fld) {
-              var val = sample[fld];
-              if (val) {
-                desc += '<li>' + fld + ': ' + val;
-              }
-            }
-          );
-
-          var infowindow = new google.maps.InfoWindow({
-            content: desc
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-            infowindow.open(map,marker);
-          });
-        }
-      });
-    }
-  );
+  else {
+    $('#results').html('');
+  }
 }
-
-$(document).ready(function() {
-  google.maps.event.addDomListener(window, "load", initialize);
-  $(".youtube").YouTubeModal({autoplay:0, width:640, height:480});
-});
 </script>
 
-<h1>[% title %]</h1>
-<div class="row">
-  <div class="pull-right">
-    <a class="youtube" href="http://www.youtube.com/watch?v=2cnc-wRBN_o"><span class="glyphicon glyphicon-film"></span></a>
+<form id="paramForm">
+  <div class="text-center">
+    <b>Add Condition:</b>
+    <select id="searchList" onchange="addOption(this.value)">
+      <option value="">--Select--</option>
+    </select>
   </div>
-  <div id="map-canvas"></div>
-  <div>
-    <button id="delete-button">Delete Selected Shape</button>
-  </div>
-  <div id="results"></div>
-</div>
+  <table class="table" id="paramTable">
+    <tbody>
+    </tbody>
+  </table>
+</form>
+
+<div id="results"></div>
 
 <script id="results-tmpl" type="text/x-handlebars-template">
   <div class="row">
     <h2 id="nav-tabs">Results: {{count}}</h2>
+    <div class="pull-right">
+      <a class="btn btn-default" href="/sample/search_results_map?{{formData}}" target="_blank">View On Map</a>
+      <a class="btn btn-default" data-toggle="collapse" href="#permalink" aria-expanded="false" aria-controls="permalink">Permalink</a>
+      <div class="collapse" id="permalink">
+        <div class="well">
+          <a href="/sample/search?{{formData}}">/sample/search_results_map?{{formData}}</a>
+        </div>
+      </div>
+    </div>
     <table id="samples-tbl" class="display" cellspacing="0" width="100%">
       <thead>
         <tr>
           <th>Sample</th>
-          <th>Sample PI</th>
           <th>Project</th>
-          <th>Project PI</th>
-          <th>Reads</th>
-          <th>Annots</th>
-          <th>Pep</th>
-          <th>Contigs</th>
-          <th>CDS</th>
-          <th>FASTQ</th>
         </tr>
       </thead>
       <tbody>
         {{#each samples}}
           <tr>
-            <td><a href="/sample/view/{{this.sample_id}}">{{this.sample_name}}</a></td>
-            <td>{{this.sample_pi}}</td>
-            <td><a href="/project/view/{{this.project_id}}">{{this.project_name}}</a></td>
-            <td>{{this.project_pi}}</td>
-            <td>
-              {{#if this.reads_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.reads_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.annotations_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.annotations_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{END}}
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.peptides_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.peptides_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.contigs_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.contigs_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.cds_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.cds_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.fastq_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.fastq_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-          </tr>
+            <td><a target="_blank" href="/sample/view/{{this.sample_id}}">{{this.sample_name}}</a></td>
+            <td><a target="_blank" href="/project/view/{{this.project_id}}">{{this.project_name}}</a></td>
         {{/each}}
       </tbody>
     </table>

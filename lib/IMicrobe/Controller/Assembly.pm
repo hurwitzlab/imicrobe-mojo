@@ -98,11 +98,21 @@ sub view {
     my $assembly_id = $self->param('assembly_id');
     my $dbh         = IMicrobe::DB->new->dbh;
 
+    if ($assembly_id =~ /^\D/) {
+        for my $fld (qw[ assembly_name assembly_code ]) {
+            my $sql = "select assembly_id from assembly where $fld=?";
+            if (my $id = $dbh->selectrow_array($sql, {}, $assembly_id)) {
+                $assembly_id = $id;
+                last;    
+            }
+        }
+    }
+
     my $sth = $dbh->prepare(
         q[
             select a.assembly_id, a.assembly_code, a.assembly_name,
                    a.organism, a.cds_file, a.nt_file, a.pep_file,
-                   p.project_id, p.project_name
+                   a.description, p.project_id, p.project_name
             from   assembly a, project p
             where  a.assembly_id=?
             and    a.project_id=p.project_id

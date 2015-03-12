@@ -219,10 +219,9 @@ sub view {
         $project_id
     );
 
+    #reads_file annotations_file peptides_file contigs_file cds_file fastq_file 
     my %has_sample_fld = map { $_, 0 } qw(
-        reads_file annotations_file peptides_file contigs_file cds_file 
-        fastq_file phylum class family genus species strain clonal 
-        axenic pcr_amp pi
+        phylum class family genus species strain clonal axenic pcr_amp pi
     );
 
     my @samples;

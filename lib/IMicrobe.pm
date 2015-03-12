@@ -40,6 +40,8 @@ sub startup {
 
     $r->get('/admin/edit_project_publications/:project_id')->to('admin#edit_project_publications');
 
+    $r->get('/admin/edit_sample/:sample_id')->to('admin#edit_sample');
+
     $r->post('/admin/update_project_page')->to('admin#update_project_page');
 
     $r->get('/admin/edit_project/:project_id')->to('admin#edit_project');
@@ -48,11 +50,15 @@ sub startup {
 
     $r->get('/admin/view_project_pages/:project_id')->to('admin#view_project_pages');
 
+    $r->get('/admin/view_project_samples/:project_id')->to('admin#view_project_samples');
+
     $r->get('/admin/view_publication/:publication_id')->to('admin#view_publication');
 
     $r->post('/admin/update_project')->to('admin#update_project');
 
     $r->post('/admin/update_publication')->to('admin#update_publication');
+
+    $r->post('/admin/update_sample')->to('admin#update_sample');
 
     #
     # User endpoints
@@ -115,13 +121,25 @@ sub startup {
 
     $r->get('/sample/list')->to('sample#list');
 
+    $r->get('/sample/map_search')->to('sample#map_search');
+
+    $r->get('/sample/map_search_results')->to('sample#map_search_results');
+
     $r->get('/sample/search')->to('sample#search');
 
+    $r->get('/sample/search_params')->to('sample#search_params');
+
+    $r->get('/sample/search_param_values/:field')->to('sample#search_param_values');
+
     $r->get('/sample/search_results')->to('sample#search_results');
+
+    $r->get('/sample/search_results_map')->to('sample#search_results_map');
 
     $r->get('/sample/view/:sample_id')->to('sample#view');
 
     $r->get('/search')->to('search#results');
+
+    $r->get('/search2')->to('search#results2');
 
     $r->get('/search/info')->to('search#info');
 

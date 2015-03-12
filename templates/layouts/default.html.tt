@@ -47,7 +47,8 @@
                 <li><a href="/assembly/list">Assemblies</a></li>
                 <li><a href="/combined_assembly/list">Combined Assemblies</a></li>
                 <li><a href="/sample/list">Samples</a></li>
-                <li><a href="/sample/search">Sample Map Search</a></li>
+                <li><a href="/sample/search">Sample Metadata Search</a></li>
+                <li><a href="/sample/map_search">Sample Map Search</a></li>
                 <li><a href="/publication/list">Publications</a></li>
                 <li><a href="/reference/list">Reference Data Sets</a></li>
                 <li><a href="/pubchase/list">Recommended Reading</a></li>

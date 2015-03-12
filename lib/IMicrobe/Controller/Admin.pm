@@ -207,6 +207,24 @@ sub edit_project_page {
 }
 
 # ----------------------------------------------------------------------
+sub edit_sample {
+    my $self      = shift;
+    my $sample_id = $self->param('sample_id');
+    my $schema    = IMicrobe::DB->new->schema;
+    my $Sample    = $schema->resultset('Sample')->find($sample_id);
+
+    if (!$Sample) {
+        return $self->reply->exception("Bad sample id ($sample_id)");
+    }
+
+    $self->layout('admin');
+    $self->render( 
+        title  => 'Edit Sample: ' . $Sample->sample_name,
+        sample => $Sample,
+    );
+}
+
+# ----------------------------------------------------------------------
 sub index {
     my $self = shift;
     $self->layout('admin');
@@ -311,6 +329,34 @@ sub update_publication {
 }
 
 # ----------------------------------------------------------------------
+sub update_sample {
+    my $self      = shift;
+    my $req       = $self->req;
+    my $sample_id = $req->param('sample_id');
+    my $schema    = IMicrobe::DB->new->schema;
+    my $Sample    = $schema->resultset('Sample')->find($sample_id);
+
+    if (!$Sample) {
+        return $self->reply->exception("Bad sample_id ($sample_id)");
+    }
+
+    my @flds = qw[ 
+        sample_name sample_acc reads_file fastq_file
+    ];
+
+    for my $fld (@flds) {
+        my $val = $req->param($fld);
+        next unless defined $val;
+        $Sample->$fld($val);
+        $Sample->update;
+    }
+
+    return $self->redirect_to(
+        '/admin/view_project_samples/' . $Sample->project_id
+    );
+}
+
+# ----------------------------------------------------------------------
 sub view_project {
     my $self       = shift;
     my $req        = $self->req;
@@ -339,6 +385,20 @@ sub view_project_pages {
 
     $self->layout('admin');
     $self->render(pages => $pages, project => $Project);
+}
+
+# ----------------------------------------------------------------------
+sub view_project_samples {
+    my $self       = shift;
+    my $req        = $self->req;
+    my $project_id = $self->param('project_id');
+    my $db         = IMicrobe::DB->new;
+    my $Project    = $db->schema->resultset('Project')->find($project_id);
+
+    $self->layout('admin');
+    $self->render(
+        project => $Project
+    );
 }
 
 # ----------------------------------------------------------------------

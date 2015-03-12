@@ -2,7 +2,8 @@
 $(document).ready(function() {
   var dt_opts = {
     "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-    "iDisplayLength": 10
+    "iDisplayLength": 50,
+    "stateSave": true
   };
 
   $('#combined-assemblies-tbl').dataTable(dt_opts);

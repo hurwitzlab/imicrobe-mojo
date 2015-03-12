@@ -1,3 +1,4 @@
+[% SET iplant = "http://mirrors.iplantcollaborative.org/browse" %]
 <div class="row">
   <h1>[% title %]</h1>
   <table class="table">
@@ -45,19 +46,19 @@
     </tr>
     <tr>
       <th>Annotations</th>
-      <td>[% IF assembly.annotations_file %]<a href="[% assembly.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.annotations_file %]<a href="[% iplant %][% assembly.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>Peptides</th>
-      <td>[% IF assembly.peptides_file %]<a href="[% assembly.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.peptides_file %]<a href="[% iplant %][% assembly.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>CDS</th>
-      <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.cds_file %]<a href="[% iplant %][% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>NT</th>
-      <td>[% IF assembly.nucleotides_file %]<a href="[% assembly.nucleotides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.nucleotides_file %]<a href="[% iplant %][% assembly.nucleotides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
   </table>
 </div>

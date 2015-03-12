@@ -3,6 +3,7 @@
   SET name_fields = {
   'assembly'          => 'assembly_name',
   'project'           => 'project_name',
+  'project_page'      => 'title',
   'publication'       => 'title',
   'sample'            => 'sample_name'
   'combined_assembly' => 'assembly_name',

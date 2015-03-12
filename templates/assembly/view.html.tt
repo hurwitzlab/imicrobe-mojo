@@ -1,3 +1,4 @@
+[% SET iplant = 'http://mirrors.iplantcollaborative.org/browse' %]
 <div class="row">
   <h1>[% title %]</h1>
   <table class="table">
@@ -14,12 +15,16 @@
       <td>[% assembly.organism %]</td>
     </tr>
     <tr>
+      <th>Description</th>
+      <td>[% assembly.description %]</td>
+    </tr>
+    <tr>
       <th>CDS</th>
-      <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.cds_file %]<a href="[% iplant %][% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>NT</th>
-      <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>[% IF assembly.nt_file %]<a href="[% iplant %][% assembly.nt_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
     </tr>
     <tr>
       <th>Peptides</th>

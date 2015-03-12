@@ -1,0 +1,28 @@
+<div class="text-center">
+  <a class="btn btn-default" href="/admin/edit_project/[% project.project_id %]">Back To Project</a>
+</div>
+
+<br/>
+[% IF project.samples_rs.count > 0 %]
+  <table class="table">
+    <tr>
+      <th>Sample Name</th>
+      <th>Sample Acc</td>
+      <th>&nbsp;</td>
+    </tr>
+    [% FOREACH sample IN project.samples %]
+      <tr>
+        <td>
+          [% sample.sample_name %]
+        </td>
+        <td>
+          [% sample.sample_acc %]
+        </td>
+        <td>
+          <a class="btn btn-default" href="/admin/edit_sample/[% sample.id %]">Edit</a>
+        </td>
+    [% END %]
+  </table>
+[% ELSE %]
+  <div class="well text-center">No samples.</div>
+[% END %]

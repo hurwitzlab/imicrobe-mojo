@@ -10,6 +10,10 @@
   [% IF project.project_pages_rs.count > 0 %]
   <a class="btn btn-default" href="/admin/view_project_pages/[% project.project_id %]">View Project Pages ([% project.project_pages_rs.count %])</a>
   [% END %]
+
+  [% IF project.samples_rs.count > 0 %]
+  <a class="btn btn-default" href="/admin/view_project_samples/[% project.project_id %]">View Samples ([% project.samples_rs.count %])</a>
+  [% END %]
 </div>
 
 <div class="row">

@@ -1,11 +1,4 @@
-[%-
-  SET download_files = [];
-  FOREACH ft IN ['reads', 'annotations', 'peptides', 'contigs', 'cds', 'fastq']; 
-    SET file = ft _ '_file';
-    IF sample.$file;
-      download_files.push({ ft = ft, file = sample.$file });
-    END;
-  END;
+[%- SET num_download_files = sample.sample_files_rs.count + assembly_files.size + combined_assembly_files.size;
 -%]
 
 [%- SET show_map = sample.latitude AND sample.longitude; %]
@@ -49,7 +42,7 @@ $(document).ready(function() {
       <li><a href="#exp" data-toggle="tab">Experiment</a></li>
       <li><a href="#meta" data-toggle="tab">Meta</a></li>
       <li><a href="#other" data-toggle="tab">Other</a></li>
-      <li><a href="#downloads" data-toggle="tab">Downloads ([% download_files.size OR '0' %])</a></li>
+      <li><a href="#downloads" data-toggle="tab">Downloads ([% num_download_files OR '0' %])</a></li>
       [% IF show_map %]<li><a href="#map" data-toggle="tab">Map</a></li>[% END %]
     </ul>
 
@@ -68,7 +61,7 @@ $(document).ready(function() {
           <tr>
             <th>Project</th>
             <td>
-              <a href="/project/view/[% sample.project_id %]">[% sample.project_name %]</a>
+              <a href="/project/view/[% sample.project_id %]">[% sample.project.project_name %]</a>
             </td>
           </tr>
           <tr>
@@ -101,21 +94,23 @@ $(document).ready(function() {
             <th>Sample Accession</th>
             <td>[% sample.sample_acc OR 'N/A' %]</td>
           </tr>
-          [% IF sample.assembly_accession_number %]
-            <tr>
-              <th>Assembly</th>
-              <td>
-                <a href="/assembly/view/[% sample.assembly_accession_number %]">[% sample.assembly_accession_number %]</a> 
-              </td>
-            </tr>
-          [% END %]
-          [% IF sample.combined_assembly_name %]
+
+          <tr>
+            <th>[% IF sample.assemblies_rs.count == 1 %]Assembly[% ELSE %]Assemblies[% END %] ([% sample.assemblies_rs.count %])</th>
+            <td>
+              <ul>
+              [% FOREACH assembly IN sample.assemblies %]
+                <li><a href="/assembly/view/[% assembly.id %]">[% assembly.assembly_name %]</a></li>
+              [% END %]
+              <ul>
+            </td>
+          </tr>
+
+          [% IF sample.combined_assembly %]
             <tr>
               <th>Combined Assembly</th>
               <td>
-                [% IF sample.combined_assembly_name %]
-                  <a href="/combined_assembly/view/[% sample.combined_assembly_name %]">[% sample.combined_assembly_name %]</a> 
-                [% END %]
+                <a href="/combined_assembly/view/[% sample.combined_assembly.id %]">[% sample.combined_assembly.assembly_name OR 'N/A' %]</a> 
               </td>
             </tr>
           [% END %]
@@ -131,7 +126,9 @@ $(document).ready(function() {
             [% SET val = sample.$fld %]
             [% IF val %]
               <tr>
-                <th>[% fld | ucfirst %]</th>
+                <th>
+                  [% IF fld == 'torder' %]Order[% ELSE %][% fld | ucfirst %][% END %]
+                </th>
                 <td>[% val %]</td>
               </tr>
             [% END %]
@@ -208,22 +205,36 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="downloads">
         <br/>
-        [% IF download_files.size > 0 %]
-          [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
+        [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
+        [% IF sample.sample_files_rs.count > 0 %]
+          <b>Sample Files</b>
           <ul>
-            [% FOREACH f IN download_files %]
-            <li><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.ft.ucfirst %]</a>
+            [% FOREACH f IN sample.sample_files %]
+            <li><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.sample_file_type.type.ucfirst.replace('_',' ') %]</a>
             [% END %]
           </ul>
-        [% ELSE %]
-          N/A
+        [% END %]
+        [% IF assembly_files.size > 0 %]
+          <b>Assembly Files</b>
+          <ul>
+            [% FOREACH f IN assembly_files %]
+            <li><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.type.ucfirst.replace('_',' ') %]</a>
+            [% END %]
+          </ul>
+        [% END %]
+        [% IF combined_assembly_files.size > 0 %]
+          <b>Combined Assembly Files</b>
+          <ul>
+            [% FOREACH f IN combined_assembly_files %]
+            <li><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.type.ucfirst.replace('_',' ') %]</a>
+            [% END %]
+          </ul>
         [% END %]
         </p>
       </div>
 
       <div class="tab-pane fade" id="meta">
         <br/>
-        <table class="table">
           [%-
             SET meta_fields = [ 
               'isolation_method',
@@ -445,13 +456,14 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="other">
         <br/>
-        [% IF sample.attrs.size > 0 %]
+        [% IF sample.sample_attrs_rs.count > 0 %]
           <table class="table">
-            [% FOREACH attr IN sample.attrs %]
+            [% FOREACH attr IN sample.sample_attrs %]
               <tr>
-                <th>[% attr.type %]</th>
+                <th>[% attr.sample_attr_type.category OR 'Other' %]</th>
+                <th>[% attr.sample_attr_type.type %]</th>
                 <td>
-                  [% IF attr.url_template; USE f=String(attr.attr_value); SET url=f.format(attr.url_template); %]<a href="[% url %]">[% END %][% attr.attr_value %][% IF attr.url_template %]</a>[% END %]
+                  [% IF attr.sample_attr_type.url_template; USE f=String(attr.attr_value); SET url=f.format(attr.sample_attr_type.url_template); %]<a href="[% url %]">[% END %][% attr.attr_value %][% IF attr.url_template %]</a>[% END %]
                 </td>
               </tr>
             [% END %]

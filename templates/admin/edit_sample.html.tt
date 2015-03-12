@@ -1,0 +1,34 @@
+<div class="text-center">
+  <a class="btn btn-default" href="/admin/edit_project/[% sample.project_id %]">Back To Project</a>
+</div>
+
+<h3>[% title %]</h3>
+
+<div class="row">
+  <form role="form" method="post" action="/admin/update_sample">
+    <div class="form-group">
+      <label for="sample_name">Sample Name</label>
+      <input type="text" class="form-control" id="sample_name" name="sample_name" value="[% sample.sample_name %]">
+    </div>
+
+    <div class="form-group">
+      <label for="sample_acc">Sample Acc</label>
+      <input type="text" class="form-control" id="sample_acc" name="sample_acc" value="[% sample.sample_acc %]">
+    </div>
+
+    <div class="form-group">
+      <label for="reads_file">Reads File</label>
+      <input type="text" class="form-control" id="reads_file" name="reads_file" value="[% sample.reads_file %]">
+    </div>
+
+    <div class="form-group">
+      <label for="fastq_file">FASTQ File</label>
+      <input type="text" class="form-control" id="fastq_file" name="fastq_file" value="[% sample.fastq_file %]">
+    </div>
+
+    <div class="text-center">
+      <input type="hidden" name="sample_id" value="[% sample.id %]">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>

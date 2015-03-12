@@ -1,0 +1,50 @@
+<script type="text/javascript">
+var map;
+function initialize() {
+  var center = new google.maps.LatLng(0, 0);
+  map = new google.maps.Map(document.getElementById("map-canvas"), 
+    { zoom: 2, center: center });
+}
+
+// --------------------------------------------------
+$(document).ready(function() {
+  google.maps.event.addDomListener(window, 'load', initialize);
+  
+  var qs = window.location.search;
+  qs = qs.replace("?", ''); 
+  if (qs) {
+    $.get('/sample/search_results.json?' + qs,
+      function(data) { 
+        $.each(data['samples'], function(i, sample) {
+          if (sample.latitude && sample.longitude) {
+            var pos = new google.maps.LatLng(sample.latitude, sample.longitude);
+
+            var marker = new google.maps.Marker({
+              position: pos,
+              map: map,
+              title: sample.sample_name
+            });
+
+            var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
+                sample.sample_name + '</a><br/><ul>';
+
+            var infowindow = new google.maps.InfoWindow({
+              content: desc
+            });
+
+            google.maps.event.addListener(marker, 'click', function() {
+              infowindow.open(map,marker);
+            });
+          }
+        });
+      }
+    );
+  }
+});
+</script>
+
+<h1>[% title %]</h1>
+<div class="row">
+  <div id="map-canvas"></div>
+</div>
+

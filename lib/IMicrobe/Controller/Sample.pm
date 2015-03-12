@@ -4,6 +4,7 @@ use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 use DBI;
+use String::Trim qw(trim);
 
 # ----------------------------------------------------------------------
 sub info {
@@ -122,7 +123,9 @@ sub list {
 sub view {
     my $self      = shift;
     my $sample_id = $self->param('sample_id') or die 'No sample id';
-    my $dbh       = IMicrobe::DB->new->dbh;
+    my $db        = IMicrobe::DB->new;
+    my $dbh       = $db->dbh;
+    my $schema    = $db->schema;
 
     if ($sample_id =~ /^\D/) {
         for my $fld (qw[ sample_name sample_acc ]) {
@@ -134,46 +137,103 @@ sub view {
         }
     }
 
-    my $sth = $dbh->prepare(
-        q[
-            select s.*, 
-                   p.project_name
-            from   sample s, project p
-            where  s.sample_id=?
-            and    s.project_id=p.project_id
-        ],
-    );
-    $sth->execute($sample_id);
-    my $sample = $sth->fetchrow_hashref;
+#    my $sth = $dbh->prepare(
+#        q[
+#            select s.*, 
+#                   p.project_name
+#            from   sample s, project p
+#            where  s.sample_id=?
+#            and    s.project_id=p.project_id
+#        ],
+#    );
+#    $sth->execute($sample_id);
+#    my $sample = $sth->fetchrow_hashref;
 
-    if (!$sample) {
+    my ($Sample) = $schema->resultset('Sample')->find($sample_id);
+    if (!$Sample) {
         return $self->reply->exception("Bad sample id ($sample_id)");
     }
 
-    $sample->{'attrs'} = $dbh->selectall_arrayref(
-        q'
-            select t.type, a.attr_value, t.url_template
-            from   sample_attr_type t, sample_attr a
-            where  a.sample_id=?
-            and    a.sample_attr_type_id=t.sample_attr_type_id
-        ', 
-        { Columns => {} },
-        $sample_id
-    );
+#    $Sample->{'attrs'} = $dbh->selectall_arrayref(
+#        q'
+#            select t.type, t.category,
+#                   a.attr_value, t.url_template
+#            from   sample_attr_type t, sample_attr a
+#            where  a.sample_id=?
+#            and    a.sample_attr_type_id=t.sample_attr_type_id
+#        ', 
+#        { Columns => {} },
+#        $sample_id
+#    );
+#
+
+#    my $files = $dbh->selectall_arrayref(
+#        q'
+#        select t.type, f.file 
+#        from   sample_file_type t, sample_file f 
+#        where  f.sample_id=? 
+#        and    f.sample_file_type_id = t.sample_file_type_id
+#        ', 
+#        { Columns => {} },
+#        $sample_id
+#    );
+
+    my @assembly_files;
+    for my $fld ( qw[pep_file nt_file cds_file] ) {
+        my $val = $dbh->selectrow_array(
+            "select $fld from assembly where sample_id=?", {}, $sample_id
+        );
+
+        if ($val) {
+            push @assembly_files, { type => $fld, file => $val };
+        }
+    }
+
+    my @combined_assembly_files;
+    for my $fld ( 
+        qw[ annotations_file peptides_file nucleotides_file cds_file ] 
+    ) {
+        my $val = $dbh->selectrow_array(
+            qq'
+            select ca.${fld}
+            from   combined_assembly_to_sample c2s, 
+                   combined_assembly ca
+            where  c2s.sample_id=?
+            and    c2s.combined_assembly_id=ca.combined_assembly_id
+            ', 
+            {}, $sample_id
+        );
+
+        if ($val) {
+            push @combined_assembly_files, { type => $fld, file => $val };
+        }
+    }
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $sample );
+            $self->render( json => { 
+                sample                  => $Sample->get_inflated_columns(),
+                assembly_files          => \@assembly_files,
+                combined_assembly_files => \@combined_assembly_files,
+            });
         },
 
         html => sub {
             $self->layout('default');
 
-            $self->render( sample => $sample );
+            $self->render( 
+                sample                  => $Sample,
+                assembly_files          => \@assembly_files,
+                combined_assembly_files => \@combined_assembly_files,
+            );
         },
 
         txt => sub {
-            $self->render( text => dump($sample) );
+            $self->render( text => dump({ 
+                sample                  => {$Sample->get_inflated_columns()},
+                assembly_files          => \@assembly_files,
+                combined_assembly_files => \@combined_assembly_files,
+            }));
         },
     );
 }
@@ -182,11 +242,162 @@ sub view {
 sub search {
     my $self = shift;
     $self->layout('default');
-    $self->render(title => 'Samples Map Search');
+    $self->render( title => 'Samples Search' );
+}
+
+# ----------------------------------------------------------------------
+sub search_param_values {
+    my $self    = shift;
+    my $field   = $self->param('field') or return;
+    my $db      = IMicrobe::DB->new;
+    my $mongo   = $db->mongo;
+    my $mdb     = $mongo->get_database('imicrobe');
+    my $result  = $mdb->run_command([
+       distinct => 'sample',
+       key      => $field,
+       query    => {}
+    ]);
+
+    my @values = $result->{'ok'} ? sort @{ $result->{'values'} } : ();
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => \@values );
+        },
+
+        txt => sub {
+            $self->render( text => dump(\@values) );
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
+sub _search_params {
+    my $db     = IMicrobe::DB->new;
+    my $mongo  = $db->mongo;
+    my $mdb    = $mongo->get_database('varietyResults');
+    my $coll   = $mdb->get_collection('sampleKeys');
+    my @types  = 
+        sort { $a->[0] cmp $b->[0] }
+        grep { $_->[0] !~ /(_id|\.floatApprox|\.bottom|\.top|text|none)/i }
+        map  { [$_->{'_id'}{'key'}, lc $_->{'value'}{'types'}[0]] }
+        $coll->find->all();
+
+    return @types;
+}
+
+# ----------------------------------------------------------------------
+sub search_params {
+    my $self   = shift;
+    my @params = $self->_search_params();
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => \@params );
+        },
+
+        txt => sub {
+            $self->render( text => dump(\@params) );
+        },
+    );
 }
 
 # ----------------------------------------------------------------------
 sub search_results {
+    my $self        = shift;
+    my $db          = IMicrobe::DB->new;
+    my $dbh         = $db->dbh;
+    my $mongo       = $db->mongo;
+    my $mdb         = $mongo->get_database('imicrobe');
+    my $coll        = $mdb->get_collection('sample');
+    my @param_types = $self->_search_params();
+
+    my %search;
+    for my $ptype (@param_types) {
+        my ($name, $type) = @$ptype;
+        if ($type eq 'string') {
+            if (my @vals = 
+                map { split /\s*,\s*/ } @{ $self->every_param($name) || [] }
+            ) {
+                if (@vals == 1) {
+                    $search{$name} = $vals[0];
+                }
+                else {
+                    $search{$name} = { '$in' => \@vals };
+                }
+            }
+        }
+        else {
+            my $min = $self->param('min_'.$name);
+            if (defined $min && $min =~ /\d+/) {
+                $search{$name}{'$gt'} = $min;
+            }
+
+            if (my $max = $self->param('max_'.$name)) {
+                $search{$name}{'$lt'} = $max;
+            }
+        }
+    }
+
+    my @samples;
+    printf STDERR "search = ", dump(\%search), "\n";
+    if (%search) {
+        my %fields = map { $_, 1 } ( 
+          qw[sample_id sample_name project_id project_name latitude longitude],
+          keys %search
+        );
+
+        my $cursor = $coll->find(\%search)->fields(\%fields);
+        push @samples, $cursor->all;
+    }
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => { 
+                samples       => \@samples, 
+                search_fields => [ sort keys %search ],
+            });
+        },
+
+        tab => sub {
+            my $text = '';
+
+            if (@samples > 0) {
+                my @flds = sort keys %{ $samples[0] };
+                my @data = (join "\t", @flds);
+
+                for my $sample (@samples) {
+                    push @data, join "\t", map { $sample->{$_} // '' } @flds;
+                }
+
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
+        },
+
+        txt => sub {
+            $self->render( text => dump(\@samples) );
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
+sub search_results_map {
+    my $self = shift;
+    $self->layout('default');
+    $self->render(title => 'Samples Search Map View');
+}
+
+# ----------------------------------------------------------------------
+sub map_search {
+    my $self = shift;
+    $self->layout('default');
+    $self->render(title => 'Samples Map Search');
+}
+
+# ----------------------------------------------------------------------
+sub map_search_results {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;
     my $sql  = q'
@@ -238,10 +449,10 @@ sub search_results {
             $self->render( json => { samples => \@samples } );
         },
 
-        html => sub {
-            #$self->layout('default');
-            $self->render(samples => \@samples);
-        },
+#        html => sub {
+#            #$self->layout('default');
+#            $self->render(samples => \@samples);
+#        },
 
         tab => sub {
             my $text = '';

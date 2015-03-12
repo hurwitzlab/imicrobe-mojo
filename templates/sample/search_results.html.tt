@@ -1,0 +1,211 @@
+<script>
+$(document).ready(function() {
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50
+  };
+  $('#samples-tbl').dataTable(dt_opts);
+  $('#samples-files').dataTable(dt_opts);
+});
+
+var map;
+function initialize() {
+  var center = new google.maps.LatLng(0, 0);
+  map = new google.maps.Map(document.getElementById("map-canvas"), 
+    { zoom: 2, center: center });
+
+  var drawingManager = new google.maps.drawing.DrawingManager({
+    drawingControl: true,
+    drawingControlOptions: {
+      position: google.maps.ControlPosition.TOP_CENTER,
+      drawingModes: [
+        google.maps.drawing.OverlayType.CIRCLE,
+        google.maps.drawing.OverlayType.RECTANGLE
+      ]
+    }
+  });
+  drawingManager.setMap(map);
+
+  google.maps.event.addListener(
+    drawingManager, 
+    'overlaycomplete', 
+    function(event) {
+      console.log('event type = ' + JSON.stringify(event.type));
+      console.log('bounds = ' + JSON.stringify(event.overlay.getBounds()));
+    }
+  );
+
+  $.getJSON(
+    "/sample/search.json?latitude_min=[% c.req.param('latitude_min') %]&latitude_min=[% c.req.param('latitude_min') %]&latitude_max=[% c.req.param('latitude_max') %]&longitude_min=[% c.req.param('longitude_min') %]&longitude_max=[% c.req.param('longitude_max') %]",
+    function(data) { 
+      $.each(data['samples'], function(i, sample) {
+        if (sample.latitude && sample.longitude) {
+          var pos = new google.maps.LatLng(sample.latitude, sample.longitude);
+
+          var marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            title: sample.sample_name
+          });
+
+          var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
+              sample.sample_name + '</a><br/><ul>';
+
+          $.each(
+            ['phylum', 'class', 'family', 'genus', 'species', 'strain'],
+            function(i, fld) {
+              var val = sample[fld];
+              if (val) {
+                desc += '<li>' + fld + ': ' + val;
+              }
+            }
+          );
+
+          var infowindow = new google.maps.InfoWindow({
+            content: desc
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(map,marker);
+          });
+        }
+      });
+    }
+  );
+}
+
+$(document).ready(function() {
+  google.maps.event.addDomListener(window, "load", initialize);
+
+  $('a[href="#map"]').on('shown.bs.tab', function(e) {
+    lastCenter=map.getCenter();
+    google.maps.event.trigger(map, 'resize');
+    map.setCenter(lastCenter);
+  });
+});
+</script>
+
+<div class="row">
+  <h1>[% title %]</h1>
+  <form role="form">
+    <div class="form-group">
+      <label for="latitude_min">Latitude (min)</label>
+      <input type="text" class="form-control" id="latitude_min" name="latitude_min" value="[% c.req.param('latitude_min') %]" placeholder="-180">
+    </div>
+    <div class="form-group">
+      <label for="latitude_max">Latitude (max)</label>
+      <input type="text" class="form-control" id="latitude_max" name="latitude_max" value="[% c.req.param('latitude_max') %]" placeholder="180">
+    </div>
+    <div class="form-group">
+      <label for="longitude_min">Longitude (min)</label>
+      <input type="text" class="form-control" id="longitude_min" name="longitude_min" value="[% c.req.param('longitude_min') %]" placeholder="0">
+    </div>
+    <div class="form-group">
+      <label for="longitude_max">Longitude (max)</label>
+      <input type="text" class="form-control" id="longitude_max" name="longitude_max" value="[% c.req.param('longitude_max') %]" placeholder="360">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+[% IF samples.size > 0 %]
+  <h2 id="nav-tabs">Results: [% samples.size %]</h2>
+  <div class="bs-component">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#table" data-toggle="tab">Table</a></li>
+      <li><a href="#files" data-toggle="tab">Files</a></li>
+      <li><a href="#map" data-toggle="tab">Samples Map</a></li>
+    </ul>
+    <div id="tabContent" class="tab-content">
+      <br/>
+      <div class="tab-pane fade active in" id="table">
+        <div class="text-center">
+          <a class="btn btn-primary download-btn" href="/download">Download</a>
+        </div>
+        <table id="samples-tbl" class="display" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th>Sample</th>
+              <th>Sample PI</th>
+              <th>Project</th>
+              <th>Project PI</th>
+              <th>Lat</th>
+              <th>Lon</th>
+            </tr>
+          </thead>
+          <tbody>
+            [% FOREACH sample IN samples %]
+              <tr>
+                <td><a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a></td>
+                <td>[% sample.sample_pi %]</td>
+                <td><a href="/project/view/[% sample.project_id %]">[% sample.project_name %]</a></td>
+                <td>[% sample.project_pi %]</td>
+                <td>[% sample.latitude %]</td>
+                <td>[% sample.longitude %]</td>
+              </tr>
+            [% END %]
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane fade active in" id="files">
+        <table id="samples-files" class="display" cellspacing="0" width="100%">
+          <thead>
+            <tr>
+              <th>Sample</th>
+              <th>Reads</th>
+              <th>Annots</th>
+              <th>Pep</th>
+              <th>Contigs</th>
+              <th>CDS</th>
+              <th>FASTQ</th>
+            </tr>
+          </thead>
+          <tbody>
+            [% SET iplant="http://mirrors.iplantcollaborative.org/browse" %]
+            [% FOREACH sample IN samples %]
+              <tr>
+                <td><a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a></td>
+                <td>
+                  [% IF sample.reads_file %]
+                    [% iplant %] :: <a href="[% iplant %][% sample.reads_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
+                  [% END %]
+                </td>
+                <td>
+                  [% IF sample.annotations_file %]
+                    <a href="[% iplant %][% sample.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
+                  [% END %]
+                </td>
+                <td>
+                  [% IF sample.peptides_file %]
+                    <a href="[% iplant %][% sample.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
+                  [% END %]
+                </td>
+                <td>
+                  [% IF sample.contigs_file %]
+                    <a href="[% iplant %][% sample.contigs_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
+                  [% END %]
+                </td>
+                <td>
+                  [% IF sample.cds_file %]
+                    <a href="[% iplant %][% sample.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
+                  [% END %]
+                </td>
+                <td>
+                  [% IF sample.fastq_file %]
+                    <a href="[% iplant %][% sample.fastq_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
+                  [% END %]
+                </td>
+              </tr>
+            [% END %]
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="map">
+        <br/>
+        <div id="map-canvas"></div>
+      </div>
+    </div>
+  </div>
+[% END %]
+</div>
