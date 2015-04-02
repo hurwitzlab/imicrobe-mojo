@@ -6,7 +6,7 @@ author         'Ken Youens-Clark <kyclark@gmail.com>';
 version        '0.01';
 license        'GPL';
 
-requires 'namespace::autoclean'            => '';
+requires 'namespace::autoclean';
 requires 'DBI'                             => '1.630';
 requires 'DBD::mysql'                      => '';
 requires 'Data::Dump'                      => '1.22';
