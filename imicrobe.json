@@ -1,7 +1,7 @@
 {
     "hypnotoad": {
         "listen": [
-            "http://*:3000"
+            "http://*:80"
         ],
         "workers": "10"
     },

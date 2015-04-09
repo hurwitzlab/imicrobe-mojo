@@ -91,7 +91,8 @@ sub submit {
     my $captcha      = Captcha::reCAPTCHA->new;
     my $result       = $captcha->check_answer(
         $captcha_keys->{'private'}, 
-        $self->req->headers->header('X-Forwarded-For'), # remote IP
+        $self->req->headers->header('X-Forwarded-For') # remote IP
+            || $self->tx->remote_address,
         $captcha_guess, 
         $captcha_response
     );

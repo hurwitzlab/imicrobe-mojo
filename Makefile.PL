@@ -11,6 +11,7 @@ requires 'common::sense';
 requires 'Captcha::reCAPTCHA';
 requires 'DBD::mysql'                      => '';
 requires 'DBI'                             => '1.630';
+requires 'DBIx::Class'                     => '';
 requires 'Data::Dump'                      => '1.22';
 requires 'Email::Valid';
 requires 'HTML::LinkExtractor';
@@ -23,6 +24,13 @@ requires 'Moose'                           => '2.1005';
 requires 'Template'                        => '2.25';
 requires 'Template::Plugin::Comma'         => '0.04';
 requires 'YAML'                            => '';
+requires 'MooseX::MarkAsMethods'           => '';
+requires 'MooseX::NonMoose'                => '';
+requires 'Captcha::reCAPTCHA'              => '';
+requires 'Email::Valid'                    => '';
+requires 'HTML::LinkExtractor'             => '';
+requires 'Mail::Sendmail'                  => '';
+requires 'Mail::SpamAssassin'              => '';
 
 test_requires 'Test::More'                 => '0.98';
 
