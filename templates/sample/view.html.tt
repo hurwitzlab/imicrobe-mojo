@@ -96,11 +96,12 @@ $(document).ready(function() {
           </tr>
 
           <tr>
-            <th>[% IF sample.assemblies_rs.count == 1 %]Assembly[% ELSE %]Assemblies[% END %] ([% sample.assemblies_rs.count %])</th>
+            <th>Assembly</th>
             <td>
-              <ul>
-              [% FOREACH assembly IN sample.assemblies %]
-                <li><a href="/assembly/view/[% assembly.id %]">[% assembly.assembly_name %]</a></li>
+              [% IF sample.assembly_id %]
+                <a href="/assembly/view/[% sample.assembly.id %]">[% sample.assembly.assembly_name %]</a></li>
+              [% ELSE %]
+                &nbsp;
               [% END %]
               <ul>
             </td>

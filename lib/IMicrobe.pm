@@ -2,6 +2,8 @@ package IMicrobe;
 
 use Mojo::Base 'Mojolicious';
 
+use lib '/usr/local/imicrobe/lib';
+
 sub startup {
     my $self = shift;
 

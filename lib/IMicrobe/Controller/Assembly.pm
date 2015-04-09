@@ -96,7 +96,9 @@ sub list {
 sub view {
     my $self        = shift;
     my $assembly_id = $self->param('assembly_id');
-    my $dbh         = IMicrobe::DB->new->dbh;
+    my $db          = IMicrobe::DB->new;
+    my $dbh         = $db->dbh;
+    my $schema      = $db->schema;
 
     if ($assembly_id =~ /^\D/) {
         for my $fld (qw[ assembly_name assembly_code ]) {
@@ -108,41 +110,28 @@ sub view {
         }
     }
 
-    my $sth = $dbh->prepare(
-        q[
-            select a.assembly_id, a.assembly_code, a.assembly_name,
-                   a.organism, a.cds_file, a.nt_file, a.pep_file,
-                   a.description, p.project_id, p.project_name
-            from   assembly a, project p
-            where  a.assembly_id=?
-            and    a.project_id=p.project_id
-        ]
-    );
-    $sth->execute($assembly_id);
-    my $assembly = $sth->fetchrow_hashref;
+    my $Assembly = $schema->resultset('Assembly')->find($assembly_id);
 
-    if (!$assembly) {
+    if (!$Assembly) {
         return $self->reply->exception("Bad assembly id ($assembly_id)");
     }
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $assembly );
+            $self->render( json => $Assembly->get_inflated_columns() );
         },
 
         html => sub {
             $self->layout('default');
 
             $self->render( 
-                assembly => $assembly,
-                title    => sprintf('Assembly: %s', 
-                    $assembly->{'assembly_name'} || $assembly->{'organism'}
-                ),
+                assembly => $Assembly,
+                title    => sprintf('Assembly: %s', $Assembly->assembly_name),
             );
         },
 
         txt => sub {
-            $self->render( text => dump($assembly) );
+            $self->render( text => dump({$Assembly->get_inflated_columns()}) );
         },
     );
 }

@@ -137,46 +137,10 @@ sub view {
         }
     }
 
-#    my $sth = $dbh->prepare(
-#        q[
-#            select s.*, 
-#                   p.project_name
-#            from   sample s, project p
-#            where  s.sample_id=?
-#            and    s.project_id=p.project_id
-#        ],
-#    );
-#    $sth->execute($sample_id);
-#    my $sample = $sth->fetchrow_hashref;
-
     my ($Sample) = $schema->resultset('Sample')->find($sample_id);
     if (!$Sample) {
         return $self->reply->exception("Bad sample id ($sample_id)");
     }
-
-#    $Sample->{'attrs'} = $dbh->selectall_arrayref(
-#        q'
-#            select t.type, t.category,
-#                   a.attr_value, t.url_template
-#            from   sample_attr_type t, sample_attr a
-#            where  a.sample_id=?
-#            and    a.sample_attr_type_id=t.sample_attr_type_id
-#        ', 
-#        { Columns => {} },
-#        $sample_id
-#    );
-#
-
-#    my $files = $dbh->selectall_arrayref(
-#        q'
-#        select t.type, f.file 
-#        from   sample_file_type t, sample_file f 
-#        where  f.sample_id=? 
-#        and    f.sample_file_type_id = t.sample_file_type_id
-#        ', 
-#        { Columns => {} },
-#        $sample_id
-#    );
 
     my @assembly_files;
     for my $fld ( qw[pep_file nt_file cds_file] ) {
@@ -201,7 +165,8 @@ sub view {
             where  c2s.sample_id=?
             and    c2s.combined_assembly_id=ca.combined_assembly_id
             ', 
-            {}, $sample_id
+            {}, 
+            $sample_id
         );
 
         if ($val) {
