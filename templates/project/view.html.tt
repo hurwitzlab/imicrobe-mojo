@@ -87,6 +87,7 @@ $(document).ready(function() {
       <li><a href="#desc" data-toggle="tab">Description</a></li>
       <li><a href="#downloads" data-toggle="tab">Downloads ([% download_files.size OR '0' %])</a></li>
       <li><a href="#samples" data-toggle="tab">Samples ([% project.samples_rs.count OR '0' %])</a></li>
+      [% IF project.ftps_rs.count > 0 %]<li><a href="#ftp" data-toggle="tab">FTP</a></li>[% END %]
       <li><a href="#assemblies" data-toggle="tab">Assemblies ([% project.assemblies_rs.count OR '0' %])</a></li>
       [% SET num_combined_assemblies = project.combined_assemblies_rs.count; IF num_combined_assemblies > 0 %]
       <li><a href="#combined-assemblies" data-toggle="tab">Combined Assemblies ([% num_combined_assemblies %])</a></li>
@@ -307,6 +308,18 @@ $(document).ready(function() {
         [% END %]
         <p>
       </div>
+
+      [% IF project.ftps_rs.count > 0 %]
+        <div class="tab-pane fade" id="ftp">
+          <br/>
+            <ul>
+              [% FOREACH ftp IN project.ftps %]
+                <li><a href="ftp://ftp.imicrobe.us[% ftp.path %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% ftp.name %]</a>
+              [% END %]
+            </ul>
+          </p>
+        </div>
+      [% END %]
 
       <div class="tab-pane fade" id="downloads">
         <br/>
