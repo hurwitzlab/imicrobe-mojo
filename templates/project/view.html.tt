@@ -178,9 +178,9 @@ $(document).ready(function() {
                <td><a href="/assembly/view/[% assembly.assembly_id %]">[% assembly.assembly_name %]</a></td>
                <td>[% assembly.assembly_code %]</td>
                <td>[% assembly.organism %]</td>
-               <td>[% IF assembly.cds_file %]<a href="[% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
-               <td>[% IF assembly.nt_file %]<a href="[% assembly.nt_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
-               <td>[% IF assembly.pep_file %]<a href="[% assembly.pep_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+               <td>[% IF assembly.cds_file %]<a href="[% iplant %][% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+               <td>[% IF assembly.nt_file %]<a href="[% iplant %][% assembly.nt_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
+               <td>[% IF assembly.pep_file %]<a href="[% iplant %][% assembly.pep_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]&nbsp;[% END %]</td>
              </tr>
            [% END %]
            </tbody>
