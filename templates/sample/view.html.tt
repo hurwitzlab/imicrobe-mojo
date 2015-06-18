@@ -43,6 +43,7 @@ $(document).ready(function() {
       <li><a href="#meta" data-toggle="tab">Meta</a></li>
       <li><a href="#other" data-toggle="tab">Other</a></li>
       <li><a href="#downloads" data-toggle="tab">Downloads ([% num_download_files OR '0' %])</a></li>
+      <li><a href="#ftp" data-toggle="tab">FTP</a></li>
       [% IF show_map %]<li><a href="#map" data-toggle="tab">Map</a></li>[% END %]
     </ul>
 
@@ -202,6 +203,11 @@ $(document).ready(function() {
           [% ELSE %]
             N/A
           [% END %]
+      </div>
+
+      <div class="tab-pane fade" id="ftp">
+        <br/>
+        <a href="ftp://ftp.imicrobe.us/projects/[% sample.project_id %]">Project folder</a>
       </div>
 
       <div class="tab-pane fade" id="downloads">

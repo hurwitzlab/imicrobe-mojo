@@ -55,6 +55,7 @@
               </ul>
             </li>
             <li><a href="http://imicrobe.us">About</a></li>
+            <li><a href="ftp://ftp.imicrobe.us">Data</a></li>
             <li><a href="/feedback">Feedback</a></li>
           </ul>
           <form class="navbar-form navbar-right" role="search" action="/search" method="GET">
