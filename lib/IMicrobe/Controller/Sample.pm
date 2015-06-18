@@ -295,17 +295,16 @@ sub search_results {
         else {
             my $min = $self->param('min_'.$name);
             if (defined $min && $min =~ /\d+/) {
-                $search{$name}{'$gt'} = $min;
+                $search{$name}{'$gte'} = $min;
             }
 
             if (my $max = $self->param('max_'.$name)) {
-                $search{$name}{'$lt'} = $max;
+                $search{$name}{'$lte'} = $max;
             }
         }
     }
 
     my @samples;
-    printf STDERR "search = ", dump(\%search), "\n";
     if (%search) {
         my %fields = map { $_, 1 } ( 
           qw[sample_id sample_name project_id project_name latitude longitude],
