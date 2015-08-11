@@ -224,7 +224,6 @@ sub view {
         phylum class family genus species strain clonal axenic pcr_amp pi
     );
 
-    my @samples;
     for my $Sample ($Project->samples->all) {
         for my $fld (keys %has_sample_fld) {
             if (!$has_sample_fld{ $fld }) {

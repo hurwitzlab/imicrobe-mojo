@@ -1,12 +1,17 @@
 [%- SET num_download_files = sample.sample_files_rs.count + assembly_files.size + combined_assembly_files.size;
 -%]
 
-[%- SET show_map = sample.latitude AND sample.longitude; %]
+[%- 
+  SET latitude = location.latitude;
+  SET longitude = location.longitude;
+  SET show_map = latitude AND longitude; 
+-%]
+
 [% IF show_map %]
 <script type="text/javascript">
 var map;
 function initialize() {
-    var pos = new google.maps.LatLng([% sample.latitude %], [% sample.longitude %]);
+    var pos = new google.maps.LatLng([% latitude %], [% longitude %]);
 
     map = new google.maps.Map(document.getElementById("map-canvas"), 
           { center: pos, zoom: 3 });
@@ -38,10 +43,9 @@ $(document).ready(function() {
   <div class="bs-component">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
-      <li><a href="#env" data-toggle="tab">Environment</a></li>
-      <li><a href="#exp" data-toggle="tab">Experiment</a></li>
-      <li><a href="#meta" data-toggle="tab">Meta</a></li>
-      <li><a href="#other" data-toggle="tab">Other</a></li>
+      [% FOREACH category IN attributes.keys.sort %]
+      <li><a href="#attr_[% category %]" data-toggle="tab">[% category | ucfirst %]</a></li>
+      [% END %]
       <li><a href="#downloads" data-toggle="tab">Downloads ([% num_download_files OR '0' %])</a></li>
       <li><a href="#ftp" data-toggle="tab">FTP</a></li>
       [% IF show_map %]<li><a href="#map" data-toggle="tab">Map</a></li>[% END %]
@@ -138,72 +142,21 @@ $(document).ready(function() {
         </table>
       </div>
 
-      <div class="tab-pane fade" id="env">
-        <br/>
-          [% 
-            SET env_table = [];
-            SET env_flds = [ 'primary_citation', 'latitude', 'longitude', 'depth', 'environmental_salinity', 'environmental_temperature', 'collection_date', 'collection_time', 'sample_collection_site', 'other_collection_site_info', 'sample_material', 'other_environmental_metadata_available', 'habitat', 'habitat_description', 'envo_term_for_habitat_primary_term', 'envo_term_for_habitat_secondary_term', 'country' ];
-
-            FOREACH fld IN env_flds;
-              SET val = sample.$fld;
-
-              IF val.match('^https?://');
-                SET val = '<a href="' _ val _ '">' _ val _ '</a>';
-              END;
-
-              IF val;
-                env_table.push([ fld.replace('_', ' '), sample.$fld ]);
-              END;
-            END;
-          %]
-
-          [% IF env_table.size > 0 %]
+      [% FOREACH category IN attributes.keys.sort %]
+        <div class="tab-pane fade" id="attr_[% category %]">
+          <br/>
             <table class="table">
-              [% FOREACH row IN env_table %]
+              [% FOREACH attr IN attributes.${category} %]
                 <tr>
-                  <th>[% row.0 | ucfirst %]</th>
-                  <td>[% row.1 %]</td>
+                  <th>[% attr.sample_attr_type.type.replace('_', ' ') | ucfirst %]</th>
+                  <td>
+                  [% IF attr.sample_attr_type.url_template; USE f=String(attr.attr_value); SET url=f.format(attr.sample_attr_type.url_template); %]<a href="[% url %]">[% END %][% attr.attr_value %][% IF attr.url_template %]</a>[% END %]
+                  </td>
                 </tr>
               [% END %]
             </table>
-          [% ELSE %]
-            N/A
-          [% END %]
-        </table>
-      </div>
-
-      <div class="tab-pane fade" id="exp">
-        <br/>
-          [% 
-            SET exp_flds = [ 'date_of_experiment', 'growth_medium', 'modifications_to_growth_medium', 'experimental_salinity', 'experimental_temperature', 'ph', 'light', 'day_portion_of_day_night_cycle_in_hours', 'night_portion_of_day_night_cycle_in_hours', 'nitrate', 'phosphate', 'silicate', 'ammonium', 'trace_elements', 'co2', 'investigation_type', 'other_experimental_metadata_available' ];
-
-            SET exp_table = [];
-            FOREACH fld IN exp_flds;
-              IF sample.$fld;
-                exp_table.push([ fld.replace('_', ' '), sample.$fld ]);
-              END;
-            END;
-
-            FOREACH fld IN  [ 'rrna_18s', 'rrna_16s' ];
-              IF sample.$fld;
-                SET val = '<pre>' _ sample.$fld.chunk(50).join("\n") _ '</pre>';
-                exp_table.push([ fld.replace('_', ' '), val ]);
-              END;
-            END;
-          %]
-          [% IF exp_table.size > 0 %]
-            <table class="table">
-              [% FOREACH row IN exp_table %]
-                <tr>
-                  <th>[% row.0 | ucfirst %]</th>
-                  <td>[% row.1 %]</td>
-                </tr>
-              [% END %]
-            </table>
-          [% ELSE %]
-            N/A
-          [% END %]
-      </div>
+        </div>
+      [% END %]
 
       <div class="tab-pane fade" id="ftp">
         <br/>
@@ -238,246 +191,6 @@ $(document).ready(function() {
           </ul>
         [% END %]
         </p>
-      </div>
-
-      <div class="tab-pane fade" id="meta">
-        <br/>
-          [%-
-            SET meta_fields = [ 
-              'isolation_method',
-              'genbank_acc',
-              'volume_unit',
-              'filter_min',
-              'filter_max',
-              'comments',
-              'collection_start_time',
-              'collection_stop_time',
-              'biomaterial_name',
-              'material_acc',
-              'site_name',
-              'altitude',
-              'site_depth',
-              'site_description',
-              'country_name',
-              'region',
-              'host_taxon_id',
-              'host_description',
-              'host_organism',
-              'library_acc',
-              'sequencing_method',
-              'dna_type',
-              'num_of_reads',
-              'material_id',
-              'other',
-              'axenic',
-              'chlorophyll',
-              'clonal',
-              'dissolved_oxygen',
-              'doc',
-              'elevation',
-              'external_sample_id',
-              'filter_fraction_maximum',
-              'filter_fraction_minimum',
-              'list_of_amino_acids_and_concentrations_with_units',
-              'poc',
-              'prelim_ncbi_taxon_id',
-              'pressure',
-              'prey_organism_if_applicable',
-              'total_fe',
-              'urea',
-              'volume_filtered',
-              'pcr_amp',
-              'abundance_bacterial_cells_ml',
-              'abundance_bacterial_cells_ml_h',
-              'abundance_synechococcus_cells_ml',
-              'alkalinityalk_mm',
-              'altitude_m',
-              'aluminiumal_um',
-              'ammonianh4_um',
-              'ammonium_umol_kg',
-              'antimonysb_um',
-              'arsenicas_um',
-              'atmospheric_general_weather',
-              'atmospheric_pressure_atm',
-              'atmospheric_wind_speed_m_s',
-              'bacterial_production_cells_ml_h',
-              'bariumba_um',
-              'biofilm_g',
-              'biomass_concentration_ug_kg',
-              'biomass_mass_g',
-              'boronb_um',
-              'caesiumcs_um',
-              'calciumca_um',
-              'carbon_dioxideco2_um',
-              'carbon_dioxideco2_umol_kg',
-              'cdom_rfu',
-              'cfu_cjejuni_cfu',
-              'charge__mmol',
-              'charge_mmol',
-              'chla_mg_1000l',
-              'chlorinitycl_mm',
-              'chlorinitycl_um',
-              'chlorophyll_density_annual_ug_kg',
-              'chlorophyll_density_annual_ug_l',
-              'chlorophyll_density_psu',
-              'chlorophyll_density_sample_month_ug_kg',
-              'chlorophyll_density_ug_kg',
-              'chloropigment',
-              'comment',
-              'current_land_use',
-              'dissolved_inorg_cdic_mm',
-              'dissolved_inorg_cdic_um',
-              'dissolved_inorganic_carbon_umol_kg',
-              'dissolved_inorganic_nitrogen_umol_l',
-              'dissolved_inorganic_phosphate_nmol_kg',
-              'dissolved_organic_carbon_um',
-              'dissolved_organic_carbon_umol_kg',
-              'dissolved_organic_nitrogen_umol_kg',
-              'dissolved_oxygen_nmol_kg',
-              'dissolved_oxygen_umol_kg',
-              'filter_type',
-              'filter_type_m',
-              'fluorescence_ug_l',
-              'fluorinef_um',
-              'gene_name',
-              'glucose_mg',
-              'h2_um',
-              'habitat_name',
-              'health_status',
-              'host_name',
-              'host_species',
-              'host_tissue',
-              'ironfe_um',
-              'isolation',
-              'leg',
-              'leucine_umol_kg',
-              'light_intensity_umol_m2_s',
-              'lithiumli_um',
-              'magnesiummg_um',
-              'manganesemn_um',
-              'mean_annual_precipitation_cm',
-              'methane_um',
-              'method_of_isolation',
-              'molybdenummo_um',
-              'nitratenitrite_nmol_kg',
-              'nitrateno3_um',
-              'nitrateno3_umol_l',
-              'nitrite_umol_l',
-              'number_of_samples_pooled',
-              'number_of_stations_sampled',
-              'nutrients_dmsp_nm',
-              'nutrients_nh4_microm',
-              'nutrients_nox_microm',
-              'nutrients_po3_microm',
-              'nutrients_po4_microm',
-              'nutrients_potassium_phosphate_um',
-              'nutrients_putrescine_c4h12n2_nm',
-              'nutrients_so4_microm',
-              'nutrients_sodium_nitrate_um',
-              'nutrients_spermidine_c7h19n3_nm',
-              'other_habitat',
-              'oxygen',
-              'oxygen_mass_um',
-              'oxygen_um',
-              'oxygen_umol_kg',
-              'particulate_carbon_umol_kg',
-              'particulate_nigrogen_umol_kg',
-              'particulate_nitrogen_umol_kg',
-              'particulate_organic_carbon_umol_kg',
-              'particulate_phosphate_umol_kg',
-              'phage_type',
-              'phosphate_umol_kg',
-              'phosphate_umol_l',
-              'plant_cover',
-              'potassium',
-              'potassiumk_um',
-              'pressure_atm',
-              'rain_fall',
-              'rubidiumrb_um',
-              'salinity_ppm',
-              'salinity_psu',
-              'sample_depth',
-              'sample_depth_m',
-              'sigma_kg_1000l',
-              'silicah4sio4_um_l',
-              'silicate_umol_kg',
-              'siliconsi_um',
-              'siliconsi_umol_l',
-              'sodium',
-              'sodium_um',
-              'soil_depth_m',
-              'soil_type',
-              'strontiumsr_um',
-              'sulfateso4_mm',
-              'sulfateso4_um',
-              'sulfurs2_um',
-              'temperature',
-              'temperature_c',
-              'template_preparation_method',
-              'theta_its_90',
-              'time_count',
-              'time_hour',
-              'transmission',
-              'treatment',
-              'tungstenw_um',
-              'turbidity_ntu',
-              'turbidity_umol_kg',
-              'urea_umol_l',
-              'vanadiumv_um',
-              'viral_abundance_viruses_ml',
-              'viral_production_viruses_ml_h',
-              'volume_filtered_l',
-              'volume_l',
-              'water_depth',
-              'water_depth_m',
-              'wave_height_m',
-              'zinczn_um',
-              'bact_chl_a_ug_l',
-              'bchl_cd_ug_l',
-              'bchl_e_ug_l',
-              'organism_count',
-              'sulfide_um',
-              'total_phosphorus'
-            ];
-
-            SET meta_table = [];
-            FOREACH fld IN meta_fields.sort;
-              IF sample.$fld;
-                meta_table.push([ fld.replace('_', ' '), sample.$fld ]);
-              END;
-            END;
-          -%]
-          [% IF meta_table.size > 0 %]
-            <table class="table">
-              [% FOREACH row IN meta_table %]
-                <tr>
-                  <th>[% row.0 | ucfirst %]</th>
-                  <td>[% row.1 %]</td>
-                </tr>
-              [% END %]
-            </table>
-          [% ELSE %]
-            N/A
-          [% END %]
-      </div>
-
-      <div class="tab-pane fade" id="other">
-        <br/>
-        [% IF sample.sample_attrs_rs.count > 0 %]
-          <table class="table">
-            [% FOREACH attr IN sample.sample_attrs %]
-              <tr>
-                <th>[% attr.sample_attr_type.category OR 'Other' %]</th>
-                <th>[% attr.sample_attr_type.type %]</th>
-                <td>
-                  [% IF attr.sample_attr_type.url_template; USE f=String(attr.attr_value); SET url=f.format(attr.sample_attr_type.url_template); %]<a href="[% url %]">[% END %][% attr.attr_value %][% IF attr.url_template %]</a>[% END %]
-                </td>
-              </tr>
-            [% END %]
-          </table>
-        [% ELSE %]
-          N/A
-        [% END %]
       </div>
 
       [% IF show_map %]

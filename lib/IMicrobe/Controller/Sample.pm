@@ -174,6 +174,14 @@ sub view {
         }
     }
 
+    my (%attrs, %location);
+    for my $attr ($Sample->sample_attrs) {
+        push @{ $attrs{ $attr->sample_attr_type->category } }, $attr;
+        if ($attr->sample_attr_type->type =~ /^((?:lat|long)itude)$/) {
+            $location{ $1 } = $attr->attr_value;
+        }
+    }
+
     $self->respond_to(
         json => sub {
             $self->render( json => { 
@@ -188,6 +196,8 @@ sub view {
 
             $self->render( 
                 sample                  => $Sample,
+                attributes              => \%attrs,
+                location                => \%location,
                 assembly_files          => \@assembly_files,
                 combined_assembly_files => \@combined_assembly_files,
             );
@@ -294,12 +304,19 @@ sub search_results {
         }
         else {
             my $min = $self->param('min_'.$name);
-            if (defined $min && $min =~ /\d+/) {
-                $search{$name}{'$gte'} = $min;
-            }
+            my $max = $self->param('max_'.$name);
 
-            if (my $max = $self->param('max_'.$name)) {
-                $search{$name}{'$lte'} = $max;
+            if (defined $min && defined $max && $min == $max) {
+                $search{$name}{'$eq'} = $min;
+            }
+            else {
+                if (defined $min && $min =~ /\d+/) {
+                    $search{$name}{'$gte'} = $min;
+                }
+
+                if (defined $max && $max =~ /\d+/) {
+                    $search{$name}{'$lte'} = $max;
+                }
             }
         }
     }
