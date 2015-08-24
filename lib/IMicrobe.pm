@@ -30,6 +30,10 @@ sub startup {
 
     $r->get('/admin/create_project_pub_form/:project_id')->to('admin#create_project_pub_form');
 
+    $r->post('/admin/create_publication')->to('admin#create_publication');
+
+    $r->get('/admin/create_publication_form')->to('admin#create_publication_form');
+
     $r->get('/admin/create_project_page_form/:project_id')->to('admin#create_project_page_form');
 
     $r->post('/admin/delete_project_page/:project_page_id')->to('admin#delete_project_page');
@@ -45,6 +49,8 @@ sub startup {
     $r->get('/admin/edit_sample/:sample_id')->to('admin#edit_sample');
 
     $r->post('/admin/update_project_page')->to('admin#update_project_page');
+
+    $r->get('/admin/home_publications')->to('admin#home_publications');
 
     $r->get('/admin/edit_project/:project_id')->to('admin#edit_project');
 

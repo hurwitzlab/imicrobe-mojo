@@ -42,6 +42,41 @@ sub create_project_pub {
 }
 
 # ----------------------------------------------------------------------
+sub create_publication {
+    my $self        = shift;
+    my $title       = $self->param('title')  or die 'No title';
+    my $author      = $self->param('author') or die 'No author(s)';
+    my $db          = IMicrobe::DB->new;
+    my $Publication = $db->schema->resultset('Publication')->find_or_create({
+        title  => $title, 
+        author => $author, 
+    });
+
+    for my $fld (qw[journal project_id pub_code doi pubmed_id]) {
+        if (my $val = $self->param($fld)) {
+            $Publication->$fld($val); 
+        }
+    }
+
+    $Publication->update();
+
+    return $self->redirect_to("/admin/list_projects");
+}
+
+# ----------------------------------------------------------------------
+sub create_publication_form {
+    my $self     = shift;
+    my $db       = IMicrobe::DB->new;
+    my $Projects = $db->schema->resultset('Project')->search(
+        {}, 
+        { order_by => { -asc => 'project_name' } }
+    );
+
+    $self->layout('admin');
+    $self->render(projects => $Projects);
+}
+
+# ----------------------------------------------------------------------
 sub create_project_page_form {
     my $self       = shift;
     my $project_id = $self->param('project_id');
@@ -222,6 +257,13 @@ sub edit_sample {
         title  => 'Edit Sample: ' . $Sample->sample_name,
         sample => $Sample,
     );
+}
+
+# ----------------------------------------------------------------------
+sub home_publications {
+    my $self = shift;
+    $self->layout('admin');
+    $self->render;
 }
 
 # ----------------------------------------------------------------------
