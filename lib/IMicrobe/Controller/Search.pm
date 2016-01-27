@@ -149,7 +149,11 @@ sub results {
     my %types;
     if ($query) {
         my $sql = sprintf(
-            "select * from search where match (search_text) against (%s)",
+            q[
+                select * 
+                from   search  
+                where  match (search_text) against (%s in boolean mode)
+            ],
             $dbh->quote($query)
         );
 

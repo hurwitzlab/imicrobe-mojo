@@ -67,28 +67,16 @@ $(document).ready(function() {
 });
 </script>
 
-
-[% 
-  SET iplant = "http://mirrors.iplantcollaborative.org/browse";
-  SET download_files = [];
-  FOREACH ft IN ['read', 'meta', 'assembly', 'peptide', 'read_pep', 'nt' ]; 
-    SET file = ft _ '_file';
-    IF project.$file;
-      download_files.push({ ft = ft, file = project.$file });
-    END;
-  END;
-%]
-
 <div class="row">
   <h2 id="nav-tabs">Project: [% project.project_name OR 'Unknown project' %]</h2>
   <div class="bs-component">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
       <li><a href="#desc" data-toggle="tab">Description</a></li>
-      <li><a href="#downloads" data-toggle="tab">Downloads ([% download_files.size OR '0' %])</a></li>
+      <li><a href="#downloads" data-toggle="tab">Downloads ([% project.project_files_rs.count OR '0' %])</a></li>
       <li><a href="#samples" data-toggle="tab">Samples ([% project.samples_rs.count OR '0' %])</a></li>
       [% IF project.ftps_rs.count > 0 %]<li><a href="#ftp" data-toggle="tab">FTP</a></li>[% END %]
-      <li><a href="#assemblies" data-toggle="tab">Assemblies ([% project.assemblies_rs.count OR '0' %])</a></li>
+      [% IF project.assemblies.rs_count > 0 %]<li><a href="#assemblies" data-toggle="tab">Assemblies ([% project.assemblies_rs.count OR '0' %])</a></li>[% END %]
       [% SET num_combined_assemblies = project.combined_assemblies_rs.count; IF num_combined_assemblies > 0 %]
       <li><a href="#combined-assemblies" data-toggle="tab">Combined Assemblies ([% num_combined_assemblies %])</a></li>
       [% END %]
@@ -323,12 +311,19 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="downloads">
         <br/>
-        [% IF download_files.size > 0 %]
-          <ul>
-            [% FOREACH f IN download_files %]
-            <li><a href="[% iplant %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.ft.ucfirst %]</a>
+        [% IF project.project_files_rs.count > 0 %]
+          <table>
+            [% FOREACH f IN project.project_files %]
+            <tr>
+              <td>
+                [% f.project_file_type.type %] 
+              </td>
+              <td>
+                <a href="[% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.file %]</a>
+              </td>
+            </tr>
             [% END %]
-          </ul>
+          </table>
         [% ELSE %]
           None.
         [% END %]

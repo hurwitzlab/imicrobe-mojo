@@ -16,7 +16,7 @@ $(document).ready(function() {
       $('#searchList')
         .append($("<option></option>")
         .attr("value", pname)
-        .text(prettyStr(pname))); 
+        .text(prettyStr(pname.replace('__', ':_')))); 
     });    
   });
 
@@ -38,24 +38,26 @@ function prettyStr(s) {
 
 // --------------------------------------------------
 function getParamValues(paramName, divId) {
-  $.get('/sample/search_param_values/' + paramName + '.json', function(data) {
-    html = ''
-    if (data.length > 0 && data.length < 1000) {
-      html = '<select name="' + paramName + '" multiple>';
-      $.each(data, function(idx, val) {
-        html += '<option value="' + val + '">' + val + '</option>';
-      });
+  $.get('/sample/search_param_values/' + paramName + '.json', 
+    function(data) {
+      html = ''
+      if (data.length > 0 && data.length < 1000) {
+        html = '<select name="' + paramName + '" multiple>';
+        $.each(data, function(idx, val) {
+          html += '<option value="' + val + '">' + val + '</option>';
+        });
 
-      html += '</select>';
-    }
-    else {
-      html = '<input name="' + paramName + '"/>';
-    }
+        html += '</select>';
+      }
+      else {
+        html = '<input name="' + paramName + '"/>';
+      }
 
-    if (html) {
-      $('#' + divId).append(html);
+      if (html) {
+        $('#' + divId).append(html);
+      }
     }
-  });
+  );
 }
 
 // --------------------------------------------------
@@ -154,8 +156,8 @@ function updateSearchResults(formData) {
       <tbody>
         {{#each samples}}
           <tr>
-            <td><a target="_blank" href="/sample/view/{{this.sample_id}}">{{this.sample_name}}</a></td>
-            <td><a target="_blank" href="/project/view/{{this.project_id}}">{{this.project_name}}</a></td>
+            <td><a target="_blank" href="/sample/view/{{this.specimen__sample_id}}">{{this.specimen__sample_name}}</a></td>
+            <td>{{this.project_name}}</td>
         {{/each}}
       </tbody>
     </table>

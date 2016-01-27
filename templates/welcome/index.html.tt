@@ -72,9 +72,17 @@
     <div class="col-md-4">
       <h2>Search</h2>
       <p>
-      From any page, enter your query in the upper-right-hand search box.
-      Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=virus">human</a>&quot; or &quot;<a href="/search?query=virus">ocean</a>.&quot;  You can limit the results to projects or
-      publications or whatever you like.
+      <ul>
+        <li>
+        Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=virus">human</a>&quot; or &quot;<a href="/search?query=virus">ocean</a>.&quot;  You can limit the results to projects, samples, or publications.
+        </li>
+        <li>
+        <a href="/sample/search">Search for samples by their metadata</a>
+        </li>
+        <li>
+        <a href="/sample/map_search">Use a map to find samples by location</a>
+        </li>
+      </ul>
    </div>
     <div class="col-md-4">
       <h2>Browse</h2>

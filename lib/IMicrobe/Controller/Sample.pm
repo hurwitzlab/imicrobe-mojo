@@ -70,12 +70,12 @@ sub info {
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;
+#               s.reads_file, s.annotations_file, s.peptides_file, 
+#               s.contigs_file, s.cds_file, s.fastq_file,
+#               s.phylum, s.class, s.family, s.genus, s.species, 
+#               s.strain, s.clonal, s.axenic, s.pcr_amp, s.pi,
     my $sql  = q[
         select s.sample_id, s.sample_name, s.sample_type,
-               s.reads_file, s.annotations_file, s.peptides_file, 
-               s.contigs_file, s.cds_file, s.fastq_file,
-               s.phylum, s.class, s.family, s.genus, s.species, 
-               s.strain, s.clonal, s.axenic, s.pcr_amp, s.pi,
                s.latitude, s.longitude,
                p.project_id, p.project_name
         from   sample s, project p
@@ -176,7 +176,11 @@ sub view {
 
     my (%attrs, %location);
     for my $attr ($Sample->sample_attrs) {
-        push @{ $attrs{ $attr->sample_attr_type->category } }, $attr;
+        my $cat = $attr->sample_attr_type->category;
+        $cat    =~ s/\s+/_/g;
+        $cat    =~ s/_parameter$//;
+        push @{ $attrs{ $cat } }, $attr;
+
         if ($attr->sample_attr_type->type =~ /^((?:lat|long)itude)$/) {
             $location{ $1 } = $attr->attr_value;
         }
@@ -233,6 +237,7 @@ sub search_param_values {
        query    => {}
     ]);
 
+    print STDERR "result = ", dump($result);
     my @values = $result->{'ok'} ? sort @{ $result->{'values'} } : ();
 
     $self->respond_to(
@@ -250,7 +255,7 @@ sub search_param_values {
 sub _search_params {
     my $db     = IMicrobe::DB->new;
     my $mongo  = $db->mongo;
-    my $mdb    = $mongo->get_database('varietyResults');
+    my $mdb    = $mongo->get_database('imicrobe');
     my $coll   = $mdb->get_collection('sampleKeys');
     my @types  = 
         sort { $a->[0] cmp $b->[0] }
@@ -323,10 +328,12 @@ sub search_results {
 
     my @samples;
     if (%search) {
-        my %fields = map { $_, 1 } ( 
-          qw[sample_id sample_name project_id project_name latitude longitude],
-          keys %search
-        );
+        my %fields = 
+            map { $_, 1 } 
+            ('project_id', 'project_name',
+            'specimen__sample_id', 'specimen__sample_name', 
+            'location__latitude', 'location__longitude'),
+            keys %search;
 
         my $cursor = $coll->find(\%search)->fields(\%fields);
         push @samples, $cursor->all;

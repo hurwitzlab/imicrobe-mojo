@@ -44,10 +44,11 @@ $(document).ready(function() {
     <ul class="nav nav-tabs">
       <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
       [% FOREACH category IN attributes.keys.sort %]
-      <li><a href="#attr_[% category %]" data-toggle="tab">[% category | ucfirst %]</a></li>
+      <li><a href="#attr_[% category %]" data-toggle="tab">[% category.replace('_', ' ') | ucfirst %]</a></li>
       [% END %]
       <li><a href="#downloads" data-toggle="tab">Downloads ([% num_download_files OR '0' %])</a></li>
       <li><a href="#ftp" data-toggle="tab">FTP</a></li>
+      <li><a href="#ontology" data-toggle="tab">Ontology ([% sample.sample_to_ontologies_rs.count %])</a></li>
       [% IF show_map %]<li><a href="#map" data-toggle="tab">Map</a></li>[% END %]
     </ul>
 
@@ -160,19 +161,27 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="ftp">
         <br/>
-        <a href="ftp://ftp.imicrobe.us/projects/[% sample.project_id %]">Project folder</a>
+        <ul>
+          <li><a href="ftp://ftp.imicrobe.us/projects/[% sample.project_id %]">Project folder</a></li>
+          <li><a href="ftp://ftp.imicrobe.us/projects/[% sample.project_id %]/samples/[% sample.id %]">Sample folder</a></li>
+        </ul>
       </div>
 
       <div class="tab-pane fade" id="downloads">
         <br/>
         [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
         [% IF sample.sample_files_rs.count > 0 %]
-          <b>Sample Files</b>
-          <ul>
+          <b>Sample Files ([% sample.sample_files_rs.count %])</b>
+          [% IF sample.sample_files_rs.count > 0 %]
+            <table>
             [% FOREACH f IN sample.sample_files %]
-            <li><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.sample_file_type.type.ucfirst.replace('_',' ') %]</a>
+              <tr>
+                <td>[% f.sample_file_type.type.ucfirst.replace('_',' ') %]</td>
+                <td><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.file %]</a></td>
+              </tr>
             [% END %]
-          </ul>
+            </table>
+          [% END %]
         [% END %]
         [% IF assembly_files.size > 0 %]
           <b>Assembly Files</b>
@@ -182,8 +191,8 @@ $(document).ready(function() {
             [% END %]
           </ul>
         [% END %]
-        [% IF combined_assembly_files.size > 0 %]
-          <b>Combined Assembly Files</b>
+        [% IF combined_assembly_files_rs.count > 0 %]
+          <b>Combined Assembly Files ([% combined_assembly_files_rs.count %])</b>
           <ul>
             [% FOREACH f IN combined_assembly_files %]
             <li><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.type.ucfirst.replace('_',' ') %]</a>
@@ -191,6 +200,26 @@ $(document).ready(function() {
           </ul>
         [% END %]
         </p>
+      </div>
+
+      <div class="tab-pane fade" id="ontology">
+        <br/>
+        [% IF sample.sample_to_ontologies_rs.count > 0 %]
+          <ul>
+          [% FOREACH o IN sample.sample_to_ontologies %]
+            <li>
+            [% 
+              SET url_template=o.ontology.ontology_type.url_template; 
+              SET acc=o.ontology.ontology_acc;
+              IF url_template; USE f=String(acc.replace(':', '_')); SET url=f.format(url_template); %]<a href="[% url %]">[% END %][% acc %][% IF url_template %]</a>
+            [% END %]
+            [% IF o.ontology.label %] ([% o.ontology.label %])[% END %]
+            </li>
+          [% END %]
+          </ul>
+        [% ELSE %]
+          N/A
+        [% END %]
       </div>
 
       [% IF show_map %]
