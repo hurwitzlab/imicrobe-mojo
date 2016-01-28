@@ -18,13 +18,9 @@ $(document).ready(function() {
      <thead>
      <tr>
        <th>Project</th>
-       <th>Name</th>
-       <th>Annots</th>
-       <th>Pep</th>
-       <th>Contigs</th>
-       <th>Reads</th>
-       <th>CDS</th>
-       <th>FASTQ</th>
+       <th>Sample</th>
+       <th>Type</th>
+       <th># Files</th>
      </tr>
      </thead>
 
@@ -38,15 +34,8 @@ $(document).ready(function() {
          <td>
            <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
          </td>
-         [% FOREACH fld IN [ 'annotations_file', 'peptides_file', 'contigs_file', 'reads_file', 'cds_file', 'fastq_file' ] %]
-           <td>
-             [% IF sample.$fld %]
-             <a href="[% url %][% sample.$fld %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a><br/>
-             [% ELSE %]
-               &nbsp;
-             [% END %]
-           </td>
-         [% END %]
+         <td>[% sample.sample_type OR 'NA' %]</td>
+         <td>[% sample.num_files OR '0' %]</td>
        </tr>
      [% END %]
      </tbody>

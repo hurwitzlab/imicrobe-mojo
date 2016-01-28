@@ -70,20 +70,20 @@ sub info {
 sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;
-#               s.reads_file, s.annotations_file, s.peptides_file, 
-#               s.contigs_file, s.cds_file, s.fastq_file,
-#               s.phylum, s.class, s.family, s.genus, s.species, 
-#               s.strain, s.clonal, s.axenic, s.pcr_amp, s.pi,
     my $sql  = q[
-        select s.sample_id, s.sample_name, s.sample_type,
-               s.latitude, s.longitude,
-               p.project_id, p.project_name
-        from   sample s, project p
-        where  s.project_id=p.project_id
+        select     s.sample_id, s.sample_name
+                   p.project_id, p.project_name,
+                   count(f.sample_file_id) as num_files
+        from       sample s 
+        inner join project p
+        on         s.project_id=p.project_id
+        left join  sample_file f
+        on         s.sample_id=f.sample_id
+        group by   1,2,3,4,5
     ];
 
     if (my $project_id = $self->req->param('project_id')) {
-        $sql .= sprintf('and s.project_id=%s', $dbh->quote($project_id));
+        $sql .= sprintf('where s.project_id=%s', $dbh->quote($project_id));
     }
 
     my $samples = $dbh->selectall_arrayref($sql, { Columns => {} });
