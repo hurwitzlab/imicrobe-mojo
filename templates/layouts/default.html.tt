@@ -19,7 +19,7 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/underscore-min.js"></script>
     <script src="/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8&libraries=drawing"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=[% config.gmap_api_key OR "" %]&libraries=drawing"></script>
     <script src="/js/handlebars.js"></script>
     <script src="/js/bootstrap.youtubepopup.min.js"></script>
     <script src="/js/dataTables.tableTools.js"></script>

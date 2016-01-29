@@ -152,8 +152,6 @@ sub startup {
 
     $r->get('/search')->to('search#results');
 
-    $r->get('/search2')->to('search#results2');
-
     $r->get('/search/info')->to('search#info');
 
     $self->hook(
@@ -162,8 +160,10 @@ sub startup {
 
             return unless my $template = $args->{'template'};
 
+            $args->{'config'} = $c->config;
+
             if ($c->accepts('html')) {
-                $args->{'title'} = ucfirst $template;
+                $args->{'title'} //= ucfirst $template;
                 $c->layout('default');
             }
             elsif ($c->accepts('json')) {

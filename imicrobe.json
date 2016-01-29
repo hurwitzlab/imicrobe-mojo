@@ -1,13 +1,14 @@
 {
     "hypnotoad": {
         "listen": [
-            "http://*:3003"
+            "http://*:3000"
         ],
         "workers": "10"
     },
     "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml",
+    "gmap_api_key": "AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8",
     "db": {
-        "name": "web_test",
+        "name": "imicrobe",
         "user": "imicrobe",
         "password": "XgDeeWTAw4pI.",
         "driver": "mysql"
