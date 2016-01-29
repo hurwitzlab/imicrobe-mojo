@@ -1,3 +1,15 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50,
+    "stateSave": true
+  };
+
+  $('#downloads-tbl').dataTable(dt_opts);
+});
+</script>
+
 [%- SET num_download_files = sample.sample_files_rs.count + assembly_files.size + combined_assembly_files.size;
 -%]
 
@@ -48,7 +60,7 @@ $(document).ready(function() {
       [% END %]
       <li><a href="#downloads" data-toggle="tab">Downloads ([% num_download_files OR '0' %])</a></li>
       <li><a href="#ftp" data-toggle="tab">FTP</a></li>
-      <li><a href="#ontology" data-toggle="tab">Ontology ([% sample.sample_to_ontologies_rs.count %])</a></li>
+      [% IF sample.sample_to_ontologies_rs.count > 0 %]<li><a href="#ontology" data-toggle="tab">Ontology ([% sample.sample_to_ontologies_rs.count %])</a></li>[% END %]
       [% IF show_map %]<li><a href="#map" data-toggle="tab">Map</a></li>[% END %]
     </ul>
 
@@ -171,15 +183,25 @@ $(document).ready(function() {
         <br/>
         [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
         [% IF sample.sample_files_rs.count > 0 %]
-          <b>Sample Files ([% sample.sample_files_rs.count %])</b>
           [% IF sample.sample_files_rs.count > 0 %]
-            <table>
+            <div class="pull-right">
+              <a href="/download?url=/sample/sample_file_list/[% sample.id %]"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+            </div>
+            <table id="downloads-tbl" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
             [% FOREACH f IN sample.sample_files %]
               <tr>
                 <td>[% f.sample_file_type.type.ucfirst.replace('_',' ') %]</td>
                 <td><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.file %]</a></td>
               </tr>
             [% END %]
+            </tbody>
             </table>
           [% END %]
         [% END %]

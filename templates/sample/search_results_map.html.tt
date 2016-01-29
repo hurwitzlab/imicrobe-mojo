@@ -16,24 +16,26 @@ $(document).ready(function() {
     $.get('/sample/search_results.json?' + qs,
       function(data) { 
         $.each(data['samples'], function(i, sample) {
-          if (sample.latitude && sample.longitude) {
-            var pos = new google.maps.LatLng(sample.latitude, sample.longitude);
+          if (sample.location__latitude && sample.location__longitude) {
+            var pos = new google.maps.LatLng(sample.location__latitude, sample.location__longitude);
+
+            var sample_name = sample.specimen__sample_name;
 
             var marker = new google.maps.Marker({
               position: pos,
               map: map,
-              title: sample.sample_name
+              title: sample_name
             });
 
-            var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
-                sample.sample_name + '</a><br/><ul>';
+            var desc = '<a href="/sample/view/' + sample.specimen__sample_id 
+                + '"\>' + sample_name + '</a>';
 
             var infowindow = new google.maps.InfoWindow({
               content: desc
             });
 
             google.maps.event.addListener(marker, 'click', function() {
-              infowindow.open(map,marker);
+              infowindow.open(map, marker);
             });
           }
         });

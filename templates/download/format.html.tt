@@ -1,4 +1,4 @@
-[% SET url=c.req.headers.referrer OR '' %]
+[% SET url=c.param('url') OR c.req.headers.referrer OR '' %]
 <h1>[% title %]</h1>
 
 <div class="text-center">
@@ -7,7 +7,7 @@
     <input type="hidden" name="url" value="[% url %]">
     From:
     [% IF url %]
-      <a href="[% url %]">[% IF url.length > 80 %][% url.chunk(80).join("<br/>") %][% ELSE %][% url %][% END %]</a>
+      <a href="[% url %]">[% url %]</a>
     [% ELSE %]
       'No refering URL' 
     [% END %]

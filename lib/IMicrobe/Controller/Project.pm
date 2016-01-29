@@ -193,6 +193,50 @@ sub list {
 }
 
 # ----------------------------------------------------------------------
+sub project_file_list {
+    my $self       = shift;
+    my $project_id = $self->param('project_id');
+    my $schema     = IMicrobe::DB->new->schema;
+    my $Project    = $schema->resultset('Project')->find($project_id) or 
+        return $self->reply->exception("Bad project id ($project_id)");
+
+    my @files = map { 
+        { type => $_->project_file_type->type, location => $_->file } 
+    } $Project->project_files->all;
+
+    for my $Sample ($Project->samples) {
+        push @files, map { 
+            { type => $_->sample_file_type->type, location => $_->file } 
+        } $Sample->sample_files->all;
+    }
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => \@files );
+        },
+
+        tab => sub {
+            my $text = '';
+
+            if (@files) {
+                my @flds = sort keys %{ $files[0] };
+                my @data = (join "\t", @flds);
+                for my $file (@files) {
+                    push @data, join "\t", map { $file->{$_} } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
+        },
+
+        txt => sub {
+            $self->render( text => dump(\@files) );
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
 sub view {
     my $self = shift;
     my $db   = IMicrobe::DB->new;
@@ -219,18 +263,10 @@ sub view {
         $project_id
     );
 
-    #reads_file annotations_file peptides_file contigs_file cds_file fastq_file 
-    my %has_sample_fld = map { $_, 0 } qw(
-        phylum class family genus species strain clonal axenic pcr_amp pi
-    );
-
-#    for my $Sample ($Project->samples->all) {
-#        for my $fld (keys %has_sample_fld) {
-#            if (!$has_sample_fld{ $fld }) {
-#                $has_sample_fld{ $fld }++ if $Sample->$fld();
-#            }
-#        }
-#    }
+    my $file_count = $Project->project_files->count;
+    for my $Sample ($Project->samples->all) {
+        $file_count += $Sample->sample_files->count;
+    }
 
     $self->respond_to(
         json => sub {
@@ -249,7 +285,7 @@ sub view {
                 title   => sprintf("Project: %s", $Project->project_name),
                 domains => $domains,
                 project => $Project,
-                has_sample_fld => \%has_sample_fld,
+                file_count => $file_count,
             );
         },
 

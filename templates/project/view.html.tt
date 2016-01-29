@@ -9,6 +9,7 @@ $(document).ready(function() {
   $('#combined-assemblies-tbl').dataTable(dt_opts);
   $('#assemblies-tbl').dataTable(dt_opts);
   $('#samples-tbl').dataTable(dt_opts);
+  $('#downloads-tbl').dataTable(dt_opts);
 });
 
 var map;
@@ -73,7 +74,7 @@ $(document).ready(function() {
     <ul class="nav nav-tabs">
       <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
       <li><a href="#desc" data-toggle="tab">Description</a></li>
-      <li><a href="#downloads" data-toggle="tab">Downloads ([% project.project_files_rs.count OR '0' %])</a></li>
+      <li><a href="#downloads" data-toggle="tab">Downloads ([% file_count OR '0' %])</a></li>
       <li><a href="#samples" data-toggle="tab">Samples ([% project.samples_rs.count OR '0' %])</a></li>
       [% IF project.ftps_rs.count > 0 %]<li><a href="#ftp" data-toggle="tab">FTP</a></li>[% END %]
       [% IF project.assemblies.rs_count > 0 %]<li><a href="#assemblies" data-toggle="tab">Assemblies ([% project.assemblies_rs.count OR '0' %])</a></li>[% END %]
@@ -252,38 +253,19 @@ $(document).ready(function() {
       <div class="tab-pane fade" id="samples">
         <br/>
         [% IF project.samples.size > 0 %]
-          [% 
-            SET all_sample_flds = [ 'pi', 'reads_file', 'annotations_file', 'peptides_file', 'contigs_file', 'cds_file', 'fastq_file', 'phylum', 'class', 'family', 'genus', 'species', 'strain', 'clonal', 'axenic', 'pcr_amp' ];
-            SET sample_flds = ['sample_name'];
-            FOREACH fld IN all_sample_flds;
-              IF has_sample_fld.$fld;
-                sample_flds.push(fld);
-              END;
-            END; 
-          %]
           <table id="samples-tbl" class="display" cellspacing="0" width="100%">
            <thead>
            <tr>
-            [% FOREACH fld IN sample_flds %]
-              <th>[% fld | ucfirst %]</th>
-            [% END %]
+              <th>Sample Name</th>
            </tr>
            </thead>
 
            <tbody>
            [% FOREACH sample IN project.samples %]
              <tr>
-              [% FOREACH fld IN sample_flds %]
-                <td>
-                [% IF fld == 'sample_name' %]
-                  <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
-                [% ELSIF sample.$fld AND fld.match('_file$') %]
-                <a href="[% iplant %][% sample.$fld %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-                [% ELSE %]
-                  [% sample.$fld %]
-                [% END %]
-                </td>
-              [% END %]
+              <td>
+                <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
+              </td>
              </tr>
            [% END %]
            </tbody>
@@ -311,8 +293,18 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="downloads">
         <br/>
-        [% IF project.project_files_rs.count > 0 %]
-          <table>
+        [% IF file_count > 0 %]
+          <div class="pull-right">
+            <a href="/download?url=/project/project_file_list/[% project.id %]"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+          </div>
+          <table id="downloads-tbl" class="display" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
             [% FOREACH f IN project.project_files %]
             <tr>
               <td>
@@ -323,6 +315,19 @@ $(document).ready(function() {
               </td>
             </tr>
             [% END %]
+            [% FOREACH sample IN project.samples %]
+              [% FOREACH file IN sample.sample_files %]
+                <tr>
+                  <td>
+                    [% file.sample_file_type.type %] 
+                  </td>
+                  <td>
+                    <a href="[% file.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% file.file %]</a>
+                  </td>
+                </tr>
+              [% END %]
+            [% END %]
+            </tbody>
           </table>
         [% ELSE %]
           None.

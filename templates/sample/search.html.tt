@@ -140,6 +140,7 @@ function updateSearchResults(formData) {
     <div class="pull-right">
       <a class="btn btn-default" href="/sample/search_results_map?{{formData}}" target="_blank">View On Map</a>
       <a class="btn btn-default" data-toggle="collapse" href="#permalink" aria-expanded="false" aria-controls="permalink">Permalink</a>
+      <a class="btn btn-default" href="/sample/search_results.tab?{{formData}}&download=1" target="_blank">Download</a>
       <div class="collapse" id="permalink">
         <div class="well">
           <a href="/sample/search?{{formData}}">/sample/search_results_map?{{formData}}</a>
@@ -151,13 +152,19 @@ function updateSearchResults(formData) {
         <tr>
           <th>Sample</th>
           <th>Project</th>
+          {{#each search_fields_pretty}}
+            <th>{{this}}</th>
+          {{/each}}
         </tr>
       </thead>
       <tbody>
         {{#each samples}}
           <tr>
             <td><a target="_blank" href="/sample/view/{{this.specimen__sample_id}}">{{this.specimen__sample_name}}</a></td>
-            <td>{{this.project_name}}</td>
+            <td><a target="_blank" href="/project/view/{{this.specimen__project_id}}">{{this.specimen__project_name}}</a></td>
+            {{#each this.search_values}}
+              <td>{{this}}</td>
+            {{/each}}
         {{/each}}
       </tbody>
     </table>

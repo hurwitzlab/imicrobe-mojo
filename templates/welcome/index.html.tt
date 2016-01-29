@@ -74,7 +74,7 @@
       <p>
       <ul>
         <li>
-        Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=virus">human</a>&quot; or &quot;<a href="/search?query=virus">ocean</a>.&quot;  You can limit the results to projects, samples, or publications.
+        Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=human">human</a>&quot; or &quot;<a href="/search?query=ocean">ocean</a>.&quot;  You can limit the results to projects, samples, or publications.
         </li>
         <li>
         <a href="/sample/search">Search for samples by their metadata</a>

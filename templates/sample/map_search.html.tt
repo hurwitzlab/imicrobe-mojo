@@ -1,4 +1,4 @@
-<script>
+<script type="text/javascript">
 function initialize() {
   var center = new google.maps.LatLng(0, 0);
   var map = new google.maps.Map(document.getElementById("map-canvas"), 
@@ -136,16 +136,6 @@ function initialize() {
           var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
               sample.sample_name + '</a><br/><ul>';
 
-          $.each(
-            ['phylum', 'class', 'family', 'genus', 'species', 'strain'],
-            function(i, fld) {
-              var val = sample[fld];
-              if (val) {
-                desc += '<li>' + fld + ': ' + val;
-              }
-            }
-          );
-
           var infowindow = new google.maps.InfoWindow({
             content: desc
           });
@@ -184,55 +174,16 @@ $(document).ready(function() {
       <thead>
         <tr>
           <th>Sample</th>
-          <th>Sample PI</th>
           <th>Project</th>
-          <th>Project PI</th>
-          <th>Reads</th>
-          <th>Annots</th>
-          <th>Pep</th>
-          <th>Contigs</th>
-          <th>CDS</th>
-          <th>FASTQ</th>
+          <th>PI</th>
         </tr>
       </thead>
       <tbody>
         {{#each samples}}
           <tr>
-            <td><a href="/sample/view/{{this.sample_id}}">{{this.sample_name}}</a></td>
-            <td>{{this.sample_pi}}</td>
-            <td><a href="/project/view/{{this.project_id}}">{{this.project_name}}</a></td>
-            <td>{{this.project_pi}}</td>
-            <td>
-              {{#if this.reads_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.reads_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.annotations_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.annotations_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{END}}
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.peptides_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.peptides_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.contigs_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.contigs_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.cds_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.cds_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
-            <td>
-              {{#if this.fastq_file}}
-                <a href="http://mirrors.iplantcollaborative.org/browse{{this.fastq_file}}"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>
-              {{/if}}
-            </td>
+            <td><a target="_blank" href="/sample/view/{{this.sample_id}}">{{this.sample_name}}</a></td>
+            <td><a target="_blank" href="/project/view/{{this.project_id}}">{{this.project_name}}</a></td>
+            <td>{{this.pi}}</td>
           </tr>
         {{/each}}
       </tbody>

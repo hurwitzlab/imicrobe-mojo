@@ -37,10 +37,11 @@ sub get {
     my $name   = $path;
     $name      =~ s{^/}{}g;
     $name      =~ s{/}{-}g;
+    $name     .= '.' . $format;
     $URL->query->param('download' => $name); 
     my $new    = $path . '.' . $format . '?' . $URL->query;
 
-    return $self->redirect_to($new);
+    $self->redirect_to($new);
 }
 
 1;

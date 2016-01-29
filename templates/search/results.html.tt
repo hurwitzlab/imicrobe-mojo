@@ -16,7 +16,7 @@
   Found [% results.size | comma %] record[% IF results.size == 1; ''; ELSE; 's'; END %] 
   for &quot;[% query %].&quot;<br/>
   [% ELSE %]
-    Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=virus">human</a>&quot; or &quot;<a href="/search?query=virus">ocean</a>.&quot;
+    Search for something like &quot;<a href="/search?query=virus">virus</a>&quot; or &quot;<a href="/search?query=human">human</a>&quot; or &quot;<a href="/search?query=ocean">ocean</a>.&quot;
   [% END %]
 
   <form class="form-inline" role="form">

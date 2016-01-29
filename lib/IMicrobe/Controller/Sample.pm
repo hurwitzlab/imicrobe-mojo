@@ -71,20 +71,22 @@ sub list {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;
     my $sql  = q[
-        select     s.sample_id, s.sample_name
+        select     s.sample_id, s.sample_name, s.sample_type,
                    p.project_id, p.project_name,
+                   s.latitude, s.longitude,
                    count(f.sample_file_id) as num_files
         from       sample s 
         inner join project p
         on         s.project_id=p.project_id
         left join  sample_file f
         on         s.sample_id=f.sample_id
-        group by   1,2,3,4,5
     ];
 
     if (my $project_id = $self->req->param('project_id')) {
         $sql .= sprintf('where s.project_id=%s', $dbh->quote($project_id));
     }
+
+    $sql .= ' group by 1,2,3,4,5';
 
     my $samples = $dbh->selectall_arrayref($sql, { Columns => {} });
 
@@ -259,7 +261,8 @@ sub _search_params {
     my $coll   = $mdb->get_collection('sampleKeys');
     my @types  = 
         sort { $a->[0] cmp $b->[0] }
-        grep { $_->[0] !~ /(_id|\.floatApprox|\.bottom|\.top|text|none)/i }
+        grep { $_->[0] ne '_id' }
+        grep { $_->[0] !~ /(\.floatApprox|\.bottom|\.top|text|none)/i }
         map  { [$_->{'_id'}{'key'}, lc $_->{'value'}{'types'}[0]] }
         $coll->find->all();
 
@@ -326,24 +329,65 @@ sub search_results {
         }
     }
 
-    my @samples;
+    my (@samples, @search_params);
     if (%search) {
-        my %fields = 
-            map { $_, 1 } 
-            ('project_id', 'project_name',
-            'specimen__sample_id', 'specimen__sample_name', 
-            'location__latitude', 'location__longitude'),
-            keys %search;
+        @search_params = map { s/^(max|min)_//; $_ } keys %search;
+        my @return_fields; 
 
+        if ($self->param('download')) {
+            @return_fields = map { $_->[0] } $self->_search_params;
+        }
+        else {
+            @return_fields = (
+                'specimen__project_id', 
+                'specimen__project_name',
+                'specimen__sample_id',
+                'specimen__sample_name', 
+                'location__latitude', 
+                'location__longitude',
+                @search_params
+            );
+        }
+
+        my %fields = map { $_, 1 } @return_fields;
         my $cursor = $coll->find(\%search)->fields(\%fields);
-        push @samples, $cursor->all;
+
+        for my $sample ($cursor->all) {
+            if ($self->param('download')) {
+                my $files = $dbh->selectall_arrayref(
+                    q[
+                        select t.type, f.file
+                        from   sample_file f, sample_file_type t   
+                        where  f.sample_id=?
+                        and    f.sample_file_type_id=t.sample_file_type_id
+                    ],
+                    { Columns => {} },
+                    ($sample->{'specimen__sample_id'})
+                );
+
+                for my $file (@$files) {
+                    (my $type = lc($file->{'type'})) =~ s/\W/_/g;
+                    $sample->{'file__' . $type} = $file->{'file'};
+                }
+            }
+            else {
+                $sample->{'search_values'} = [
+                    map { $sample->{ $_ } } @search_params
+                ];
+            }
+
+            push @samples, $sample;
+        }
     }
 
     $self->respond_to(
         json => sub {
             $self->render( json => { 
                 samples       => \@samples, 
-                search_fields => [ sort keys %search ],
+                search_fields => \@search_params,
+                search_fields_pretty => [
+                    map { s/__/: /; s/_/ /g; ucfirst($_) } @search_params
+                ],
             });
         },
 
@@ -389,12 +433,8 @@ sub map_search_results {
     my $self = shift;
     my $dbh  = IMicrobe::DB->new->dbh;
     my $sql  = q'
-        select p.project_id, p.project_name, p.pi as project_pi,
-               s.sample_id, s.sample_name, s.pi as sample_pi, 
-               s.latitude, s.longitude, s.phylum, s.class, 
-               s.family, s.genus, s.species, s.strain,
-               s.reads_file, s.annotations_file, s.peptides_file,
-               s.contigs_file, s.cds_file, s.fastq_file
+        select p.project_id, p.project_name, p.pi,
+               s.sample_id, s.sample_name, s.latitude, s.longitude
         from   sample s, project p
         where  s.project_id=p.project_id
     ';
@@ -437,11 +477,6 @@ sub map_search_results {
             $self->render( json => { samples => \@samples } );
         },
 
-#        html => sub {
-#            #$self->layout('default');
-#            $self->render(samples => \@samples);
-#        },
-
         tab => sub {
             my $text = '';
 
@@ -461,6 +496,46 @@ sub map_search_results {
 
         txt => sub {
             $self->render( text => dump(\@samples) );
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
+sub sample_file_list {
+    my $self      = shift;
+    my $sample_id = $self->param('sample_id');
+    my $schema    = IMicrobe::DB->new->schema;
+    my $Sample    = $schema->resultset('Sample')->find($sample_id) or 
+        return $self->reply->exception("Bad sample id ($sample_id)");
+
+    my @files = map { 
+        { type => $_->sample_file_type->type, location => $_->file } 
+    } $Sample->sample_files->all;
+
+    say "files = ", dump(\@files);
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => \@files );
+        },
+
+        tab => sub {
+            my $text = '';
+
+            if (@files) {
+                my @flds = sort keys %{ $files[0] };
+                my @data = (join "\t", @flds);
+                for my $file (@files) {
+                    push @data, join "\t", map { $file->{$_} } @flds;
+                }
+                $text = join "\n", @data;
+            }
+
+            $self->render( text => $text );
+        },
+
+        txt => sub {
+            $self->render( text => dump(\@files) );
         },
     );
 }

@@ -103,6 +103,8 @@ sub startup {
 
     $r->get('/project/list')->to('project#list');
 
+    $r->get('/project/project_file_list/:project_id')->to('project#project_file_list');
+
     $r->get('/project/view/:project_id')->to('project#view');
 
     $r->get('/project_page/info')->to('project_page#info');
@@ -132,6 +134,8 @@ sub startup {
     $r->get('/sample/map_search')->to('sample#map_search');
 
     $r->get('/sample/map_search_results')->to('sample#map_search_results');
+
+    $r->get('/sample/sample_file_list/:sample_id')->to('sample#sample_file_list');
 
     $r->get('/sample/search')->to('sample#search');
 
@@ -174,9 +178,9 @@ sub startup {
         after_dispatch => sub {
             my $c = shift;
             if ( defined $c->param('download') ) {
-                $c->res->headers->add(
-                    'Content-type' => 'application/force-download' );
-
+                #$c->res->headers->add(
+                #    'Content-type' => 'application/force-download' );
+                
                 (my $file = $c->req->url->path) =~ s{.+/}{};
                 my $name = $c->param('download') || '';
 
@@ -185,7 +189,8 @@ sub startup {
                 }
 
                 $c->res->headers->add(
-                    'Content-Disposition' => qq[attachment; filename=$file] );
+                    'Content-Disposition' => qq[attachment; filename=$file] 
+                );
             }
         }
     );
