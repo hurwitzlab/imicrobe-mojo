@@ -1,9 +1,7 @@
 package IMicrobe::Controller::Pubchase;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
-use DBI;
 
 # ----------------------------------------------------------------------
 sub info {
@@ -24,7 +22,7 @@ sub info {
 # ----------------------------------------------------------------------
 sub list {
     my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $last = $dbh->selectrow_array(
         'select rec_date from pubchase_rec order by rec_date desc limit 1'
     );

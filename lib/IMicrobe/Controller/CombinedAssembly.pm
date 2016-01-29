@@ -1,9 +1,7 @@
 package IMicrobe::Controller::CombinedAssembly;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
-use DBI;
 
 # ----------------------------------------------------------------------
 sub info {
@@ -42,7 +40,7 @@ sub info {
 # ----------------------------------------------------------------------
 sub list {
     my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $sql  = q[
         select a.combined_assembly_id, a.assembly_name,
                a.phylum, a.class, a.family,
@@ -122,7 +120,7 @@ sub list {
 sub view {
     my $self        = shift;
     my $assembly_id = $self->param('combined_assembly_id');
-    my $db          = IMicrobe::DB->new;
+    my $db          = $self->db;
     my $dbh         = $db->dbh;
     my $schema      = $db->schema;
 

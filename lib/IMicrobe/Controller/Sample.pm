@@ -1,9 +1,7 @@
 package IMicrobe::Controller::Sample;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
-use DBI;
 use String::Trim qw(trim);
 
 # ----------------------------------------------------------------------
@@ -69,7 +67,7 @@ sub info {
 # ----------------------------------------------------------------------
 sub list {
     my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $sql  = q[
         select     s.sample_id, s.sample_name, s.sample_type,
                    p.project_id, p.project_name,
@@ -125,7 +123,7 @@ sub list {
 sub view {
     my $self      = shift;
     my $sample_id = $self->param('sample_id') or die 'No sample id';
-    my $db        = IMicrobe::DB->new;
+    my $db        = $self->db;
     my $dbh       = $db->dbh;
     my $schema    = $db->schema;
 
@@ -230,7 +228,7 @@ sub search {
 sub search_param_values {
     my $self    = shift;
     my $field   = $self->param('field') or return;
-    my $db      = IMicrobe::DB->new;
+    my $db      = $self->db;
     my $mongo   = $db->mongo;
     my $mdb     = $mongo->get_database('imicrobe');
     my $result  = $mdb->run_command([
@@ -255,7 +253,7 @@ sub search_param_values {
 
 # ----------------------------------------------------------------------
 sub _search_params {
-    my $db     = IMicrobe::DB->new;
+    my $db     = $self->db;
     my $mongo  = $db->mongo;
     my $mdb    = $mongo->get_database('imicrobe');
     my $coll   = $mdb->get_collection('sampleKeys');
@@ -288,7 +286,7 @@ sub search_params {
 # ----------------------------------------------------------------------
 sub search_results {
     my $self        = shift;
-    my $db          = IMicrobe::DB->new;
+    my $db          = $self->db;
     my $dbh         = $db->dbh;
     my $mongo       = $db->mongo;
     my $mdb         = $mongo->get_database('imicrobe');
@@ -431,7 +429,7 @@ sub map_search {
 # ----------------------------------------------------------------------
 sub map_search_results {
     my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $sql  = q'
         select p.project_id, p.project_name, p.pi,
                s.sample_id, s.sample_name, s.latitude, s.longitude
@@ -504,7 +502,7 @@ sub map_search_results {
 sub sample_file_list {
     my $self      = shift;
     my $sample_id = $self->param('sample_id');
-    my $schema    = IMicrobe::DB->new->schema;
+    my $schema    = $self->db->schema;
     my $Sample    = $schema->resultset('Sample')->find($sample_id) or 
         return $self->reply->exception("Bad sample id ($sample_id)");
 

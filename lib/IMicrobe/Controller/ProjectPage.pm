@@ -1,7 +1,6 @@
 package IMicrobe::Controller::ProjectPage;
 
 use strict;
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 
@@ -31,7 +30,7 @@ sub info {
 sub view {
     my $self  = shift;
     my $pp_id = $self->param('project_page_id');
-    my $db    = IMicrobe::DB->new;
+    my $db    = $self->db;
     my $Page  = $db->schema->resultset('ProjectPage')->find($pp_id);
 
     if (!$Page) {

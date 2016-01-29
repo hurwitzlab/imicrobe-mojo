@@ -1,9 +1,7 @@
 package IMicrobe::Controller::Publication;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
-use DBI;
 
 # ----------------------------------------------------------------------
 sub info {
@@ -34,7 +32,7 @@ sub info {
 # ----------------------------------------------------------------------
 sub list {
     my $self   = shift;
-    my $db     = IMicrobe::DB->new;
+    my $db     = $self->db;
     my $schema = $db->schema;
     my $Pubs   = $schema->resultset('Publication');
 
@@ -80,7 +78,7 @@ sub list {
 sub view {
     my $self   = shift;
     my $pub_id = $self->param('publication_id');
-    my $db     = IMicrobe::DB->new;
+    my $db     = $self->db;
     my $schema = $db->schema;
     my $Pub    = $schema->resultset('Publication')->find($pub_id);
 

@@ -1,9 +1,7 @@
 package IMicrobe::Controller::Reference;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
-use DBI;
 
 # ----------------------------------------------------------------------
 sub info {
@@ -33,7 +31,7 @@ sub info {
 # ----------------------------------------------------------------------
 sub list {
     my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $url  = "http://mirrors.iplantcollaborative.org/browse/iplant/"
              . "home/shared/imicrobe/camera/camera_reference_datasets/";
     my @refs = 
@@ -83,7 +81,7 @@ sub list {
 # ----------------------------------------------------------------------
 sub view {
     my $self         = shift;
-    my $db           = IMicrobe::DB->new;
+    my $db           = $self->db;
     my $reference_id = $self->param('reference_id');
     my $Reference    = $db->schema->resultset('Reference')->find($reference_id);
 

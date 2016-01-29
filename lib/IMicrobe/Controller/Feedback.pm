@@ -1,6 +1,5 @@
 package IMicrobe::Controller::Feedback;
 
-use IMicrobe::DB;
 use Captcha::reCAPTCHA;
 use Data::Dump 'dump';
 use Email::Valid;

@@ -1,6 +1,5 @@
 package IMicrobe::Controller::Download;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 

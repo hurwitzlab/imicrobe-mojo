@@ -1,14 +1,12 @@
 package IMicrobe::Controller::Project;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
-use DBI;
 
 # ----------------------------------------------------------------------
 sub browse {
     my $self     = shift;
-    my $dbh      = IMicrobe::DB->new->dbh;
+    my $dbh      = $self->db->dbh;
     my @projects = map { 
             $_->{'url'} = 
                 sprintf('/project/list?domain=%s', $_->{'domain_name'});
@@ -104,7 +102,7 @@ sub info {
 # ----------------------------------------------------------------------
 sub list {
     my $self   = shift;
-    my $dbh    = IMicrobe::DB->new->dbh;
+    my $dbh    = $self->db->dbh;
     my $domain = lc($self->param('domain') || '');
     my $sql    = q[
         select    p.project_id, p.project_name, p.project_code,
@@ -196,7 +194,7 @@ sub list {
 sub project_file_list {
     my $self       = shift;
     my $project_id = $self->param('project_id');
-    my $schema     = IMicrobe::DB->new->schema;
+    my $schema     = $self->db->schema;
     my $Project    = $schema->resultset('Project')->find($project_id) or 
         return $self->reply->exception("Bad project id ($project_id)");
 
@@ -239,7 +237,7 @@ sub project_file_list {
 # ----------------------------------------------------------------------
 sub view {
     my $self = shift;
-    my $db   = IMicrobe::DB->new;
+    my $db   = $self->db;
     my $id   = $self->param('project_id');
     my $sql  = sprintf(
         'select project_id from project where %s=?',

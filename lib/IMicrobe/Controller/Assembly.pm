@@ -1,9 +1,7 @@
 package IMicrobe::Controller::Assembly;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
-use DBI;
 
 # ----------------------------------------------------------------------
 sub info {
@@ -42,7 +40,7 @@ sub info {
 # ----------------------------------------------------------------------
 sub list {
     my $self = shift;
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $sql  = q[
         select a.assembly_id, a.assembly_code, a.assembly_name,
                a.organism, a.cds_file, a.nt_file, a.pep_file,
@@ -96,7 +94,7 @@ sub list {
 sub view {
     my $self        = shift;
     my $assembly_id = $self->param('assembly_id');
-    my $db          = IMicrobe::DB->new;
+    my $db          = $self->db;
     my $dbh         = $db->dbh;
     my $schema      = $db->schema;
 

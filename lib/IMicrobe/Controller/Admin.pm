@@ -1,6 +1,5 @@
 package IMicrobe::Controller::Admin;
 
-use IMicrobe::DB;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 
@@ -12,7 +11,7 @@ sub create_project_page {
     my $contents   = $self->param('contents')      or die 'No contents';
     my $order      = $self->param('display_order') || '1';
     my $format     = $self->param('format')        || 'html';
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $schema     = $db->schema;
 
     my $Page          = $schema->resultset('ProjectPage')->create({
@@ -31,7 +30,7 @@ sub create_project_pub {
     my $self       = shift;
     my $project_id = $self->param('project_id')     or die 'No project id';
     my $pub_id     = $self->param('publication_id') or die 'No publication_id';
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $schema     = $db->schema;
     my $Pub        = $schema->resultset('Publication')->find($pub_id);
 
@@ -46,7 +45,7 @@ sub create_publication {
     my $self        = shift;
     my $title       = $self->param('title')  or die 'No title';
     my $author      = $self->param('author') or die 'No author(s)';
-    my $db          = IMicrobe::DB->new;
+    my $db          = $self->db;
     my $Publication = $db->schema->resultset('Publication')->find_or_create({
         title  => $title, 
         author => $author, 
@@ -66,7 +65,7 @@ sub create_publication {
 # ----------------------------------------------------------------------
 sub create_publication_form {
     my $self     = shift;
-    my $db       = IMicrobe::DB->new;
+    my $db       = $self->db;
     my $Projects = $db->schema->resultset('Project')->search(
         {}, 
         { order_by => { -asc => 'project_name' } }
@@ -80,7 +79,7 @@ sub create_publication_form {
 sub create_project_page_form {
     my $self       = shift;
     my $project_id = $self->param('project_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $Project    = $db->schema->resultset('Project')->find($project_id);
 
     $self->layout('admin');
@@ -91,7 +90,7 @@ sub create_project_page_form {
 sub create_project_pub_form {
     my $self       = shift;
     my $project_id = $self->param('project_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $Project    = $db->schema->resultset('Project')->find($project_id);
     my $Pubs       = $db->schema->resultset('Publication')->search(
         { project_id => undef },
@@ -109,7 +108,7 @@ sub create_project_pub_form {
 sub delete_project_page {
     my $self       = shift;
     my $pp_id      = $self->param('project_page_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $schema     = $db->schema;
     my $Page       = $schema->resultset('ProjectPage')->find($pp_id);
 
@@ -136,7 +135,7 @@ sub delete_project_page {
 sub delete_project_pub {
     my $self   = shift;
     my $pub_id = $self->param('publication_id');
-    my $db     = IMicrobe::DB->new;
+    my $db     = $self->db;
     my $schema = $db->schema;
     my $Pub    = $schema->resultset('Publication')->find($pub_id);
 
@@ -163,7 +162,7 @@ sub delete_project_pub {
 sub delete_publication {
     my $self   = shift;
     my $pub_id = $self->param('publication_id');
-    my $db     = IMicrobe::DB->new;
+    my $db     = $self->db;
     my $schema = $db->schema;
     my $Pub    = $schema->resultset('Publication')->find($pub_id);
 
@@ -188,7 +187,7 @@ sub delete_publication {
 sub edit_project {
     my $self       = shift;
     my $project_id = $self->param('project_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
 
     my $sql = sprintf(
         'select project_id from project where %s=?',
@@ -216,7 +215,7 @@ sub edit_project {
 sub edit_project_publications {
     my $self       = shift;
     my $project_id = $self->param('project_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $Project    = $db->schema->resultset('Project')->find($project_id);
 
     $self->layout('admin');
@@ -229,7 +228,7 @@ sub edit_project_publications {
 # ----------------------------------------------------------------------
 sub edit_project_page {
     my $self   = shift;
-    my $db     = IMicrobe::DB->new;
+    my $db     = $self->db;
     my $schema = $db->schema;
     my $pp_id  = $self->param('project_page_id');
     my $Page   = $schema->resultset('ProjectPage')->find($pp_id);
@@ -245,7 +244,7 @@ sub edit_project_page {
 sub edit_sample {
     my $self      = shift;
     my $sample_id = $self->param('sample_id');
-    my $schema    = IMicrobe::DB->new->schema;
+    my $schema    = $self->db->schema;
     my $Sample    = $schema->resultset('Sample')->find($sample_id);
 
     if (!$Sample) {
@@ -276,7 +275,7 @@ sub index {
 # ----------------------------------------------------------------------
 sub list_projects {
     my $self     = shift;
-    my $schema   = IMicrobe::DB->new->schema;
+    my $schema   = $self->db->schema;
     my $Projects = $schema->resultset('Project');
 
     $self->layout('admin');
@@ -286,7 +285,7 @@ sub list_projects {
 # ----------------------------------------------------------------------
 sub list_publications {
     my $self   = shift;
-    my $schema = IMicrobe::DB->new->schema;
+    my $schema = $self->db->schema;
     my $Pubs   = $schema->resultset('Publication');
 
     $self->respond_to(
@@ -315,7 +314,7 @@ sub update_project {
     ];
     my @vals = map { $req->param($_) } @flds;
 
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $sql  = sprintf(
         'update project set %s where project_id=?',
         join(', ', map { "$_=?" } @flds),
@@ -334,7 +333,7 @@ sub update_project_page {
     my $contents   = $self->param('contents')        or die 'No contents';
     my $order      = $self->param('display_order')   || '1';
     my $format     = $self->param('format')          || 'html';
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $schema     = $db->schema;
 
     my $Page = $schema->resultset('ProjectPage')->find($id);
@@ -359,7 +358,7 @@ sub update_publication {
     ];
     my @vals = map { $req->param($_) } @flds;
 
-    my $dbh  = IMicrobe::DB->new->dbh;
+    my $dbh  = $self->db->dbh;
     my $sql  = sprintf(
         'update publication set %s where publication_id=?',
         join(', ', map { "$_=?" } @flds),
@@ -375,7 +374,7 @@ sub update_sample {
     my $self      = shift;
     my $req       = $self->req;
     my $sample_id = $req->param('sample_id');
-    my $schema    = IMicrobe::DB->new->schema;
+    my $schema    = $self->db->schema;
     my $Sample    = $schema->resultset('Sample')->find($sample_id);
 
     if (!$Sample) {
@@ -403,7 +402,7 @@ sub view_project {
     my $self       = shift;
     my $req        = $self->req;
     my $project_id = $self->param('project_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $Project    = $db->schema->resultset('Project')->find($project_id);
 
     $self->layout('admin');
@@ -416,7 +415,7 @@ sub view_project {
 sub view_project_pages {
     my $self       = shift;
     my $project_id = $self->param('project_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $Project    = $db->schema->resultset('Project')->find($project_id);
     my $pages      = $db->dbh->selectall_arrayref(
         'select * from project_page where project_id=?', 
@@ -434,7 +433,7 @@ sub view_project_samples {
     my $self       = shift;
     my $req        = $self->req;
     my $project_id = $self->param('project_id');
-    my $db         = IMicrobe::DB->new;
+    my $db         = $self->db;
     my $Project    = $db->schema->resultset('Project')->find($project_id);
 
     $self->layout('admin');
@@ -448,7 +447,7 @@ sub view_publication {
     my $self     = shift;
     my $req      = $self->req;
     my $pub_id   = $self->param('publication_id');
-    my $db       = IMicrobe::DB->new;
+    my $db       = $self->db;
     my $Pub      = $db->schema->resultset('Publication')->find($pub_id);
     my $Projects = $db->schema->resultset('Project')->search(
         {},

@@ -3,6 +3,7 @@ package IMicrobe;
 use Mojo::Base 'Mojolicious';
 
 use lib '/usr/local/imicrobe/lib';
+use IMicrobe::DB;
 
 sub startup {
     my $self = shift;
@@ -178,8 +179,9 @@ sub startup {
         after_dispatch => sub {
             my $c = shift;
             if ( defined $c->param('download') ) {
-                #$c->res->headers->add(
-                #    'Content-type' => 'application/force-download' );
+                $c->res->headers->add(
+                    'Content-type' => 'application/force-download' 
+                );
                 
                 (my $file = $c->req->url->path) =~ s{.+/}{};
                 my $name = $c->param('download') || '';
@@ -192,6 +194,14 @@ sub startup {
                     'Content-Disposition' => qq[attachment; filename=$file] 
                 );
             }
+        }
+    );
+
+    $self->helper(
+        db => sub {
+            my $self   = shift;
+            my $config = $self->config;
+            return IMicrobe::DB->new($config->{'db'});
         }
     );
 }

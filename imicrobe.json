@@ -1,9 +1,20 @@
 {
     "hypnotoad": {
         "listen": [
-            "http://*:3000"
+            "http://*:3003"
         ],
         "workers": "10"
     },
-    "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml"
+    "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml",
+    "db": {
+        "name": "web_test",
+        "user": "imicrobe",
+        "password": "XgDeeWTAw4pI.",
+        "driver": "mysql"
+    },
+    "mongo": {
+        "host": "lipothrix.hpc.arizona.edu",
+        "port": "27017",
+        "dbname": "imicrobe"
+    }
 }
