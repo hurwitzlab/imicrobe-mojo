@@ -5,6 +5,9 @@
         ],
         "workers": "10"
     },
+    "site_name": "iMicrobe",
+    "about_link": "http://imicrobe.us",
+    "download_link": "ftp://ftp.imicrobe.us",
     "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml",
     "gmap_api_key": "AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8",
     "db": {

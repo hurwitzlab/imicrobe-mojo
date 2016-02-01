@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="/img/favicon.ico">
-    <link rel="search" type="application/opensearchdescription+xml" href="http://data.imicrobe.us/opensearch.xml" title="iMicrobe Search" />
+    <link rel="search" type="application/opensearchdescription+xml" href="opensearch.xml" title="[% config.site_title %] Search" />
 
-    <title>iMicrobe [% title %]</title>
+    <title>[% config.site_title %] [% title %]</title>
 
     <link href="/css/readable.min.css" rel="stylesheet">
     <link href="/css/jquery.dataTables.css" rel="stylesheet">
@@ -60,8 +60,8 @@
                 <li><a href="/pubchase/list">Recommended Reading</a></li>
               </ul>
             </li>
-            <li><a href="http://imicrobe.us">About</a></li>
-            <li><a href="ftp://ftp.imicrobe.us">Downloads</a></li>
+            <li><a href="[% config.about_link %]">About</a></li>
+            <li><a href="[% config.download_link %]">Downloads</a></li>
             <li><a href="/feedback">Feedback</a></li>
           </ul>
           <form class="navbar-form navbar-right" role="search" action="/search" method="GET">
@@ -84,7 +84,7 @@
        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-    ga('create', 'UA-56769725-3', 'auto');
+    ga('create', '[% config.google_analytics_key %]', 'auto');
     ga('send', 'pageview');
 
     </script>
