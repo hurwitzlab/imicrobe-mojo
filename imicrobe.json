@@ -6,6 +6,12 @@
         "workers": "10"
     },
     "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml",
+    "site_name": "iVirus",
+    "about_link": "http://ivirus.us",
+    "download_link": "ftp://ftp.imicrobe.us",
+    "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml",
+    "gmap_api_key": "AIzaSyAWs1dfDhYBzoiFWWCyomxPCvYR11hlRWQ",
+    "google_analytics_key": "UA-57461008-1",
     "db": {
         "name": "ivirus",
         "user": "imicrobe",
