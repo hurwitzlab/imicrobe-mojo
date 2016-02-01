@@ -32,42 +32,38 @@ sub info {
 sub list {
     my $self = shift;
     my $dbh  = $self->db->dbh;
-    my $url  = "http://mirrors.iplantcollaborative.org/browse/iplant/"
-             . "home/shared/imicrobe/camera/camera_reference_datasets/";
-    my @refs = 
-        map { $_->{'url'} = $url . $_->{'file'}; $_ }
-        @{$dbh->selectall_arrayref(
-            q[
-                select   reference_id, file, name, build_date, 
-                         revision, length, seq_count
-                from     reference
-                order by 2
-            ],
-            { Columns => {} }
-        )};
+    my $refs = $dbh->selectall_arrayref(
+        q[
+            select   reference_id, file, name, build_date, 
+                     revision, length, seq_count
+            from     reference
+            order by 2
+        ],
+        { Columns => {} }
+    );
 
     $self->respond_to(
         json => sub {
-            $self->render( json => \@refs );
+            $self->render( json => $refs );
         },
 
         html => sub {
             $self->layout('default');
 
-            $self->render( refs => \@refs, title => 'Reference Data Sets' );
+            $self->render( refs => $refs, title => 'Reference Data Sets' );
         },
 
         txt => sub {
-            $self->render( text => dump(\@refs) );
+            $self->render( text => dump($refs) );
         },
 
         tab => sub {
             my $text = '';
 
-            if (@refs) {
-                my @flds = sort keys %{ $refs[0] };
+            if (@$refs) {
+                my @flds = sort keys %{ $refs->[0] };
                 my @data = (join "\t", @flds);
-                for my $ref (@refs) {
+                for my $ref (@$refs) {
                     push @data, join "\t", map { $ref->{$_} // '' } @flds;
                 }
                 $text = join "\n", @data;

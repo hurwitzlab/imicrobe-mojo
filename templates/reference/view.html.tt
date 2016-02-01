@@ -13,7 +13,11 @@
     <tr>
       <th>Data</th>
       <td>
-        <a href="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe/camera/camera_reference_datasets/[% reference.file %]">[% reference.file %]</a>
+        [% IF reference.file %]
+        <a href="[% reference.file %]">[% reference.file %]</a>
+        [% ELSE %]
+        NA
+        [% END %]
       </td>
     </tr>
     <tr>

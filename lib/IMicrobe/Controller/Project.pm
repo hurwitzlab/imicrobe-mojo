@@ -1,12 +1,12 @@
 package IMicrobe::Controller::Project;
 
 use Mojo::Base 'Mojolicious::Controller';
-use Data::Dump 'dump';
 
 # ----------------------------------------------------------------------
 sub browse {
     my $self     = shift;
     my $dbh      = $self->db->dbh;
+ 
     my @projects = map { 
             $_->{'url'} = 
                 sprintf('/project/list?domain=%s', $_->{'domain_name'});

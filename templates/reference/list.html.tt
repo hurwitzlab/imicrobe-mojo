@@ -31,7 +31,12 @@ $(document).ready(function() {
           <td>[% ref.build_date %]</td>
           <td align="right">[% ref.seq_count | comma %]</td>
           <td align="right">[% ref.length | comma %]</td>
-          <td><a href="[% ref.url %]">[% ref.file %]</a></td>
+          <td>
+            [% IF ref.file %]
+            <a href="[% ref.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% ref.file.replace('.*/', '') %]</a></td>
+            [% ELSE %]
+            NA
+            [% END %]
         </tr>
       [% END %]
       </tbody>
