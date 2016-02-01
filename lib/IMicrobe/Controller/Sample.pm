@@ -237,7 +237,6 @@ sub search_param_values {
        query    => {}
     ]);
 
-    print STDERR "result = ", dump($result);
     my @values = $result->{'ok'} ? sort @{ $result->{'values'} } : ();
 
     $self->respond_to(
@@ -253,6 +252,7 @@ sub search_param_values {
 
 # ----------------------------------------------------------------------
 sub _search_params {
+    my $self   = shift;
     my $db     = $self->db;
     my $mongo  = $db->mongo;
     my $mdb    = $mongo->get_database('imicrobe');
