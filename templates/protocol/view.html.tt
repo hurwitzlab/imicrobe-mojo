@@ -1,0 +1,59 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50,
+    "stateSave": true
+  };
+
+  $('#projects-tbl').dataTable(dt_opts);
+});
+</script>
+
+<div class="row">
+  <h1>[% title | truncate(50) %]</h1>
+  <table class="table">
+    <tr>
+      <th>Protocol Name</th>
+      <td>[% protocol.protocol_name %]</td>
+    </tr>
+    <tr>
+      <th>URL</th>
+      <td>
+        [% IF protocol.url %]
+          <a href="[% protocol.url %]">[% protocol.url %]</a>
+        [% ELSE %]
+          NA
+        [% END %]
+      </td>
+    </tr>
+  </table>
+
+  [% SET project_count=protocol.project_to_protocols_rs.count %]
+  [% IF project_count > 0 %]
+    <hr/>
+    <h3>Projects ([% project_count %])</h3>
+    <table class="table" id="projects-tbl">
+      <thead>
+        <tr>
+          <th>Domain</th>
+          <th>Project Name</th>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH p IN protocol.project_to_protocols %]
+        <tr>
+          <td>
+            [% SET domain=p.project.project_to_domains.domain.domain_name %]
+            <a href="/project/list?domain=[% domain %]">[% domain %]</a>
+          </td>
+          <td>
+            <a href="/project/view/[% p.project_id %]">[% p.project.project_name %]</a>
+          </td>
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
+  [% END %]
+  </p>
+</div>

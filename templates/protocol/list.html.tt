@@ -1,0 +1,42 @@
+<script>
+$(document).ready(function() {
+  $('#protocols').dataTable({
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 10
+  });
+});
+</script>
+
+<div class="row">
+  <h1>[% title %]</h1>
+  [% USE Comma %]
+  [% IF protocols.count > 0 %]
+  <div class="pull-right">
+    <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
+  <table id="protocols" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>URL</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% WHILE (protocol = protocols.next) %]
+      <tr>
+        <td><a href="/protocol/view/[% protocol.protocol_id %]">[% protocol.protocol_name OR 'Untitled' %]</a></td>
+        <td>
+        [% IF protocol.url %]
+          <a href="[% protocol.url %]">[% protocol.url %]</a>
+        [% ELSE %]
+          NA
+        [% END %]
+        </td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    No protocols.
+  [% END %]
+</div>
