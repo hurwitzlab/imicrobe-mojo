@@ -55,7 +55,7 @@
      [% END %]
     </ul>
     <div class="text-center">
-      <a class="btn btn-primary download-btn" href="/search.tab?[% c.req.url.query({'download' = 'search'}).query %]">Download</a>
+      <a class="btn btn-primary download-btn" href="/download">Download</a>
     </div>
   </div>
 [% END %]
