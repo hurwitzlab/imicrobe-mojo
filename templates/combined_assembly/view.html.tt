@@ -8,7 +8,10 @@
     </tr>
     <tr>
       <th>Name</th>
-      <td>[% assembly.assembly_name %]</td>
+      <td>
+        [% assembly.assembly_name %]&nbsp;<a href="[% c.req.url %].json"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+            </td>
+      </td>
     </tr>
     <tr>
       <th>Phylum</th>
@@ -46,19 +49,43 @@
     </tr>
     <tr>
       <th>Annotations</th>
-      <td>[% IF assembly.annotations_file %]<a href="[% iplant %][% assembly.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>
+        [% IF assembly.annotations_file %]
+          <a href="[% iplant %][% assembly.annotations_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% assembly.annotations_file %]</a>
+        [% ELSE %]
+          N/A
+        [% END %]
+      </td>
     </tr>
     <tr>
       <th>Peptides</th>
-      <td>[% IF assembly.peptides_file %]<a href="[% iplant %][% assembly.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>
+        [% IF assembly.peptides_file %]
+          <a href="[% iplant %][% assembly.peptides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% assembly.peptides_file %]</a>
+          [% ELSE %]
+            N/A
+        [% END %]
+      </td>
     </tr>
     <tr>
       <th>CDS</th>
-      <td>[% IF assembly.cds_file %]<a href="[% iplant %][% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>
+        [% IF assembly.cds_file %]
+          <a href="[% iplant %][% assembly.cds_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% assembly.cds_file %]</a>
+        [% ELSE %]
+          N/A
+        [% END %]
+      </td>
     </tr>
     <tr>
       <th>NT</th>
-      <td>[% IF assembly.nucleotides_file %]<a href="[% iplant %][% assembly.nucleotides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></a>[% ELSE %]N/A[% END %]</td>
+      <td>
+        [% IF assembly.nucleotides_file %]
+          <a href="[% iplant %][% assembly.nucleotides_file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% assembly.nucleotides_file %]</a>
+        [% ELSE %]
+          N/A
+        [% END %]
+      </td>
     </tr>
   </table>
 </div>

@@ -10,6 +10,20 @@ $(document).ready(function() {
 <div class="row">
   <h1>[% title %]</h1>
   [% USE Comma %]
+  [% SET query_params = c.req.query_params.to_hash %]
+  [% IF query_params.keys.size > 0 %]
+    <div class="well well-sm text-center">
+    [% FOREACH param IN query_params.keys %]
+      [% SET not_this = [] %]
+      [% FOREACH p2 IN query_params.keys %]
+        [% IF p2 != param %]
+          [% not_this.push(p2 _ "=" _ query_params.$p2) %]
+        [% END %]
+      [% END %]
+      <a href="[% c.req.url.path %]?[% not_this.join('&amp') %]"><span class="glyphicon glyphicon-remove-circle"></span>&nbsp;[% param %] = [% query_params.$param %]</a></br>
+    [% END %]
+    </div>
+  [% END %]
   [% IF samples.size > 0 %]
     <div class="pull-right">
       <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
@@ -17,6 +31,7 @@ $(document).ready(function() {
     <table id="samples-tbl" class="display" cellspacing="0" width="100%">
      <thead>
      <tr>
+       <th>Domain</th>
        <th>Project</th>
        <th>Sample</th>
        <th>Type</th>
@@ -28,6 +43,7 @@ $(document).ready(function() {
      [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
      [% FOREACH sample IN samples %]
        <tr>
+         <td>[% sample.domain_name %]</td>
          <td>
            <a href="/project/view/[% sample.project_id %]">[% sample.project_name | truncate(40) %]</a>
          </td>

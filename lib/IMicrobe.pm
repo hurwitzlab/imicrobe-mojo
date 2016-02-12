@@ -122,6 +122,12 @@ sub startup {
 
     $r->get('/publication/view/:publication_id')->to('publication#view');
 
+    $r->get('/protocol/info')->to('protocol#info');
+
+    $r->get('/protocol/list')->to('protocol#list');
+
+    $r->get('/protocol/view/:protocol_id')->to('protocol#view');
+
     $r->get('/reference/info')->to('reference#info');
 
     $r->get('/reference/list')->to('reference#list');

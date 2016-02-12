@@ -38,7 +38,7 @@ $(document).ready(function() {
      [% FOREACH assembly IN assemblies %]
        <tr>
          <td>
-           <a href="/project/view/[% assembly.project_id %]">[% assembly.project_name | truncate(20) %]</a>
+           <a href="/project/view/[% assembly.project_id %]">[% assembly.project.project_name | truncate(20) %]</a>
          </td>
          <td><a href="/combined_assembly/view/[% assembly.combined_assembly_id %]">[% assembly.assembly_name %]</a></td>
          <td>[% assembly.phylum %]</td>

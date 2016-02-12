@@ -70,7 +70,9 @@ $(document).ready(function() {
         <table class="table">
           <tr>
             <th>Sample Name</th>
-            <td>[% sample.sample_name %]</td>
+            <td>
+              [% sample.sample_name %]&nbsp;<a href="[% c.req.url %].json"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+            </td>
           </tr>
           <tr>
             <th>Sample Type</th>

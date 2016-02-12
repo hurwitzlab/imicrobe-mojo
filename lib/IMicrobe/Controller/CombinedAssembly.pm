@@ -39,45 +39,34 @@ sub info {
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self = shift;
-    my $dbh  = $self->db->dbh;
-    my $sql  = q[
-        select a.combined_assembly_id, a.assembly_name,
-               a.phylum, a.class, a.family,
-               a.genus, a.species, a.strain, a.pcr_amp,
-               a.annotations_file, a.peptides_file,
-               a.nucleotides_file, a.cds_file,
-               p.project_id, p.project_name
-        from   combined_assembly a, project p
-        where  a.project_id=p.project_id
-    ];
+    my $self   = shift;
+    my $db     = $self->db;
+    my $schema = $db->schema;
+    my $rs     = $schema->resultset('CombinedAssembly');
 
+    my @Assemblies;
     if (my $project_id = $self->param('project_id')) {
-        $sql .= sprintf('and a.project_id=%s', $dbh->quote($project_id));
+        @Assemblies = $rs->search({ project_id => $project_id });
+    }
+    else {
+        @Assemblies = $rs->all;
     }
 
-    my $assemblies = $dbh->selectall_arrayref($sql, { Columns => {} });
-    
-    for my $asm (@$assemblies) {
-#        $asm->{'samples'} = $dbh->selectall_arrayref(
-#            q[
-#                select s.sample_id, s.sample_name
-#                from   combined_assembly_to_sample c2s,
-#                       sample s
-#                where  c2s.combined_assembly_id=?
-#                and    c2s.sample_id=s.sample_id
-#            ], 
-#            { Columns => {} }, 
-#            $asm->{'combined_assembly_id'}
-#        );
+    my @exploded;
+    for my $CA (@Assemblies) {
+        my %hash = $CA->get_inflated_columns();
 
-        $asm->{'sample_names'} = join ', ', 
-            map { $_->{'sample_name'} } @{ $asm->{'samples'} };
+        $hash{'samples'} = [
+            map { {$_->get_inflated_columns()} } 
+            $CA->samples->all
+        ];
+
+        push @exploded, \%hash;
     }
 
     $self->respond_to(
         json => sub {
-            $self->render( json => $assemblies );
+            $self->render( json => \@exploded )
         },
 
         html => sub {
@@ -85,21 +74,20 @@ sub list {
 
             $self->render( 
                 title      => 'Combined Assemblies', 
-                assemblies => $assemblies 
+                assemblies => \@Assemblies 
             );
         },
 
         txt => sub {
-            $self->render( text => dump($assemblies) );
+            $self->render(text => dump(\@exploded))
         },
 
         tab => sub {
             my $text = '';
-
-            if (@$assemblies) {
-                my @flds = sort keys %{ $assemblies->[0] };
+            if (@exploded) {
+                my @flds = sort keys %{ $exploded[0] };
                 my @data = (join "\t", @flds);
-                for my $asm (@$assemblies) {
+                for my $asm (@exploded) {
                     push @data, join "\t", 
                         map { s/[\r\n]//g; $_ }
                         map { 
@@ -145,7 +133,13 @@ sub view {
 
     $self->respond_to(
         json => sub {
-            $self->render( json => { $Assembly->get_inflated_columns() } );
+            $self->render( json => { 
+                assembly => { $Assembly->get_inflated_columns() },
+                samples  => [
+                    map { {$_->sample->get_inflated_columns()} } 
+                    $Assembly->combined_assembly_to_samples->all
+                ]
+            });
         },
 
         html => sub {
@@ -161,7 +155,13 @@ sub view {
         },
 
         txt => sub {
-            $self->render( text => dump({ $Assembly->get_inflated_columns()}) );
+            $self->render( text => dump({
+                assembly => { $Assembly->get_inflated_columns() },
+                samples  => [
+                    map { {$_->sample->get_inflated_columns()} } 
+                    $Assembly->combined_assembly_to_samples->all
+                ]
+            }))
         },
     );
 }

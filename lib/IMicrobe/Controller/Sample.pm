@@ -66,27 +66,62 @@ sub info {
 
 # ----------------------------------------------------------------------
 sub list {
-    my $self = shift;
-    my $dbh  = $self->db->dbh;
-    my $sql  = q[
+    my $self   = shift;
+    my $db     = $self->db;
+    my $dbh    = $db->dbh;
+    my $sql    = q[
         select     s.sample_id, s.sample_name, s.sample_type,
                    p.project_id, p.project_name,
                    s.latitude, s.longitude,
+                   d.domain_name,
                    count(f.sample_file_id) as num_files
         from       sample s 
         inner join project p
         on         s.project_id=p.project_id
         left join  sample_file f
         on         s.sample_id=f.sample_id
+        inner join project_to_domain p2d
+        on         p.project_id=p2d.project_id
+        inner join domain d
+        on         p2d.domain_id=d.domain_id
     ];
 
+    my (@where, @args);
     if (my $project_id = $self->req->param('project_id')) {
-        $sql .= sprintf('where s.project_id=%s', $dbh->quote($project_id));
+        push @where, 's.project_id=?';
+        push @args, $project_id;
     }
 
-    $sql .= ' group by 1,2,3,4,5';
+    if (my $domain_id = $self->req->param('domain_id')) {
+        push @where, 'd2p.domain_id=?';
+        push @args, $domain_id;
+    }
 
-    my $samples = $dbh->selectall_arrayref($sql, { Columns => {} });
+    if (my $domain = $self->req->param('domain')) {
+        push @where, 'd.domain_name=?';
+        push @args, $domain;
+    }
+
+    if (@where) {
+        my $first = ' where ' . shift(@where);
+        $sql .= join ' and ', $first, map { qq[($_)] } @where;
+    }
+
+    $sql .= ' group by 1,2,3,4,5,6,7,8';
+
+    my $samples = $dbh->selectall_arrayref($sql, { Columns => {} }, @args);
+    for my $sample (@$samples) {
+        $sample->{'files'} = $dbh->selectall_arrayref(
+            q[
+                select f.file, t.type
+                from   sample_file f, sample_file_type t
+                where  f.sample_id=?
+                and    f.sample_file_type_id=t.sample_file_type_id
+            ],
+            { Columns => {} },
+            $sample->{'sample_id'}
+        );
+    }
 
     $self->respond_to(
         json => sub {
@@ -109,7 +144,9 @@ sub list {
                 my @flds = sort keys %{ $samples->[0] };
                 my @data = (join "\t", @flds);
                 for my $sample (@$samples) {
-                    push @data, join "\t", map { $sample->{$_} // '' } @flds;
+                    push @data, join "\t", 
+                        map { ref $sample->{$_} ? '-' : $sample->{$_} // '' } 
+                        @flds;
                 }
                 $text = join "\n", @data;
             }
@@ -186,12 +223,31 @@ sub view {
         }
     }
 
+    my @attributes = map { 
+        {
+            type     => $_->sample_attr_type->type, 
+            category => $_->sample_attr_type->category, 
+            value    => $_->attr_value,
+        } 
+    } $Sample->sample_attrs->all;
+
+    my @files = map {
+        { $_->sample_file_type->type, $_->file }
+    } $Sample->sample_files->all;
+
+    my %sample_hash;
+    my %tmp = $Sample->get_columns;
+    while (my ($key, $val) = each %tmp) {
+        next if ref $val;
+        $sample_hash{ $key } = $val;
+    }
+
     $self->respond_to(
         json => sub {
             $self->render( json => { 
-                sample                  => $Sample->get_inflated_columns(),
-                assembly_files          => \@assembly_files,
-                combined_assembly_files => \@combined_assembly_files,
+                sample     => \%sample_hash,
+                attributes => \@attributes,
+                files      => \@files,
             });
         },
 
@@ -209,9 +265,9 @@ sub view {
 
         txt => sub {
             $self->render( text => dump({ 
-                sample                  => {$Sample->get_inflated_columns()},
-                assembly_files          => \@assembly_files,
-                combined_assembly_files => \@combined_assembly_files,
+                sample     => \%sample_hash,
+                attributes => \@attributes,
+                files      => \@files,
             }));
         },
     );

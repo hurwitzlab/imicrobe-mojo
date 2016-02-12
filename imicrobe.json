@@ -10,6 +10,7 @@
     "download_link": "ftp://ftp.imicrobe.us",
     "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml",
     "gmap_api_key": "AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8",
+    "google_analytics_key": "UA-56769725-3",
     "db": {
         "name": "imicrobe",
         "user": "imicrobe",

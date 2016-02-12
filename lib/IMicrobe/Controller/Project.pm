@@ -1,6 +1,7 @@
 package IMicrobe::Controller::Project;
 
 use Mojo::Base 'Mojolicious::Controller';
+use Data::Dump 'dump';
 
 # ----------------------------------------------------------------------
 sub browse {
@@ -199,12 +200,22 @@ sub project_file_list {
         return $self->reply->exception("Bad project id ($project_id)");
 
     my @files = map { 
-        { type => $_->project_file_type->type, location => $_->file } 
+        { 
+            type     => $_->project_file_type->type, 
+            location => $_->file,
+            owner    => 'project',    
+            owner_id => $project_id
+        } 
     } $Project->project_files->all;
 
     for my $Sample ($Project->samples) {
         push @files, map { 
-            { type => $_->sample_file_type->type, location => $_->file } 
+            { 
+                type     => $_->sample_file_type->type, 
+                location => $_->file,
+                owner    => 'sample',
+                owner_id => $Sample->id,
+            } 
         } $Sample->sample_files->all;
     }
 
@@ -291,9 +302,10 @@ sub view {
             $self->render( text => dump({
                 project => { $Project->get_inflated_columns() },
                 samples => [ 
-                    map { {$_->get_inflated_columns()} } $Project->samples->all
+                    map { {$_->get_inflated_columns()} }
+                    $Project->samples->all
                 ], 
-            }));
+            }))
         },
     );
 }
