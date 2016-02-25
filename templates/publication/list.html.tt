@@ -8,7 +8,7 @@ $(document).ready(function() {
 </script>
 
 <div class="row">
-  <h1>[% title %]</h1>
+  <h1>[% title %] ([% pubs.count OR '0' | comma %])</h1>
   [% USE Comma %]
   [% IF pubs.count > 0 %]
   <div class="pull-right">

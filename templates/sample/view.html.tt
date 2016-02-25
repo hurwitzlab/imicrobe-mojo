@@ -10,6 +10,8 @@ $(document).ready(function() {
 });
 </script>
 
+[% USE Comma %]
+
 [%- SET num_download_files = sample.sample_files_rs.count + assembly_files.size + combined_assembly_files.size;
 -%]
 
@@ -193,6 +195,10 @@ $(document).ready(function() {
             <thead>
               <tr>
                 <th>Type</th>
+                <th>#Seqs</th>
+                <th>#BP</th>
+                <th>Avg. Len.</th>
+                <th>%GC</th>
                 <th>Location</th>
               </tr>
             </thead>
@@ -200,6 +206,10 @@ $(document).ready(function() {
             [% FOREACH f IN sample.sample_files %]
               <tr>
                 <td>[% f.sample_file_type.type.ucfirst.replace('_',' ') %]</td>
+                <td align="right">[% f.num_seqs | comma %]</td>
+                <td align="right">[% f.num_bp | comma %]</td>
+                <td align="right">[% f.avg_len %]</td>
+                <td align="right">[% f.pct_gc %]</td>
                 <td><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.file %]</a></td>
               </tr>
             [% END %]

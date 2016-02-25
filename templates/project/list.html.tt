@@ -11,7 +11,7 @@ $(document).ready(function() {
 </script>
 
 <div class="row">
-  <h1>[% title %]</h1>
+  <h1>Projects ([% projects.size OR '0' %])</h1>
   [% IF domain %]
     <div class="well well-sm text-center">
     <a href="[% c.req.url.path %]"><span class="glyphicon glyphicon-remove-circle"></span>&nbsp;[% domain %] only</a>

@@ -282,6 +282,7 @@ $(document).ready(function() {
            <thead>
            <tr>
               <th>Sample Name</th>
+              <th>Desc</th>
            </tr>
            </thead>
 
@@ -290,6 +291,9 @@ $(document).ready(function() {
              <tr>
               <td>
                 <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
+              </td>
+              <td>
+                [% sample.sample_description %]
               </td>
              </tr>
            [% END %]
