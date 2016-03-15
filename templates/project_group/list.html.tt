@@ -1,0 +1,42 @@
+[% USE Comma %]
+
+<script>
+$(document).ready(function() {
+  $('#groups').dataTable({
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 10,
+    "stateSave": true
+  });
+});
+</script>
+
+<div class="row">
+  <h1>Project Groups ([% groups.size OR '0' %])</h1>
+  [% IF domain %]
+    <div class="well well-sm text-center">
+    <a href="[% c.req.url.path %]"><span class="glyphicon glyphicon-remove-circle"></span>&nbsp;[% domain %] only</a>
+    </div>
+  [% END %]
+  [% IF groups.size > 0 %]
+  <div class="pull-right">
+    <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
+  <table id="groups" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th># of Projects</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH group IN groups %]
+      <tr>
+        <td><a href="/project_group/view/[% group.id %]">[% group.group_name %]</a></td>
+        <td>[% group.project_to_project_groups.size OR '0' %]</td>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    No groups.
+  [% END %]
+</div>
