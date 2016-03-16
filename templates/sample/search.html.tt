@@ -1,5 +1,6 @@
 <script type = "text/javascript">
 var paramType = {};
+var paramValues = {};
 
 $(document).ready(function() {
   $("#paramForm").on( "submit", function(event) {
@@ -7,18 +8,7 @@ $(document).ready(function() {
     updateSearchResults($(this).serialize());
   });
 
-  $.get("/sample/search_params.json", function(data) {
-    $.each(data, function(key, value) {   
-      var pname = value[0];
-      var ptype = value[1];
-      paramType[pname] = ptype;
-
-      $('#searchList')
-        .append($("<option></option>")
-        .attr("value", pname)
-        .text(prettyStr(pname.replace('__', ':_')))); 
-    });    
-  });
+  loadSearchParams();
 
   // See if we have a query string
   var qs = window.location.search;
@@ -29,6 +19,38 @@ $(document).ready(function() {
 });
 
 // --------------------------------------------------
+function loadSearchParams(keys) {
+  if (typeof(keys) == 'undefined') {
+    keys = [];
+  }
+
+  var limit = keys.reduce(
+      function(hash, elem, idx) { hash[elem] = idx++; return hash }, {}
+  );
+
+  $('#searchList').empty();
+  $('#searchList')
+    .append($("<option>")
+    .attr("value", "")
+    .text("--Select--")); 
+
+  $.get("/sample/search_params.json", function(data) {
+    $.each(data, function(key, value) {   
+      var pname = value[0];
+      var ptype = value[1];
+      paramType[pname] = ptype;
+
+      if (keys.length == 0 || (keys.length > 0 && pname in limit)) {
+        $('#searchList')
+          .append($("<option>")
+          .attr("value", pname)
+          .text(prettyStr(pname.replace('__', ':_')))); 
+      }
+    });    
+  });
+}
+
+// --------------------------------------------------
 function prettyStr(s) {
   s += '';
   return _.map(s.split("_"), function(str) {
@@ -37,10 +59,19 @@ function prettyStr(s) {
 }
 
 // --------------------------------------------------
-function getParamValues(paramName, divId) {
-  $.get('/sample/search_param_values/' + paramName + '.json', 
-    function(data) {
-      html = ''
+function setParamValues(paramName, divId) {
+  if (![paramName, divId].every(
+        function(v) { return typeof(v) == 'string' && v.length > 0 })
+  ) {
+    return false;
+  }
+
+  f = function (data) {
+    html = '';
+    if (typeof(data) == 'undefined') {
+      html = 'Error getting values for param ' + paramName;
+    }
+    else {
       if (data.length > 0 && data.length < 1000) {
         html = '<select name="' + paramName + '" multiple>';
         $.each(data, function(idx, val) {
@@ -52,23 +83,30 @@ function getParamValues(paramName, divId) {
       else {
         html = '<input name="' + paramName + '"/>';
       }
-
-      if (html) {
-        $('#' + divId).append(html);
-      }
     }
-  );
+
+    if (html) {
+      $('#' + divId).append(html);
+    }
+  }
+
+  if (paramName in paramValues) {
+    f(Object.keys(paramValues[paramName]).sort());
+  }
+  else {
+    $.get('/sample/search_param_values/' + paramName + '.json?', f);
+  }
 }
 
 // --------------------------------------------------
 function addOption(paramName) {
   var type = paramType[paramName];
   var tr   = '<tr><th>' + prettyStr(paramName) + '</th>';
+  var valsDivId = '';
 
   if (type == 'string') {
     valsDivId = paramName + '_vals';
     tr  += '<td><div id="' +  valsDivId + '"></div></td></td><td>';
-    vals = getParamValues(paramName, valsDivId);
   }
   else {
     tr  += '<td>Min: <input name="min_' + paramName + '"/></td>';
@@ -78,12 +116,14 @@ function addOption(paramName) {
   tr += '<td><button type="submit" class="btn btn-primary">Search</button></td><td><button class="btn btn-default" onclick="removeTableRow(this)">Remove</button></td></tr>';
 
   $('#paramTable > tbody:last').append(tr);
+  setParamValues(paramName, valsDivId);
 }
 
 // --------------------------------------------------
 function removeTableRow(row) {
   $(row).closest("tr").remove();
   $('#paramForm').submit();
+  loadSearchParams();
   return false;
 }
 
@@ -106,6 +146,26 @@ function updateSearchResults(formData) {
             "iDisplayLength": 50,
             "bFilter": false
           });
+
+          var keys = _.filter(
+            _.uniq(_.flatten(data['samples'].map(Object.keys))),
+            function (str) { return str.indexOf('__') > 0 }
+          );
+
+          paramValues = data['samples'].reduce(
+            function(hash, obj, idx) {
+              Object.keys(obj).map(function (key, i, arr) {
+                if (typeof(hash[key]) == 'undefined') {
+                  hash[key] = {};
+                }
+                value = obj[key];
+                hash[key][value] = 1;
+              });
+              return hash
+            }, {}
+          );
+
+          loadSearchParams(keys);
         }
         else {
           $('#results').html('<div class="well text-center">No results</div>');
@@ -123,7 +183,6 @@ function updateSearchResults(formData) {
   <div class="text-center">
     <b>Add Condition:</b>
     <select id="searchList" onchange="addOption(this.value)">
-      <option value="">--Select--</option>
     </select>
   </div>
   <table class="table" id="paramTable">

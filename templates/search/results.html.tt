@@ -4,6 +4,7 @@
   'assembly'          => 'assembly_name',
   'project'           => 'project_name',
   'project_page'      => 'title',
+  'project_group'     => 'group_name',
   'publication'       => 'title',
   'sample'            => 'sample_name'
   'combined_assembly' => 'assembly_name',

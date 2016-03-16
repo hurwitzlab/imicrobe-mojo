@@ -108,6 +108,12 @@ sub startup {
 
     $r->get('/project/view/:project_id')->to('project#view');
 
+    $r->get('/project_group/info')->to('project_group#info');
+
+    $r->get('/project_group/list')->to('project_group#list');
+
+    $r->get('/project_group/view/:project_group_id')->to('project_group#view');
+
     $r->get('/project_page/info')->to('project_page#info');
 
     $r->get('/project_page/view/:project_page_id')->to('project_page#view');

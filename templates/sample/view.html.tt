@@ -169,6 +169,9 @@ $(document).ready(function() {
                   <td>
                   [% IF attr.sample_attr_type.url_template; USE f=String(attr.attr_value); SET url=f.format(attr.sample_attr_type.url_template); %]<a href="[% url %]">[% END %][% attr.attr_value %][% IF attr.url_template %]</a>[% END %]
                   </td>
+                  <td>
+                    [% attr.unit OR '&nbsp;' %]
+                  </td>
                 </tr>
               [% END %]
             </table>

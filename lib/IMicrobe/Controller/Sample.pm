@@ -80,9 +80,9 @@ sub list {
         on         s.project_id=p.project_id
         left join  sample_file f
         on         s.sample_id=f.sample_id
-        inner join project_to_domain p2d
+        left join  project_to_domain p2d
         on         p.project_id=p2d.project_id
-        inner join domain d
+        left join  domain d
         on         p2d.domain_id=d.domain_id
     ];
 
@@ -404,7 +404,7 @@ sub search_results {
         }
 
         my %fields = map { $_, 1 } @return_fields;
-        my $cursor = $coll->find(\%search)->fields(\%fields);
+        my $cursor = $coll->find(\%search); #->fields(\%fields);
 
         for my $sample ($cursor->all) {
             if ($self->param('download')) {

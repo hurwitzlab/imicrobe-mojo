@@ -207,5 +207,6 @@ $(document).ready(function() {
       </div>
     </div>
   </div>
+  <pre>[% USE Dumper; Dumper.dump(samples) %]</pre>
 [% END %]
 </div>
