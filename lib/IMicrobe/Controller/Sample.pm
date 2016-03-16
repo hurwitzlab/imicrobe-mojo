@@ -87,9 +87,16 @@ sub list {
     ];
 
     my (@where, @args);
-    if (my $project_id = $self->req->param('project_id')) {
-        push @where, 's.project_id=?';
-        push @args, $project_id;
+    if (my @project_ids = split(/\s*,\s*/, $self->req->param('project_id'))) {
+        if (scalar(@project_ids) == 1) {
+            push @where, 's.project_id=?';
+            push @args, $project_ids[0];
+        }
+        else {
+            push @where, sprintf(
+                's.project_id in (%s)', join(', ', @project_ids)
+            );
+        }
     }
 
     if (my $domain_id = $self->req->param('domain_id')) {
