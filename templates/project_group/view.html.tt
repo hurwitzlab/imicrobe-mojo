@@ -1,5 +1,47 @@
 <script type="text/javascript">
+var map;
+function initialize() {
+  var center = new google.maps.LatLng(0, 0);
+  map = new google.maps.Map(document.getElementById("map-canvas"), 
+    { zoom: 2, center: center });
+
+  [% SET project_ids=[] %]
+  [% FOREACH p2g IN group.project_to_project_groups %]
+    [% project_ids.push(p2g.project_id) %]
+  [% END %]
+  $.getJSON(
+    '/sample/list.json?project_id=[% project_ids.join(",") %]',
+    function(data) { 
+      console.log("data = " + JSON.stringify(data));
+      $.each(data, function(i, sample) {
+        if (sample.latitude && sample.longitude) {
+          var pos = new google.maps.LatLng(sample.latitude, sample.longitude);
+
+          var marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            title: sample.sample_name
+          });
+
+          var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
+              sample.sample_name + '</a><br/><ul>';
+
+          var infowindow = new google.maps.InfoWindow({
+            content: desc
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(map,marker);
+          });
+        }
+      });
+    }
+  );
+}
+
 $(document).ready(function() {
+  google.maps.event.addDomListener(window, "load", initialize);
+
   var dt_opts = {
     "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
     "iDisplayLength": 50,
@@ -7,6 +49,12 @@ $(document).ready(function() {
   };
 
   $('#projects-tbl').dataTable(dt_opts);
+
+  $('a[href="#map"]').on('shown.bs.tab', function(e) {
+    lastCenter=map.getCenter();
+    google.maps.event.trigger(map, 'resize');
+    map.setCenter(lastCenter);
+  });
 });
 </script>
 
@@ -15,7 +63,8 @@ $(document).ready(function() {
   <div class="bs-component">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#projects" data-toggle="tab">Projects ([% group.project_to_project_groups_rs.count %])</a></li>
-      <li><a href="#desc" data-toggle="tab">Description</a></li>
+      <li><a href="#info" data-toggle="tab">Info</a></li>
+      <li><a href="#map" data-toggle="tab">Samples Map</a></li>
     </ul>
 
     <div id="tabContent" class="tab-content">
@@ -44,9 +93,25 @@ $(document).ready(function() {
         [% END %]
       </div>
 
-      <div class="tab-pane fade active in" id="desc">
+      <div class="tab-pane fade active in" id="info">
         <br/>
-        [% group.description.replace("\n", "<br/>") %]
+        <table class="table">
+        [% IF group.url %]
+          <tr>
+            <th>URL</th>
+            <td><a href="[% group.url %]">[% group.url %]</a></td>
+          </tr>
+        [% END %]
+        <tr>
+          <th>Description</th>
+          <td>[% group.description.replace("\n", "<br/>") OR 'NA' %]</td>
+        </tr>
+        </table>
+      </div>
+
+      <div class="tab-pane fade" id="map">
+        <br/>
+        <div id="map-canvas"></div>
       </div>
     </div>
   </div>
