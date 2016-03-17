@@ -1,0 +1,40 @@
+[% USE Comma %]
+<script>
+$(document).ready(function() {
+  $('#invs').dataTable({
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 10
+  });
+});
+</script>
+
+<div class="row">
+  <h1>[% title %] ([% investigators.count OR '0' | comma %])</h1>
+  [% IF investigators.count > 0 %]
+  <div class="pull-right">
+    <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
+  <table id="invs" class="display" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Inst</th>
+        <th># Projects</th>
+        <th># Samples</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% WHILE (inv = investigators.next) %]
+      <tr>
+        <td><a href="/investigator/view/[% inv.id %]">[% inv.investigator_name OR 'NA' %]</a></td>
+        <td>[% inv.institution OR '&nbsp;' %]</td>
+        <td>[% inv.project_to_investigators_rs.count OR '0' %]</td>
+        <td>[% inv.sample_to_investigators_rs.count OR '0' %]</td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    No investigators.
+  [% END %]
+</div>
