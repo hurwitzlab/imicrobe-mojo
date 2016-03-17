@@ -98,6 +98,10 @@ sub startup {
 
     $r->get('/info')->to('welcome#index');
 
+    $r->get('/investigator/list')->to('investigator#list');
+
+    $r->get('/investigator/view/:investigator_id')->to('investigator#view');
+
     $r->get('/project/info')->to('project#info');
 
     $r->get('/project/browse')->to('project#browse');
