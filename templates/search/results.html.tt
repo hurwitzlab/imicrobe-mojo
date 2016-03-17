@@ -1,13 +1,14 @@
 [% 
   USE Comma;
   SET name_fields = {
-  'assembly'          => 'assembly_name',
-  'project'           => 'project_name',
-  'project_page'      => 'title',
-  'project_group'     => 'group_name',
-  'publication'       => 'title',
-  'sample'            => 'sample_name'
-  'combined_assembly' => 'assembly_name',
+  'assembly'          = 'assembly_name',
+  'investigator'      = 'investigator_name',
+  'project'           = 'project_name',
+  'project_page'      = 'title',
+  'project_group'     = 'group_name',
+  'publication'       = 'title',
+  'sample'            = 'sample_name'
+  'combined_assembly' = 'assembly_name',
 } %]
 <div class="row">
 <h1>Search</h1>
