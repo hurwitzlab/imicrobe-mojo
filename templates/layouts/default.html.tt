@@ -53,6 +53,7 @@
                 <li><a href="/project/list">Projects</a></li>
                 <li><a href="/project_group/list">Project Groups</a></li>
                 <li><a href="/project/browse">Domains of Life</a></li>
+                <li><a href="/investigator/list">Investigators</a></li>
                 <li><a href="/assembly/list">Assemblies</a></li>
                 <li><a href="/combined_assembly/list">Combined Assemblies</a></li>
                 <li><a href="/sample/list">Samples</a></li>

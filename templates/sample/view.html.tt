@@ -93,9 +93,15 @@ $(document).ready(function() {
             </td>
           </tr>
           <tr>
+            <th>URL</th>
+            <td>
+              [% IF sample.url %]<a href="[% sample.url %]">[% sample.url %]</a>[% ELSE %]N/A[% END %]
+            </td>
+          </tr>
+          <tr>
             <th>Description</th>
             <td>
-              [% FOREACH fld IN [ 'description', 'sample_description' ] %]
+              [% FOREACH fld IN [ 'description', 'sample_description', 'comments' ] %]
                 [% SET val = sample.$fld %]
                 [% IF val %]
                   <p>
