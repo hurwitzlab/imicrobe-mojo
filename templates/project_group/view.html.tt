@@ -84,7 +84,22 @@ $(document).ready(function() {
               <td>
                 <a href="/project/view/[% p2g.project_id %]">[% p2g.project.project_name | truncate(100) %]</a>
               </td>
-              <td>[% p2g.project.pi %]</td>
+              <td>
+                [% SET project=p2g.project %]
+                [% IF project.project_to_investigators_rs.count > 0 %]
+                  [% SET pis=[] %]
+                  [% FOREACH p2i IN project.project_to_investigators %]
+                    [% pis.push(
+                       '<a href="/investigator/view/' _ p2i.investigator.id _ '">' _
+                       p2i.investigator.investigator_name _
+                       '</a>'
+                    ) %]
+                  [% END %]
+                  [% pis.join(', ') %]
+                [% ELSE %]
+                  &nbsp;
+                [% END %]
+              </td>
             [% END %]
             </tbody>
           </table>
