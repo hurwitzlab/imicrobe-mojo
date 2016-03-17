@@ -1,28 +1,101 @@
+<script type="text/javascript">
+var map;
+function initialize() {
+  var center = new google.maps.LatLng(0, 0);
+  map = new google.maps.Map(document.getElementById("map-canvas"), 
+    { zoom: 2, center: center });
+
+  [% SET project_ids=[] %]
+  [% FOREACH p2i IN investigator.project_to_investigators %]
+    [% project_ids.push(p2i.project_id) %]
+  [% END %]
+  $.getJSON(
+    '/sample/list.json?project_id=[% project_ids.join(",") %]',
+    function(data) { 
+      $.each(data, function(i, sample) {
+        if (sample.latitude && sample.longitude) {
+          var pos = new google.maps.LatLng(sample.latitude, sample.longitude);
+
+          var marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+            title: sample.sample_name
+          });
+
+          var desc = '<a href="/sample/view/' + sample.sample_id + '"\>' +
+              sample.sample_name + '</a><br/><ul>';
+
+          var infowindow = new google.maps.InfoWindow({
+            content: desc
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(map,marker);
+          });
+        }
+      });
+    }
+  );
+}
+
+$(document).ready(function() {
+  google.maps.event.addDomListener(window, "load", initialize);
+
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50,
+    "stateSave": true
+  };
+
+  $('#projects-tbl').dataTable(dt_opts);
+
+  $('a[href="#map"]').on('shown.bs.tab', function(e) {
+    lastCenter=map.getCenter();
+    google.maps.event.trigger(map, 'resize');
+    map.setCenter(lastCenter);
+  });
+});
+</script>
+
 <div class="row">
-  <h1>[% title %]</h1>
-  <table class="table">
-    <tr>
-      <th>Name</th>
-      <td>[% investigator.investigator_name OR 'NA' %]</td>
-    </tr>
-    <tr>
-      <th>Institution</th>
-      <td>[% investigator.institution OR 'NA' %]</td>
-    </tr>
-    <tr>
-      <th>Projects ([% investigator.project_to_investigators_rs.count %])</th>
-      <td>
-        [% IF investigator.project_to_investigators_rs.count > 0 %]
-          <ul>
-          [% FOREACH p2i IN investigator.project_to_investigators %]
-            <li><a href="/project/view/[% p2i.project_id %]">[% p2i.project.project_name OR 'NA' %]</a></li>
-          [% END %]
-          </ul>
-        [% ELSE %]
-          None.
-        [% END %]
-      </td>
-    </tr>
-  </table>
-  </p>
+  <h2 id="nav-tabs">[% title %]</h2>
+  <div class="bs-component">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#info" data-toggle="tab">Info</a></li>
+      <li><a href="#map" data-toggle="tab">Samples Map</a></li>
+    </ul>
+
+    <div id="tabContent" class="tab-content">
+      <div class="tab-pane fade active in" id="info">
+        <br/>
+        <table class="table">
+          <tr>
+            <th>Name</th>
+            <td>[% investigator.investigator_name OR 'NA' %]</td>
+          </tr>
+          <tr>
+            <th>Institution</th>
+            <td>[% investigator.institution OR 'NA' %]</td>
+          </tr>
+          <tr>
+            <th>Projects ([% investigator.project_to_investigators_rs.count %])</th>
+            <td>
+              [% IF investigator.project_to_investigators_rs.count > 0 %]
+                <ul>
+                [% FOREACH p2i IN investigator.project_to_investigators %]
+                  <li><a href="/project/view/[% p2i.project_id %]">[% p2i.project.project_name OR 'NA' %]</a></li>
+                [% END %]
+                </ul>
+              [% ELSE %]
+                None.
+              [% END %]
+            </td>
+          </tr>
+        </table>
+        </p>
+      </div>
+      <div class="tab-pane fade" id="map">
+        <br/>
+        <div id="map-canvas"></div>
+      </div>
 </div>
