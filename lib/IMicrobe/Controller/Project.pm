@@ -107,7 +107,6 @@ sub list {
     my $domain = lc($self->param('domain') || '');
     my $sql    = q[
         select    p.project_id, p.project_name, p.project_code,
-                  p.pi, p.institution,
                   p.project_type, p.description, 
                   read_file, meta_file, assembly_file, peptide_file,
                   count(s.sample_id) as num_samples
@@ -145,6 +144,16 @@ sub list {
                 and    p2d.domain_id=d.domain_id
             ],
             {},
+            $project->{'project_id'}
+        );
+        $project->{'investigators'} = $dbh->selectall_arrayref(
+            q[
+                select i.investigator_id, i.investigator_name, i.institution
+                from   project_to_investigator p2i, investigator i
+                where  p2i.project_id=?
+                and    p2i.investigator_id=i.investigator_id
+            ],
+            { Columns => {} },
             $project->{'project_id'}
         );
     }
