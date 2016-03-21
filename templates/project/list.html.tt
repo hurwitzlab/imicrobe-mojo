@@ -39,7 +39,20 @@ $(document).ready(function() {
     [% FOREACH project IN projects %]
       <tr>
         <td><a href="/project/view/[% project.project_id %]">[% project.project_name | truncate(70) %]</a></td>
-        <td>[% project.pi | truncate(30) %]</td>
+        <td>[% project.pi | truncate(30) %]
+          [% 
+            IF project.investigators.size > 0; 
+              SET investigators=[]; 
+              FOREACH inv IN project.investigators;
+                investigators.push("<a href=\"/investigator/view/" _ inv.investigator_id _ "\">" _ inv.investigator_name _ "</a>");
+              END;
+              investigators.join(', ');
+            ELSE;
+              'NA';
+            END;
+          %]
+        
+        </td>
         <td>
           [% 
             IF project.domains.size > 0; 
