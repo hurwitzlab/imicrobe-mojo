@@ -21,11 +21,13 @@ function initialize() {
   $.getJSON(
     '/sample/list.json?project_id=[% project.project_id %]',
     function(data) { 
+      //dot = 'https://maps.gstatic.com/intl/en_ALL/mapfiles/markers2/measle.png';
       $.each(data, function(i, sample) {
         if (sample.latitude && sample.longitude) {
           var pos = new google.maps.LatLng(sample.latitude, sample.longitude);
 
           var marker = new google.maps.Marker({
+            //icon: dot
             position: pos,
             map: map,
             title: sample.sample_name
@@ -311,6 +313,7 @@ $(document).ready(function() {
            <thead>
            <tr>
               <th>Sample Name</th>
+              <th>PI</th>
               <th>Desc</th>
            </tr>
            </thead>
@@ -320,6 +323,18 @@ $(document).ready(function() {
              <tr>
               <td>
                 <a href="/sample/view/[% sample.sample_id %]">[% sample.sample_name %]</a>
+              </td>
+              <td>
+                [% IF sample.sample_to_investigators_rs.count > 0 %]
+                  [% SET pis = [] %]
+                  [% FOREACH s2i IN sample.sample_to_investigators %]
+                    [% SET inv = s2i.investigator %]
+                    [% pis.push(inv.investigator_name) %]
+                  [% END %]
+                  [% pis.join(', ') %]
+                [% ELSE %]
+                  NA
+                [% END %]
               </td>
               <td>
                 [% sample.sample_description %]

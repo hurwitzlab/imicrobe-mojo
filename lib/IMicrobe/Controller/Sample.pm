@@ -573,8 +573,6 @@ sub sample_file_list {
         { type => $_->sample_file_type->type, location => $_->file } 
     } $Sample->sample_files->all;
 
-    say "files = ", dump(\@files);
-
     $self->respond_to(
         json => sub {
             $self->render( json => \@files );

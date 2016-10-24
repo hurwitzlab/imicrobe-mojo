@@ -86,9 +86,7 @@ sub view {
 
     $self->respond_to(
         json => sub {
-            $self->render( json => { 
-                investigator => { $Inv->get_inflated_columns() }
-            });
+            $self->render( json => { $Inv->get_inflated_columns() });
         },
 
         html => sub {

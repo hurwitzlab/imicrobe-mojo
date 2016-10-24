@@ -60,6 +60,11 @@ $(document).ready(function() {
 
 <div class="row">
   <h2 id="nav-tabs">Project Group: [% group.group_name OR 'Unknown project' %]</h2>
+  <div class="pull-right">
+    <a href="[% c.req.url %].json"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
+    
+  </h2>
   <div class="bs-component">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#projects" data-toggle="tab">Projects ([% group.project_to_project_groups_rs.count %])</a></li>

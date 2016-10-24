@@ -71,7 +71,8 @@ $(document).ready(function() {
         <table class="table">
           <tr>
             <th>Name</th>
-            <td>[% investigator.investigator_name OR 'NA' %]</td>
+            <td>[% investigator.investigator_name OR 'NA' %]&nbsp;<a href="[% c.req.url %].json"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+            </td>
           </tr>
           <tr>
             <th>Institution</th>
@@ -84,6 +85,20 @@ $(document).ready(function() {
                 <ul>
                 [% FOREACH p2i IN investigator.project_to_investigators %]
                   <li><a href="/project/view/[% p2i.project_id %]">[% p2i.project.project_name OR 'NA' %]</a></li>
+                [% END %]
+                </ul>
+              [% ELSE %]
+                None.
+              [% END %]
+            </td>
+          </tr>
+          <tr>
+            <th>Samples ([% investigator.sample_to_investigators_rs.count %])</th>
+            <td>
+              [% IF investigator.sample_to_investigators_rs.count > 0 %]
+                <ul>
+                [% FOREACH s2i IN investigator.sample_to_investigators %]
+                  <li><a href="/sample/view/[% s2i.sample_id %]">[% s2i.sample.project.project_name %]: [% s2i.sample.sample_name OR 'NA' %]</a></li>
                 [% END %]
                 </ul>
               [% ELSE %]

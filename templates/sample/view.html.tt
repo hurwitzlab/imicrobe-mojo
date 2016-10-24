@@ -87,9 +87,19 @@ $(document).ready(function() {
             </td>
           </tr>
           <tr>
-            <th>PI</th>
+            <th>Investigators ([% sample.sample_to_investigators_rs.count %])</th>
             <td>
-              [% sample.pi OR sample.principle_investigator OR 'N/A' %]
+              [% IF sample.sample_to_investigators_rs.count > 0 %]
+                <ul>
+                [% FOREACH s2i IN sample.sample_to_investigators %]
+                  [% SET inv = s2i.investigator %]
+                  <li><a href="/investigator/view/[% inv.id %]">[% inv.investigator_name %] [% IF inv.institution %]([% inv.institution %])[% END %]</a>
+                  </li>
+                [% END %]
+                </ul>
+              [% ELSE %]
+                N/A
+              [% END %]
             </td>
           </tr>
           <tr>
@@ -219,7 +229,7 @@ $(document).ready(function() {
                 <td align="right">[% f.num_bp | comma %]</td>
                 <td align="right">[% f.avg_len %]</td>
                 <td align="right">[% f.pct_gc %]</td>
-                <td><a href="[% url %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.file %]</a></td>
+                <td><a href="[% UNLESS f.file.match('^ftp:'); url; END %][% f.file %]"><span class="glyphicon glyphicon-file" aria-hidden="true"></span>&nbsp;[% f.file %]</a></td>
               </tr>
             [% END %]
             </tbody>
