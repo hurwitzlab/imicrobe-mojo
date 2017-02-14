@@ -105,9 +105,9 @@
     <div class="col-md-4">
       <h2>Discover</h2>
       <p>
-      Use <a href="http://imicrobe.us/tools/">iMicrobe's bioinformatics tool</a> in the
-      <a href="http://www.iplantcollaborative.org/ci/discovery-environment">iPlant
-        Disovery Environment</a> with data in the <a href="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe">iPlant Data Store</a>.
+      Use <a href="http://imicrobe.us/tools/">iMicrobe's bioinformatics tools</a> in the
+      <a href="http://de.cyverse.org">iPlant
+        Discovery Environment</a> with data in the <a href="http://mirrors.iplantcollaborative.org/browse/iplant/home/shared/imicrobe">iPlant Data Store</a>.
     </div>
     <div class="col-md-4">
       <h2>Featured</h2>
