@@ -16,7 +16,35 @@ $(document).ready(function() {
   if (qs) {
     updateSearchResults(qs);
   }
+
+  updateCart();
 });
+
+// --------------------------------------------------
+function toggleAll() {
+  var checkboxes = $('#samples-tbl').find("input[name='sample_id[]']:checkbox");
+  checkboxes.prop("checked", $('#toggler').is(':checked'));
+}
+
+// --------------------------------------------------
+function addToCart() {
+  vals = $.map($('#samples-tbl').find("input[name='sample_id[]']:checked"), function(item) { return item.value });
+
+  if (vals.length > 0) {
+    $.post('/cart/add', { item: vals.join(',') })
+     .fail(function() { alert( "error adding to cart" ) })
+     .success(function() {
+      //var n = vals.length;
+      //alert("Added " + n + " sample" + (n == 1 ? '' : 's') + " to cart")
+      updateCart();
+    });
+  }
+}
+
+// --------------------------------------------------
+function updateCart() {
+  $.get('/cart/icon', function (html) { $('#cart').html(html) });
+}
 
 // --------------------------------------------------
 function loadSearchParams(keys) {
@@ -179,6 +207,8 @@ function updateSearchResults(formData) {
 }
 </script>
 
+<div class="pull-right" id="cart"></div>
+
 <form id="paramForm">
   <div class="text-center">
     <b>Add Condition:</b>
@@ -199,6 +229,7 @@ function updateSearchResults(formData) {
     <div class="pull-right">
       <a class="btn btn-default" href="/sample/search_results_map?{{formData}}" target="_blank">View On Map</a>
       <a class="btn btn-default" data-toggle="collapse" href="#permalink" aria-expanded="false" aria-controls="permalink">Permalink</a>
+      <a class="btn btn-default" onclick="addToCart()">Add To Cart</a>
       <a class="btn btn-default" href="/sample/search_results.tab?{{formData}}&download=1" target="_blank">Download</a>
       <div class="collapse" id="permalink">
         <div class="well">
@@ -209,6 +240,7 @@ function updateSearchResults(formData) {
     <table id="samples-tbl" class="display" cellspacing="0" width="100%">
       <thead>
         <tr>
+          <th><input id="toggler" type="checkbox" onclick="toggleAll()"></th>
           <th>Sample</th>
           <th>Project</th>
           {{#each search_fields_pretty}}
@@ -219,6 +251,7 @@ function updateSearchResults(formData) {
       <tbody>
         {{#each samples}}
           <tr>
+            <td><input name="sample_id[]" type="checkbox" value="{{this.specimen__sample_id}}"></td>
             <td><a target="_blank" href="/sample/view/{{this.specimen__sample_id}}">{{this.specimen__sample_name}}</a></td>
             <td><a target="_blank" href="/project/view/{{this.specimen__project_id}}">{{this.specimen__project_name}}</a></td>
             {{#each this.search_values}}

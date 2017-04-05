@@ -21,3 +21,4 @@ log
 *.swp
 script/hypnotoad.pid
 .passwd
+perltidy.ERR

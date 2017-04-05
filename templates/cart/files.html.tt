@@ -1,0 +1,38 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50,
+    "stateSave": true
+  };
+
+  //$('#samples-tbl').dataTable(dt_opts);
+});
+</script>
+
+<h1>Files ([% files.size OR '0' %])</h1>
+[% IF files.size > 0 %]
+  <div class="pull-right">
+  <a href="/download?url=[% c.req.url %]"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+  </div>
+  <table id="samples-tbl" class="table">
+    <thead>
+      <tr>
+        <th>Sample</th>
+        <th>Type</th>
+        <th>File</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH file IN files %]
+      <tr>
+        <td><a href="/sample/view/[% file.sample.id %]">[% file.sample.sample_name %]</a></td>
+        <td>[% file.sample_file_type.type %]</td>
+        <td><a href="/sample_file/view/[% file.id %]">[% file.file %]</a></td>
+      <tr>
+    [% END %]
+    </tbody>
+  </table>
+[% ELSE %]
+  No files.
+[% END %]

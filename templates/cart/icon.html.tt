@@ -1,0 +1,1 @@
+<a target="_blank" href="/cart/view"><span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span><span class="badge">[% session.defined('items') ? session.items.size OR '0' : '0' %]</span></a>

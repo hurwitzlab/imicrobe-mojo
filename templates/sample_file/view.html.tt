@@ -1,0 +1,44 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50,
+    "stateSave": true
+  };
+
+  $('#downloads-tbl').dataTable(dt_opts);
+});
+</script>
+
+<h1>Sample File</h1>
+
+<table class="table">
+  <tr>
+    <th>Project</th>
+    <td><a href="/project/view/[% sample_file.sample.project_id %]">[% sample_file.sample.project.project_name %]</a></td>
+  </tr>
+  <tr>
+    <th>Sample</th>
+    <td><a href="/sample/view/[% sample_file.sample_id %]">[% sample_file.sample.sample_name %]</a></td>
+  </tr>
+  <tr>
+    <th>Sample File</th>
+    <td><a href="[% sample_file.file %]">[% sample_file.file %]</a></td>
+  </tr>
+  <tr>
+    <th>Num. Sequences</th>
+    <td>[% sample_file.num_seqs OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th>Num. BP</th>
+    <td>[% sample_file.num_bp OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th>Avg. Length</th>
+    <td>[% sample_file.avg_len OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th>Pct. GC</th>
+    <td>[% sample_file.pct_gc OR 'NA' %]</td>
+  </tr>
+</table>

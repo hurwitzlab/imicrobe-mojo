@@ -80,6 +80,18 @@ sub startup {
 
     $r->get('/assembly/view/:assembly_id')->to('assembly#view');
 
+    $r->post('/cart/add')->to('cart#add');
+
+    $r->get('/cart/files')->to('cart#files');
+
+    $r->get('/cart/icon')->to('cart#icon');
+
+    $r->get('/cart/remove/:item')->to('cart#remove');
+
+    $r->get('/cart/purge')->to('cart#purge');
+
+    $r->get('/cart/view')->to('cart#view');
+
     $r->get('/combined_assembly/info')->to('combined_assembly#info');
 
     $r->get('/combined_assembly/list')->to('combined_assembly#list');
@@ -165,6 +177,8 @@ sub startup {
     $r->get('/sample/search_results_map')->to('sample#search_results_map');
 
     $r->get('/sample/view/:sample_id')->to('sample#view');
+
+    $r->get('/sample_file/view/:sample_file_id')->to('sample_file#view');
 
     $r->get('/search')->to('search#results');
 
