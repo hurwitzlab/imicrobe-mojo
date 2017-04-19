@@ -3,7 +3,7 @@ requires 'Date::Parse';
 requires 'Data::GUID';
 requires 'NetAddr::IP';
 requires 'MongoDB';
-requires 'JSON::Xs';
+requires 'JSON::XS';
 requires 'YAML';
 requires 'Moose';
 requires 'DBI';
