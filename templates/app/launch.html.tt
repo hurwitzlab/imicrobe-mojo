@@ -1,0 +1,33 @@
+<h1>Launch App</h1>
+
+[% IF result.status == 'success' %]
+<table id="app" class="table">
+  <tr>
+    <th>App</th>
+    <td>[% result.result.appId %]</td>
+  </tr>
+  <tr>
+    <th>Job Name</th>
+    <td>[% result.result.name %]</td>
+  </tr>
+  <tr>
+    <th>Job ID</th>
+    <td>[% result.result.id %]</td>
+  </tr>
+  <tr>
+    <th>Created</th>
+    <td>[% result.result.created %]</td>
+  </tr>
+  <tr>
+    <th>Archive System</th>
+    <td>[% result.result.archiveSystem %]</td>
+  </tr>
+  <tr>
+    <th>Archive Path</th>
+    <td>[% result.result.archivePath %]</td>
+  </tr>
+</table>
+[% ELSE %]
+  <b>Error launching app</b>
+  <pre>[% USE Dumper; Dumper.dump(result) %]</pre>
+[% END %]

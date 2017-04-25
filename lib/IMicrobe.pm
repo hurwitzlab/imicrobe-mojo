@@ -14,6 +14,11 @@ sub startup {
 
     $self->sessions->default_expiration(86400);
 
+    my $config = $self->config;
+    if (my $secret = $config->{'secret'}) {
+        $self->secrets([$secret]);
+    }
+
     my $r = $self->routes;
 
     # 
@@ -74,6 +79,12 @@ sub startup {
     #
     $r->get('/')->to('welcome#index');
 
+    $r->get('/app/files')->to('app#files');
+
+    $r->get('/app/list')->to('app#list');
+
+    $r->get('/app/run/#app_id')->to('app#run');
+
     $r->get('/assembly/info')->to('assembly#info');
 
     $r->get('/assembly/list')->to('assembly#list');
@@ -109,6 +120,10 @@ sub startup {
     $r->get('/index')->to('welcome#index');
 
     $r->get('/info')->to('welcome#index');
+
+    $r->get('/login')->to('login#login');
+
+    $r->get('/auth')->to('login#auth');
 
     $r->get('/investigator/list')->to('investigator#list');
 
@@ -234,6 +249,37 @@ sub startup {
             return IMicrobe::DB->new($config->{'db'});
         }
     );
+
+    $self->helper( get_access_token => sub {
+        my ($self, %args) = @_;
+        my $token   = $self->session->{'token'};
+        my $expired = 1;
+
+        if ($token && ref $token eq 'HASH') {
+            my $expires = $token->{'expires'} ||  0;
+            my $now     = time();
+            $expired    = $expires < $now;
+        }
+
+        if ($expired) {
+            my $state  = $args{'state'} || '000';
+            my $config = $self->config;
+            my $key    = $config->{'tacc_api_key'} or die "No TACC API key\n";
+            my $params = join '&',
+                'client_id='    . $key->{'public'},
+                'redirect_uri=' . $key->{'redirect_url'},
+                'state='        . $state,
+                'scope=PRODUCTION',
+                'response_type=code';
+
+            my $url = "https://agave.iplantc.org/authorize?$params";
+
+            return $self->redirect_to($url);
+        }
+        else {
+            return $token;
+        }
+    });
 }
 
 1;

@@ -1,0 +1,52 @@
+<h1>[% app.id %]</h1>
+
+
+<form action="/app/launch">
+<table class="table">
+  <tr>
+    <th>App</th>
+    <td>[% app.id %]</td>
+  </tr>
+  <tr>
+    <th>Description</th>
+    <td>[% app.longDescription OR app.shortDescription OR 'NA' %]</td>
+  </tr>
+  [% IF app.inputs.size > 0 %]
+    <tr>
+      <th colspan="2">Inputs</th>
+    </tr>
+    [% FOREACH input IN app.inputs %]
+    <tr>
+      <th>[% input.details.label OR input.id %]</th>
+      <td>
+        <input name="[% input.id %]" id="[% input.id %]">
+        <!-- button class="btn btd-default" onclick="fileBrowser(event, '[% input.id %]')">Select</button -->
+        <button class="btn btd-default" onclick="dialog(event, '[% input.id %]')">Browse</button>
+      </td>
+    </tr>
+    [% END %]
+  [% END %]
+  [% IF app.parameters.size > 0 %]
+    <tr>
+      <th align="center" colspan="2">Parameters</th>
+    </tr>
+    [% FOREACH param IN app.parameters %]
+    <tr>
+      <th>[% param.details.label OR param.id %]</th>
+      <td>
+        <input name="[% param.id %]" value="[% param.value.default %]">
+      </td>
+    </tr>
+    [% END %]
+  [% END %]
+  <tr>
+    <td colspan="2" align="center">
+      <input type="hidden" name="app_id" value="[% app.id %]">
+      <input type="submit" class="btn btn-primary" value="Run">
+    </td>
+  </tr>
+</table>
+</form>
+
+
+<!-- pre>[% USE Dumper; Dumper.dump(app) %]</pre -->

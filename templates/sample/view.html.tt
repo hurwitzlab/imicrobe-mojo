@@ -204,7 +204,7 @@ $(document).ready(function() {
 
       <div class="tab-pane fade" id="downloads">
         <br/>
-        [% SET url = "http://mirrors.iplantcollaborative.org/browse" %]
+        [% SET url = "http://datacommons.cyverse.org/browse" %]
         [% IF sample.sample_files_rs.count > 0 %]
           [% IF sample.sample_files_rs.count > 0 %]
             <div class="pull-right">

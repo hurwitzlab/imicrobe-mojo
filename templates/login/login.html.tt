@@ -1,0 +1,18 @@
+<table id="user" class="table">
+  <tr>
+    <th>Token</th>
+    <td>[% c.session.token.access_token OR 'NA' %]</td>
+  <tr>
+  <tr>
+    <th>User Name</th>
+    <td>[% c.session.user.username OR 'NA' %]</td>
+  <tr>
+  <tr>
+    <th>Full Name</th>
+    <td>[% c.session.user.fullName OR 'NA' %]</td>
+  <tr>
+  <tr>
+    <th>Institution</th>
+    <td>[% c.session.user.institution OR 'NA' %]</td>
+  <tr>
+</table>

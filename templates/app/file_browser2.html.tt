@@ -1,0 +1,44 @@
+<html>
+<head>
+<script>
+$(document).ready(function() {
+  fileBrowser();
+});
+
+function fileBrowser() {
+  var token = "[% token.access_token %]";
+  var user = "[% user.username %]";
+  var url = 'https://agave.iplantc.org/files/v2/listings/' + user;  
+  $('#browser').html('Loading...');
+  $.ajax({ 
+    "url": url, 
+    "type": "GET",
+    "dataType": "json",
+    "headers": { "Authorization": "Bearer " + token },
+    "contentType": "application/json; charset=utf-8",
+    "success": function (result) {
+      if (result.status == 'success') {
+        console.log(JSON.stringify(result.result));
+        var files = $.map(result.result, function (item) { 
+          return { 
+            text: item.name,
+            icon: item.type == 'dir' ? 'glyphicon glyphicon-folder-open' : 'glyphicon glyphicon-file',
+          }
+        });
+        console.log(JSON.stringify(files));
+        $('#browser').jstree({ 'core' : { 'data' : files } });
+      }
+    },
+    "error": function (result) {
+      console.log('error = ', JSON.stringify(result));
+    },
+  })
+}
+</script>
+</head>
+
+<h1>File Browser</h1>
+
+<div id="browser"></div>
+<div id="selected"></div>
+</html>

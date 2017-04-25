@@ -1,0 +1,25 @@
+<h1>App List ([% apps.size OR '0' %])</h1>
+
+[% IF apps.size > 0 %]
+<table id="apps-tbl" class="table">
+  <thead>
+    <tr>
+      <th>App Name</th>
+      <th>Run</th>
+    </tr>
+  </thead>
+  <tbody>
+    [% FOREACH app IN apps %]
+      <tr>
+        <td>[% app %]</td>
+        <td align="center">
+          <a target="_blank" href="http://agave.muscope.org/app/#/apps/[% app %]/run"><span class="glyphicon glyphicon-play-circle"></span></a>
+          <a href="/app/run/[% app %]"><span class="glyphicon glyphicon-play-circle"></span></a>
+        </td>
+      </tr>
+    [% END %]
+  </tbody>
+</table>
+[% ELSE %]
+  No apps.
+[% END %]

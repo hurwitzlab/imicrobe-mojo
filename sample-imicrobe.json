@@ -9,17 +9,22 @@
     "about_link": "http://imicrobe.us",
     "download_link": "ftp://ftp.imicrobe.us",
     "captcha_conf": "/usr/local/hurwitzlab/configs/web/imicrobe-captcha.yaml",
-    "gmap_api_key": "AIzaSyDz72ShEBwhZx1QlNGlMfsqW-vQkheOGu8",
-    "google_analytics_key": "UA-56769725-3",
+    "gmap_api_key": "XXX",
+    "google_analytics_key": "XXX",
     "db": {
         "name": "imicrobe",
         "user": "imicrobe",
-        "password": "XgDeeWTAw4pI.",
+        "password": "XXX",
         "driver": "mysql"
     },
     "mongo": {
         "host": "lipothrix.hpc.arizona.edu",
         "port": "27017",
         "dbname": "imicrobe"
+    },
+    "tacc_api_key": {
+      "public": "XXX",
+      "private": "XXX",
+      "redirect_url": "https://data.imicrobe.us/auth/"
     }
 }
