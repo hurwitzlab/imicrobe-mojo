@@ -1,0 +1,28 @@
+{
+  "name": "muscope",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "~1.5.11",
+    "bootstrap-css": "~3.3.1",
+    "jquery": "~2.2.0",
+    "underscore": "~1.8.3",
+    "angular-filemanager": "^1.5.1",
+    "datatables": "^1.10.15",
+    "handlebars": "^4.0.5"
+  },
+  "devDependencies": {},
+  "homepage": "https://github.com/hurwitzlab/imicrobe-mojo",
+  "authors": [
+    "Ken Youens-Clark <kyclark@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
