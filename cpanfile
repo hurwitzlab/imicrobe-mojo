@@ -1,5 +1,9 @@
 requires 'DateTime';
 requires 'Date::Parse';
+requires 'Data::GUID';
+requires 'NetAddr::IP';
+requires 'MongoDB';
+requires 'JSON::XS';
 requires 'YAML';
 requires 'Moose';
 requires 'DBI';
