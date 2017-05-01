@@ -4,6 +4,12 @@ use Mojo::Base 'Mojolicious::Controller';
 use Data::Dump 'dump';
 use JSON::XS 'decode_json';
 
+sub logout {
+    my $self = shift;
+    $self->session->{'token'} = undef;
+    $self->redirect_to( $self->url_for('/login') );
+}
+
 # ----------------------------------------------------------------------
 sub login {
     my $self  = shift;

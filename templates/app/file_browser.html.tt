@@ -1,9 +1,13 @@
 <html>
 <head>
+<script src="/js/bower_components/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<!-- jstree -->
+<link rel="stylesheet" href="/js/bower_components/jstree/dist/themes/default/style.min.css" />
+<script src="/js/bower_components/jstree/dist/jstree.min.js" type="text/javascript" charset="utf-8"></script>
 <script>
 class AgaveFileBrowser {
     constructor(params) {
-      let self = this;
+    	let self = this;
 
         let element = $('#'+params.elementId);
         if (!params.elementID && !element) {
@@ -15,126 +19,134 @@ class AgaveFileBrowser {
         this.userName  = params.userName;
         this.baseUrl   = params.baseUrl;
         this.authToken = params.authToken;
+        this.selectCallback = params.selectCallback;
 
-        this.busy().get_path().done(self.render.bind(self));
-  }
+        // Initialize contents
+        //this.busy().get_path().done(self.render.bind(self));
+        //self.element.jstree();
+        self.treeInit = false;
+        this.get_path().done(self.render.bind(self));
+	}
 
-  busy(enable) {
-    this.element.html("<div>Loading...</div>");
-    return this;
-  }
+	busy(enable) {
+		this.element.html("<div>Loading...</div>");
+		return this;
+	}
 
-  get_path(path) {
-    var self = this;
+	get_path(path) {
+		var self = this;
 
-    if (!path)
-      path = this.userName;
-    let url = this.baseUrl + '/' + path;
+		if (!path)
+			path = this.userName;
+		let url = this.baseUrl + '/' + path;
 
-    return $.ajax({
-      type: 'GET',
-      url: url,
-      beforeSend: function (xhr) {
-          xhr.setRequestHeader('Authorization', 'Bearer ' + self.authToken);
-      },
-      data: {}
-    });
-  }
+		return $.ajax({
+			type: 'GET',
+			url: url,
+			headers: {
+			    'Authorization': 'Bearer ' + self.authToken
+			},
+			data: {}
+		});
+	}
 
-  render(contents) {
-    let self = this;
+	render(contents) {
+		let self = this;
 
-    console.log(contents);
-    
-    self.element.empty();
+		console.log(contents);
 
-    self.renderMenu();
+		if (!self.treeInit) {
+			self.treeInit = 1;
 
-    let path = "";
-    contents.result.forEach(function(item) {
-      if (item.name == '.')
-        path = item.path;
-    });
-    self.element.append("<div><b>" + path + "</b></div>");
-    self.path = path;
+		 	let items = contents.result.filter(function(item) { return (item.name != '.') }).map(function(item) {
+		 		return { 
+		 			id: item.path, 
+		 			text: item.name, 
+		 			data: { type: item.type },
+		 			icon: (item.type == 'dir' ? 'jstree-folder' : 'jstree-file')
+		 		};
+		 	});
 
-    contents.result.forEach(function(item) {
-      if (item.name == '.')
-        return;
-      if (item.type == 'dir') {
-        let el = $("<div style='margin-left:1em;'>" + item.name + "/</div>");
-        el.on("click", function() {
-          self.busy().get_path(item.path).done(self.render.bind(self));
-        });
-        self.element.append(el);
-      }
-      else if (item.type == 'file') {
-        self.element.append("<div style='margin-left:1em;'>" + item.name + "</div>");
-      }
-    });
-  }
+		    self.element.hide().jstree("destroy").empty();
+		    self.element.jstree({
+                    core: {
+                        check_callback: true,
+                        data: items
+                    }
+                })
+		    	.bind("select_node.jstree",
+                    function (event, data) {
+                        var id = data.selected[0];
+                        if (self.selectCallback) {
+                        	let node = self.element.jstree().get_node(id);
+                        	self.selectCallback(node);
+                        }
+                    }
+                )
+                .bind("dblclick.jstree",
+                	function(event) {
+						var node = $(event.target).closest("li");
+   						self.node = self.element.jstree().get_node(node[0].id);
+   						setTimeout(function() { self.get_path(node[0].id).done(self.render.bind(self)) }, 10);
+                	}
+                )
+                .show();
 
-  renderMenu() {
-    let self = this;
-    let home    = $("<b>Home</b>").on("click", function() {
-      self.busy().get_path().done(self.render.bind(self));
-    });
-    let up      = $("<b>Up</b>").on("click", function() {
-      let path = self.path.substring(0, self.path.lastIndexOf("/"));
-      self.busy().get_path(path).done(self.render.bind(self));
-    });
-    let refresh = $("<b>Refresh</b>").on("click", function() {
-      self.busy().get_path(self.path).done(self.render.bind(self));
-    });
-    let spacer = $("<span> | </span>");
-    let div = $('<div></div>');
-    div.append(home).append(spacer.clone()).append(up).append(spacer.clone()).append(refresh).append('<hr>');
-    self.element.append(div);
-  }
+            return;
+		}
+
+		if (self.node) {
+			contents.result.forEach(function(item) {
+				if (item.name === '.') return;
+				self.element.jstree().create_node(self.node, {
+					id: item.path,
+					text: item.name,
+					data: {type: item.type},
+					icon: (item.type == 'dir' ? 'jstree-folder' : 'jstree-file')
+				}, "last");
+			});
+
+			self.element.jstree().open_node(self.node);
+		}
+	}
+
+	get_selected_nodes() {
+		let ids = this.element.jstree().get_selected();
+		let node = this.element.jstree().get_node(ids[0]);
+	}
 }
+
+let browser;
 
 $(function() {
-  let browser = new AgaveFileBrowser({
+  $('#browser').html('Loading...');
+  browser = new AgaveFileBrowser({
     elementId: "browser",
     userName:  "[% user.username %]",
-    baseUrl:   "https://agave.iplantc.org/files/v2/listings/",
     authToken: "[% token.access_token %]",
+    baseUrl:   "https://agave.iplantc.org/files/v2/listings",
+    selectCallback: function(node) {
+      console.log(node);
+      $('#selected').val(node.id);
+    }
   });
-});
 
-function fileBrowser() {
-  var token = "[% token.access_token %]";
-  var user = "[% user.username %]";
-  var url = 'https://agave.iplantc.org/files/v2/listings/' + user;  
-  $('#browser').html('Loading...');
-  $.ajax({ 
-    "url": url, 
-    "type": "GET",
-    "dataType": "json",
-    "headers": { "Authorization": "Bearer " + token },
-    "contentType": "application/json; charset=utf-8",
-    "success": function (result) {
-      if (result.status == 'success') {
-        console.log(JSON.stringify(result.result));
-        var files = $.map(result.result, function (item) { 
-          return { 
-            text: item.name,
-            icon: item.type == 'dir' ? 'glyphicon glyphicon-folder-open' : 'glyphicon glyphicon-file',
-          }
-        });
-        console.log(JSON.stringify(files));
-        $('#browser').jstree({ 'core' : { 'data' : files } });
-      }
-    },
-    "error": function (result) {
-      console.log('error = ', JSON.stringify(result));
-    },
+  $('#select').click(function() {
+    let selected = $('#selected').val();
+    alert(selected);
   })
-}
+});
 </script>
 </head>
 
 <h1>File Browser</h1>
 
-<div id="browser"></div>
+<h1>Agave File Browser Demo</h1>
+
+<button id="select">Select</button><input id="selected" size=30/>
+<div style="min-height:400px;max-height:400px;overflow:auto;border:1px solid lightgray;">
+  <div id="browser"></div>
+</div>
+
+</body>
 </html>

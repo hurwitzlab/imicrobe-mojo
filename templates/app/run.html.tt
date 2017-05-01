@@ -1,5 +1,28 @@
-<h1>[% app.id %]</h1>
+<script type="text/javascript">
+let browser;
 
+function browse(evt, elemId) {
+  evt.preventDefault();
+  $('#browser-container').modal();
+  $('#browser').html('Loading...');
+  browser = new AgaveFileBrowser({
+    elementId: "browser",
+    userName:  "[% user.username %]",
+    authToken: "[% token.access_token %]",
+    baseUrl:   "https://agave.iplantc.org/files/v2/listings"
+  });
+
+  $('#input-select').click(function() {
+    let selected = browser.get_selected_nodes();
+    if (selected.length > 0) {
+      $('#' + elemId).val(selected[0].id);
+      $('#browser-container').modal('hide');
+    }
+  })
+}
+</script>
+
+<h1>[% app.id %]</h1>
 
 <form action="/app/launch">
 <table class="table">
@@ -20,8 +43,7 @@
       <th>[% input.details.label OR input.id %]</th>
       <td>
         <input name="[% input.id %]" id="[% input.id %]">
-        <!-- button class="btn btd-default" onclick="fileBrowser(event, '[% input.id %]')">Select</button -->
-        <button class="btn btd-default" onclick="dialog(event, '[% input.id %]')">Browse</button>
+        <button class="btn btd-default" onclick="browse(event, '[% input.id %]')">Browse</button>
       </td>
     </tr>
     [% END %]
@@ -48,5 +70,22 @@
 </table>
 </form>
 
-
-<!-- pre>[% USE Dumper; Dumper.dump(app) %]</pre -->
+<div class="modal fade" id="browser-container" style="max-height: 300">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">File browser</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="min-height:400px;max-height:400px;overflow:auto;border:1px solid lightgray;">
+        <div id="browser"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="input-select">Select</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

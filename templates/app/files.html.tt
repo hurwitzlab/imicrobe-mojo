@@ -1,1 +1,88 @@
-<angular-filemanager></angular-filemanager>
+<script>
+$(function() {
+  var token = "[% token.access_token %]";
+  var user = "[% user.username %]";
+  var url = 'https://agave.iplantc.org/files/v2/listings/' + user;
+  $('#browser').html('Loading...');
+  $.ajax({
+    "url": url,
+    "type": "GET",
+    "dataType": "json",
+    "headers": { "Authorization": "Bearer " + token },
+    "contentType": "application/json; charset=utf-8",
+    "success": function (result) {
+      if (result.status == 'success') {
+        //console.log(JSON.stringify(result.result));
+        var files = $.map(result.result, function (item) {
+          return {
+            text: item.name,
+            path: item.path,
+            type: item.type,
+            icon: item.type == 'dir' 
+              ? 'glyphicon glyphicon-folder-open' 
+              : 'glyphicon glyphicon-file',
+          }
+        });
+
+        $('#browser').jstree({ 
+          "core": { 'data' : files },
+        })
+        .on("dblclick.jstree", '.jstree-anchor', handleDblClick);
+      }
+    },
+    "error": function (result) {
+      console.log('error = ', JSON.stringify(result));
+    },
+  })
+});
+
+function saySelected() {
+  var tree = $('#browser').jstree(true);
+  var selected = tree.get_selected();
+  if (selected.length > 0) {
+    var node = tree.get_node(selected[0]);
+    console.log('node = ' + JSON.stringify(node));
+    console.log('path = ' + node.original.path);
+  }
+  else {
+    alert('Please make a selection');
+  }
+}
+
+function handleDblClick (event) {
+  console.log('DBLCLICK');
+  var tree = $.jstree.reference(this);
+  var node = tree.get_node(this);
+  console.log('node = ' + JSON.stringify(node));
+  console.log('id = ' + node.id);
+  console.log('path = ' + node.original.path);
+  console.log('type = ' + node.original.type);
+
+  if (node.original.type == 'dir') {
+    console.log('adding child');
+    var newNode = $('#browser').jstree().create_node($(node),
+        {id: "foobar", text: "foobar"}, 'last');
+    console.log('newNode = ', JSON.stringify(newNode));
+    $('#browser').jstree().open_node(newNode);
+  }
+
+  /*
+  var node = $(event.target).closest("li");
+  console.log('node = ' + JSON.stringify(node));
+  var type = node.attr('rel');
+  console.log('type = ' + type);
+  var id = node[0].id;
+  console.log('id = ' + id);
+  var data = node.data("jstree");
+  console.log('data = ' + data);
+  */
+  //if(data.selected.length) {
+  //  alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+  //}
+}
+
+</script>
+<div>
+  <button class="btn btn-default" onclick="saySelected()">Select</button>
+  <div id="browser" style="position: fixed; overflow-y: auto; max-height: 20%"></div>
+</div>

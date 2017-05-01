@@ -4,18 +4,13 @@
 <table id="apps-tbl" class="table">
   <thead>
     <tr>
-      <th>App Name</th>
-      <th>Run</th>
+      <th>App</th>
     </tr>
   </thead>
   <tbody>
     [% FOREACH app IN apps %]
       <tr>
-        <td>[% app %]</td>
-        <td align="center">
-          <a target="_blank" href="http://agave.muscope.org/app/#/apps/[% app %]/run"><span class="glyphicon glyphicon-play-circle"></span></a>
-          <a href="/app/run/[% app %]"><span class="glyphicon glyphicon-play-circle"></span></a>
-        </td>
+        <td><a href="/app/run/[% app %]">[% app %]</a></td>
       </tr>
     [% END %]
   </tbody>

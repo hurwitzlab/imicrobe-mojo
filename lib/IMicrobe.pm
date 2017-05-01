@@ -4,6 +4,7 @@ use Mojo::Base 'Mojolicious';
 
 use lib '/usr/local/imicrobe/lib';
 use IMicrobe::DB;
+use Data::Dump 'dump';
 
 sub startup {
     my $self = shift;
@@ -20,6 +21,41 @@ sub startup {
     }
 
     my $r = $self->routes;
+
+    #
+    # Auth
+    #
+    my $auth = $r->under(sub {
+        my $self    = shift;
+        my $token   = $self->session->{'token'};
+        my $expired = 1;
+
+        if ($token && ref $token eq 'HASH') {
+            my $expires = $token->{'expires'} ||  0;
+            my $now     = time();
+            $expired    = $expires < $now;
+        }
+
+        if ($expired) {
+            my $state  = '000';
+            my $config = $self->config;
+            my $key    = $config->{'tacc_api_key'} or die "No TACC API key\n";
+            my $params = join '&',
+                'client_id='    . $key->{'public'},
+                'redirect_uri=' . $key->{'redirect_url'},
+                'state='        . $state,
+                'scope=PRODUCTION',
+                'response_type=code';
+
+            my $url = "https://agave.iplantc.org/authorize?$params";
+
+            $self->redirect_to($url);
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    });
 
     # 
     # Admin endpoints
@@ -79,11 +115,11 @@ sub startup {
     #
     $r->get('/')->to('welcome#index');
 
-    $r->get('/app/files')->to('app#files');
+    $r->get('/app/file_browser')->to('app#file_browser');
 
     $r->get('/app/list')->to('app#list');
 
-    $r->get('/app/run/#app_id')->to('app#run');
+    $auth->get('/app/run/#app_id')->to('app#run');
 
     $r->get('/assembly/info')->to('assembly#info');
 
@@ -122,6 +158,8 @@ sub startup {
     $r->get('/info')->to('welcome#index');
 
     $r->get('/login')->to('login#login');
+
+    $r->get('/logout')->to('login#logout');
 
     $r->get('/auth')->to('login#auth');
 

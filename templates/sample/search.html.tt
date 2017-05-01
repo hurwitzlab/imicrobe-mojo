@@ -164,8 +164,7 @@ function updateSearchResults(formData) {
       function(data) {
         if (data["samples"].length > 0 ) {
           data['count'] = data['samples'].length;
-          var source    = $("#results-tmpl").html();
-          var template  = Handlebars.compile(source);
+          var template  = Handlebars.templates['search-results'];
           data['formData'] = formData;
 
           $('#results').html(template(data));
@@ -261,5 +260,4 @@ function updateSearchResults(formData) {
       </tbody>
     </table>
   </div>
-</div>
 </script>

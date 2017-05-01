@@ -5,15 +5,15 @@ use Data::Dump 'dump';
 use JSON::XS qw'encode_json decode_json';
 
 # ----------------------------------------------------------------------
-sub files {
+sub file_browser {
     my $self  = shift;
     my $token = $self->get_access_token;
 
-    $self->layout('popup');
+    #$self->layout('popup');
     $self->render(
         token => $token,
-        token_json => encode_json($token),
         user  => $self->session->{'user'},
+        #token_json => encode_json($token),
     );
 }
 
@@ -116,7 +116,6 @@ sub run {
         die "Bad app_id ($app_id)\n";
     }
 
-    my $token   = $self->get_access_token(state => "/app/run/$app_id");
     my $access  = $token->{'access_token'};
     my $ua      = Mojo::UserAgent->new;
     my $url     = sprintf("https://agave.iplantc.org/apps/v2/%s", $app_id);

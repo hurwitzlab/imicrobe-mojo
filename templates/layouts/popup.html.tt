@@ -1,52 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- popup -->
+<html>
+<head>
+<script src="/js/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- jstree -->
+<link rel="stylesheet" href="/js/bower_components/jstree/dist/themes/default/style.min.css" />
+<script src="/js/bower_components/jstree/dist/jstree.min.js" type="text/javascript" charset="utf-8"></script>
+<link href="/js/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- third party -->
-    <script src="/js/angular/angular.min.js"></script>
-    <script src="/js/angular-translate/angular-translate.min.js"></script>
-    <script src="/js/ng-file-upload/ng-file-upload.min.js"></script>
-    <script src="/js/jquery/dist/jquery.min.js"></script>
-    <script src="/js/bootstrap/dist/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="/js/bootswatch/paper/bootstrap.min.css" />
-    <!-- /third party -->
+</head>
 
-    <link href="/js/angular-filemanager/dist/angular-filemanager.min.css" rel="stylesheet">
-    <script src="/js/angular-filemanager/dist/angular-filemanager.min.js"></script>
-  </head>
-
-  <body class="ng-cloak">
-
-    <script type="text/javascript">
-    $(function() {
-      console.log('onready - loading token into localStorage');
-      var token = [% token_json %];
-      localStorage.setItem('ngStorage-token', JSON.stringify(token));
-    });
-
-    //example to override angular-filemanager default config
-    angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (config) {
-      var defaults = config.$get();
-      config.set({
-        appName: 'angular-filemanager',
-        pickCallback: function(item) {
-          var msg = 'Picked %s "%s" for external use'
-            .replace('%s', item.type)
-            .replace('%s', item.fullPath());
-          window.alert(msg);
-        },
-
-        allowedActions: angular.extend(defaults.allowedActions, {
-          pickFiles: false,
-          pickFolders: false,
-        }),
-      });
-    }]);
-    </script>
-      [% content %]
-  </body>
+<body>
+[% content %]
+</body>
 </html>
-

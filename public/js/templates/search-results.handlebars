@@ -1,0 +1,37 @@
+  <div class="row">
+    <h2 id="nav-tabs">Results: {{count}}</h2>
+    <div class="pull-right">
+      <a class="btn btn-default" href="/sample/search_results_map?{{formData}}" target="_blank">View On Map</a>
+      <a class="btn btn-default" data-toggle="collapse" href="#permalink" aria-expanded="false" aria-controls="permalink">Permalink</a>
+      <a class="btn btn-default" onclick="addToCart()">Add To Cart</a>
+      <a class="btn btn-default" href="/sample/search_results.tab?{{formData}}&download=1" target="_blank">Download</a>
+      <div class="collapse" id="permalink">
+        <div class="well">
+          <a href="/sample/search?{{formData}}">/sample/search_results_map?{{formData}}</a>
+        </div>
+      </div>
+    </div>
+    <table id="samples-tbl" class="table" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th><input id="toggler" type="checkbox" onclick="toggleAll()"></th>
+          <th>Sample</th>
+          <th>Project</th>
+          {{#each search_fields_pretty}}
+            <th>{{this}}</th>
+          {{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each samples}}
+          <tr>
+            <td><input name="sample_id[]" type="checkbox" value="{{this.specimen__sample_id}}"></td>
+            <td><a target="_blank" href="/sample/view/{{this.specimen__sample_id}}">{{this.specimen__sample_name}}</a></td>
+            <td><a target="_blank" href="/project/view/{{this.specimen__project_id}}">{{this.specimen__project_name}}</a></td>
+            {{#each this.search_values}}
+              <td>{{this}}</td>
+            {{/each}}
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
