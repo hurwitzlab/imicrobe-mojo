@@ -75,12 +75,21 @@ $(function() {
 <table class="table">
   <tr>
     <th>App</th>
-    <td>[% app.id %]</td>
+    <td>[% app.id %] [% IF app.shortDescription %]([% app.shortDescription %])[% END %]
+    </td>
   </tr>
-  <tr>
-    <th>Description</th>
-    <td>[% app.longDescription OR app.shortDescription OR 'NA' %]</td>
-  </tr>
+  [% IF app.helpURI %]
+    <tr>
+      <th>Help</th>
+      <td><a href="[% app.helpURI %]">[% app.helpURI %]</a></td>
+    </tr>
+  [% END %]
+  [% IF app.longDescription %]
+    <tr>
+      <th>Description</th>
+      <td>[% app.longDescription OR app.shortDescription OR 'NA' %]</td>
+    </tr>
+  [% END %]
   [% IF app.inputs.size > 0 %]
     <tr class="bg-info">
       <th colspan="2">Inputs</th>
@@ -172,3 +181,5 @@ $(function() {
     </div>
   </div>
 </div>
+
+<pre>[% USE Dumper; Dumper.dump(app) %]</pre>
