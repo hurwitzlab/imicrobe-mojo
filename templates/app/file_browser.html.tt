@@ -1,9 +1,5 @@
 <html>
 <head>
-<script src="/js/bower_components/jquery/dist/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-<!-- jstree -->
-<link rel="stylesheet" href="/js/bower_components/jstree/dist/themes/default/style.min.css" />
-<script src="/js/bower_components/jstree/dist/jstree.min.js" type="text/javascript" charset="utf-8"></script>
 <script>
 class AgaveFileBrowser {
     constructor(params) {

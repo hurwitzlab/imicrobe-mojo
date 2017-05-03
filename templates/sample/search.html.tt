@@ -33,11 +33,10 @@ function addToCart() {
   if (vals.length > 0) {
     $.post('/cart/add', { item: vals.join(',') })
      .fail(function() { alert( "error adding to cart" ) })
-     .success(function() {
-      //var n = vals.length;
-      //alert("Added " + n + " sample" + (n == 1 ? '' : 's') + " to cart")
-      updateCart();
-    });
+     .success(function() { updateCart() });
+  }
+  else {
+    alert('Please choose some samples to add to your cart.');
   }
 }
 
@@ -236,7 +235,7 @@ function updateSearchResults(formData) {
         </div>
       </div>
     </div>
-    <table id="samples-tbl" class="display" cellspacing="0" width="100%">
+    <table id="samples-tbl" class="table" cellspacing="0" width="100%">
       <thead>
         <tr>
           <th><input id="toggler" type="checkbox" onclick="toggleAll()"></th>

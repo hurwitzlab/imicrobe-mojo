@@ -1,9 +1,11 @@
 package IMicrobe::Controller::Login;
 
 use Mojo::Base 'Mojolicious::Controller';
+use DateTime;
 use Data::Dump 'dump';
 use JSON::XS 'decode_json';
 
+# ----------------------------------------------------------------------
 sub logout {
     my $self = shift;
     $self->session->{'token'} = undef;
@@ -77,6 +79,18 @@ sub auth {
     my $user_info = $user->{'result'};
     $self->session(token => $token);
     $self->session(user  => $user_info);
+
+    if (my $username  = $user_info->{'username'}) {
+        my $schema    = $self->db->schema;
+        my ($User)    = $schema->resultset('User')->find_or_create({
+            user_name => $username
+        });
+        my $dt       = DateTime->now;
+        my ($Login)  = $schema->resultset('Login')->find_or_create({
+            user_id    => $User->id,
+            login_date => join ' ', $dt->ymd, $dt->hms,
+        });
+    }
 
     my $state = $self->param('state') || '';
     my $url   = $state =~ m{^/\w+} ? $state : '/login';

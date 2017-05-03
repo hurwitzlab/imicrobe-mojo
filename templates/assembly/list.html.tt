@@ -17,7 +17,7 @@ $(document).ready(function() {
     <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
   </div>
 
-  <table id="assemblies" class="display" cellspacing="0" width="100%">
+  <table id="assemblies" class="table" cellspacing="0" width="100%">
     <thead>
       <tr>
         <th>Project</th>

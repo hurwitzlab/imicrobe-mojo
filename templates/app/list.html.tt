@@ -10,7 +10,7 @@
   <tbody>
     [% FOREACH app IN apps %]
       <tr>
-        <td><a href="/app/run/[% app %]">[% app %]</a></td>
+        <td><a href="/app/run/[% app.id %]">[% app.app_name %]</a></td>
       </tr>
     [% END %]
   </tbody>

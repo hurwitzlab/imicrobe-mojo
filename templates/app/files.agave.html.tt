@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="FileManagerApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- third party -->
+    <script src="/js/bower_components/angular/angular.min.js"></script>
+    <script src="/js/bower_components/angular-translate/angular-translate.min.js"></script>
+    <script src="/js/bower_components/ng-file-upload/ng-file-upload.min.js"></script>
+    <script src="/js/bower_components/angular-ui-router/release/angular-ui-router.min.js" type="text/javascript"></script>
+
+    <script src="/js/bower_components/angular-schema-form/dist/schema-form.min.js"></script>
+    <script src="/js/bower_components/checklist-model/checklist-model.js"></script>
+    <script src="/js/bower_components/angular-cookies/angular-cookies.min.js"></script>
+    <script src="/js/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/js/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/js/bower_components/bootstrap-modal/js/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
+    <script src="/js/bower_components/oclazyload/dist/ocLazyLoad.min.js"></script>
+    <script src="/js/bower_components/oclazyload/dist/ocLazyLoad.require.min.js"></script>
+    <script src="/js/bower_components/angular-cookies/angular-cookies.min.js"></script>
+    <script src="/js/bower_components/bootstrap-modal/js/bootstrap-modal.js" type="text/javascript"></script>
+    <script src="/js/bower_components/bootstrap-modal/js/bootstrap-modalmanager.js" type="text/javascript"></script>
+    <script src="/js/bower_components/ngstorage/ngStorage.min.js"></script>
+
+    <script type="text/javascript" src="/js/bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="/js/bower_components/tv4/tv4.js"></script>
+    <script type="text/javascript" src="/js/bower_components/objectpath/lib/ObjectPath.js"></script>
+    <script type="text/javascript" src="/js/bower_components/angular-schema-form/dist/schema-form.min.js"></script>
+    <script type="text/javascript" src="/js/bower_components/angular-schema-form/dist/bootstrap-decorator.min.js"></script>
+    <script type="text/javascript" src="/js/bower_components/moment/min/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="/js/bower_components/angular-moment/angular-moment.min.js"></script>
+
+    <script src="/js/bower_components/agave-angularjs-sdk/agave-angularjs-sdk.min.js"></script>
+    <!-- /third party -->
+
+    <link href="/js/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="/js/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Comment if you need to use raw source code -->
+    <link href="/js/agave/agave-angular-filemanager.min.css" rel="stylesheet">
+    <script src="/js/agave/agave-angular-filemanager.min.js"></script>
+
+    <script type="text/javascript">
+      /**
+       * This is a static config block, appropriate for injecting into a server-side
+       * template to render this page. When authenticating on the server-side,
+       * you should not be injecting the client key or refresh token into this
+       * page. Keep those private and only add the token and, optionally, the
+       * username. If no username is supplied, the app will look it up by calling
+       * the Profiles api.
+       *
+       * The last two fields are the responses from the Tenants and Systems
+       * APIs in the CyVerse tenant. They don't change very often,
+       * so I pruned them and included them here statically to simplify the
+       * logic. In a real app, these would be queried for these values, and
+       * the responses cached in local or session storage.
+       *
+       * Collectively, This object represents the minimum information the file
+       * manager needs to properly resolve urls, paths, home directories,
+       * and manage permissions.
+       *
+       * If, for some reason, you use a different tenant or storage sytsem,
+       * include its info here
+       */
+      var AGAVE_CONFIG = {
+        token:   {access_token:"[% token.access_token %]"},
+        profile: {username:"[% user.username %]"},
+        tenant:  {"name":"CyVerse Science APIs","baseUrl":"https://agave.iplantc.org/","code":"iplantc.org"},
+        system:  {"id":"data.iplantcollaborative.org","default":true,"status":"UP","description":"CyVerse's petabyte-scale, cloud-based data management service.","name":"CyVerse Data Store","owner":"dooley","globalDefault":true,"available":true,"public":true,"type":"STORAGE","storage":{"mirror":true,"homeDir":"/","protocol":"IRODS4","host":"data.cyverse.org","rootDir":"/iplant/home"}},
+      };
+
+    </script>
+
+    <!-- ******************************************************************
+         * DO NOT EDIT BELOW THIS LINE. CONIFG IS COMPLETE.
+         * FILE BROWSER NEEDS NO FURTHER CUSTOMIZATION TO WORK.
+         ****************************************************************** -->
+    <script type="text/javascript">
+    //example to override angular-filemanager default config
+    angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (config) {
+      var defaults = config.$get();
+      config.set({
+        appName: 'angular-filemanager',
+        pickCallback: function(item) {
+          var msg = 'Picked %s "%s" for external use'
+            .replace('%s', item.type)
+            .replace('%s', item.fullPath());
+          window.alert(msg);
+        },
+
+        allowedActions: angular.extend(defaults.allowedActions, {
+          pickFiles: false,
+          pickFolders: false,
+        }),
+      });
+    }]);
+
+    angular.module('FileManagerApp').controller('DemoController',
+      ['$scope', '$rootScope', '$timeout', 'Configuration','ProfilesController','$localStorage', 'fileNavigator',
+        function($scope, $rootScope, $timeout, Configuration, ProfilesController, $localStorage, FileNavigator) {
+
+        console.log('onready - loading token into localStorage');
+
+        $localStorage.tenant = AGAVE_CONFIG.tenant;
+        $localStorage.system = AGAVE_CONFIG.system;
+        $localStorage.token = AGAVE_CONFIG.token;
+
+        if (AGAVE_CONFIG.profile && AGAVE_CONFIG.profile.username) {
+          $localStorage.activeProfile = AGAVE_CONFIG.profile;
+        }
+        else {
+          delete $localStorage.activeProfile;
+        }
+
+        Configuration.BASEURI = $localStorage.tenant.baseUrl;
+        Configuration.oAuthAccessToken = $localStorage.token.access_token;
+
+        $scope.refreshListing = function() {
+          $scope.$parent.system = $localStorage.system;
+          $scope.$parent.path = $localStorage.activeProfile.username;
+          $scope.$parent.fileNavigator = new FileNavigator($scope.$parent.system, $localStorage.activeProfile.username);
+          $scope.$parent.fileNavigator.refresh();
+        };
+
+        if ($localStorage.activeProfile) {
+          $scope.refreshListing();
+        }
+        else {
+          ProfilesController.getProfile('me').then(
+            function (profile) {
+              $localStorage.activeProfile = profile;
+              $scope.refreshListing();
+            },
+            function (data) {
+              console.error(data.result && data.result.error || "Error fetching user profile details");
+              $scope.$parent.system = null;
+              delete $localStorage.activeProfile;
+            });
+        }
+    }]);
+    </script>
+<style type="text/css">
+    body {
+      padding-top: 0px;
+    }
+    .page-header {
+      margin-top: 0px !important;
+    }
+    .page-header.navbar .navbar-brand {
+      height: 32px;
+      line-height: 32px;
+      font-size: 1.5em;
+    }
+    .modal-backdrop.in {
+      z-index: 950!important;
+    }
+    .btn {
+      border-radius: 0;
+    }
+    a,a:hover,a:focus {
+      color: #375a7f;
+
+    }
+    table a:not(.btn), .table a:not(.btn) {
+      text-decoration: none;
+    }
+    .red {
+      color: #fff;
+      background-color: #E74C3C;
+      border-color: #E74C3C;
+      box-shadow: none;
+    }
+    .green {
+      color: #fff;
+      background-color: #00bc8c;
+      border-color: #00bc8c;
+      box-shadow: none;
+    }
+    .dark {
+      color: #fff;
+      background-color: #464545;
+      border-color: #464545;
+      box-shadow: none;
+    }
+    .dark:hover, .red:hover, .green:hover {
+      color: #ddd;
+    }
+    .caption {
+      display: inline-block;
+      line-height: 32px;
+      vertical-align: middle;
+    }
+    .actions {
+      display: inline-block;
+      float: right;
+    }
+    .browser-title {
+      margin-bottom: 10px;
+    }
+  </style>
+  </head>
+
+  <body class="ng-cloak">
+      <div class="row">
+        <div class="container-fluid">
+          <span ng-controller="DemoController"></span>
+          <angular-filemanager system="system" agave-path="path"></angular-filemanager>
+        </div>
+      </div>
+  </body>
+</html>

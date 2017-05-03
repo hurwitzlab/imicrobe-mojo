@@ -37,7 +37,7 @@ sub startup {
         }
 
         if ($expired) {
-            my $state  = '000';
+            my $state  = $self->req->headers->referrer || '000';
             my $config = $self->config;
             my $key    = $config->{'tacc_api_key'} or die "No TACC API key\n";
             my $params = join '&',
@@ -121,11 +121,15 @@ sub startup {
 
     $auth->get('/app/run/#app_id')->to('app#run');
 
+    $auth->any('/app/launch')->to('app#launch');
+
     $r->get('/assembly/info')->to('assembly#info');
 
     $r->get('/assembly/list')->to('assembly#list');
 
     $r->get('/assembly/view/:assembly_id')->to('assembly#view');
+
+    $r->get('/cart/add/:item')->to('cart#add');
 
     $r->post('/cart/add')->to('cart#add');
 
@@ -164,6 +168,10 @@ sub startup {
     $r->get('/auth')->to('login#auth');
 
     $r->get('/investigator/list')->to('investigator#list');
+
+    $auth->get('/job/list')->to('job#list');
+
+    $auth->get('/job/view/:job_id')->to('job#view');
 
     $r->get('/investigator/view/:investigator_id')->to('investigator#view');
 

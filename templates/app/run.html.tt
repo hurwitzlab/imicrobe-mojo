@@ -1,7 +1,7 @@
 <script type="text/javascript">
 let browser;
 
-function browse(evt, elemId) {
+function fileBrowser(evt, elemId) {
   evt.preventDefault();
   $('#browser-container').modal();
   $('#browser').html('Loading...');
@@ -20,11 +20,58 @@ function browse(evt, elemId) {
     }
   })
 }
+
+function cartBrowser(evt, elemId) {
+  evt.preventDefault();
+  $('#browser-container').modal();
+  $('#browser').html('Loading from cart...');
+
+  $.get('[% c.url_for("/cart/file_types.json") %]', function (data) {
+    html = '';
+    $.each(data, function (index, item) {
+      html += '<input type="checkbox" value="'
+           +  item.sample_file_type_id
+           +  '"> ' + item.sample_file_type
+           + '</input><br/>';
+    });
+    $('#browser').html(html);
+  });
+
+  $('#input-select').click(function() {
+    var selected = [];
+    $('#browser :checked').each(function() { selected.push($(this).val()) });
+
+    if (selected.length > 0) {
+      var url = '/cart/files.json?file_type_id=' + selected.join(',');
+      $.get(url, function (data) {
+        var files = [];
+        $.each(data, function (index, item) {
+          files.push(item.file);
+        });
+        $('#' + elemId).val(files.join(';'));
+        $('#browser-container').modal('hide');
+      });
+    }
+  });
+}
+
+$(function() {
+  $('form').on('submit', function (event) {
+    event.preventDefault();
+    $('#launcher-container').modal();
+    $('#launcher-status').html('Launching [% app.id %]...');
+    formData = $( this ).serialize();
+    $.post('/app/launch', formData)
+     .fail(function (err ) { $('#launcher-status').html(err) })
+     .done(function (html) { $('#launcher-status').html(html) })
+    ;
+  });
+});
 </script>
 
 <h1>[% app.id %]</h1>
 
-<form action="/app/launch">
+<form id="form">
 <table class="table">
   <tr>
     <th>App</th>
@@ -35,35 +82,52 @@ function browse(evt, elemId) {
     <td>[% app.longDescription OR app.shortDescription OR 'NA' %]</td>
   </tr>
   [% IF app.inputs.size > 0 %]
-    <tr>
+    <tr class="bg-info">
       <th colspan="2">Inputs</th>
     </tr>
     [% FOREACH input IN app.inputs %]
     <tr>
-      <th>[% input.details.label OR input.id %]</th>
+      <th>[% input.details.label OR input.id %][% IF input.value.required; '&nbsp;<b>*</b>'; END %]</th>
       <td>
-        <input name="[% input.id %]" id="[% input.id %]">
-        <button class="btn btd-default" onclick="browse(event, '[% input.id %]')">Browse</button>
+        <input name="input-[% input.id %]" id="[% input.id %]">
+        <button class="btn btn-default" onclick="fileBrowser(event, '[% input.id %]')">Cyverse</button>
+        <button class="btn btn-default"[% IF c.session.items.size == 0; ' disabled'; END %] onclick="cartBrowser(event, '[% input.id %]')">Cart ([% c.session.items.size OR '0' %])</button>
+        [% IF input.details.description %]
+        <em>[% input.details.description %]</em>
+        [% END %]
       </td>
     </tr>
     [% END %]
   [% END %]
   [% IF app.parameters.size > 0 %]
-    <tr>
+    <tr class="bg-info">
       <th align="center" colspan="2">Parameters</th>
     </tr>
     [% FOREACH param IN app.parameters %]
     <tr>
       <th>[% param.details.label OR param.id %]</th>
       <td>
-        <input name="[% param.id %]" value="[% param.value.default %]">
+        [% IF param.value.type == 'enumeration' AND param.value.enum_values.size > 0 %]
+          <select name="param-[% param.id %]">
+            [% FOREACH enum IN param.value.enum_values %]
+              [% SET key = enum.items.0, val = enum.items.1 %]
+              <!-- key = [% key %], val = [% val %] -->
+              <option value="[% key %]"[% IF key == param.value.default; ' selected'; END %] >[% val %]</option>
+            [% END %]
+          </select>
+        [% ELSE %]
+          <input name="param-[% param.id %]" value="[% param.value.default %]">
+        [% END %]
+        [% IF param.details.description %]
+        <em>[% input.details.description %]</em>
+        [% END %]
       </td>
     </tr>
     [% END %]
   [% END %]
   <tr>
     <td colspan="2" align="center">
-      <input type="hidden" name="app_id" value="[% app.id %]">
+      <input type="hidden" name="app_id" value="[% app_id %]">
       <input type="submit" class="btn btn-primary" value="Run">
     </td>
   </tr>
@@ -74,7 +138,7 @@ function browse(evt, elemId) {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">File browser</h5>
+        <h5 class="modal-title">File selector</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -85,6 +149,25 @@ function browse(evt, elemId) {
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id="input-select">Select</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="launcher-container" style="max-height: 300">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Launcher</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="min-height:400px;max-height:400px;overflow:auto;border:1px solid lightgray;">
+        <div id="launcher-status"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

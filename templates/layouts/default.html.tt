@@ -121,6 +121,8 @@
                 <li><a href="/reference/list">Reference Data Sets</a></li>
                 <li><a href="/pubchase/list">Recommended Reading</a></li>
                 <li><a href="/protocol/list">Protocols</a></li>
+                <li><a href="/app/list">Apps</a></li>
+                <li><a href="/job/list">Jobs</a></li>
                 <li><a href="/cart/view">Cart ([% c.session.items.size OR '0' %])</a></li>
               </ul>
             </li>

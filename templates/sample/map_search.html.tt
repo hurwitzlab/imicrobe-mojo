@@ -170,7 +170,7 @@ $(document).ready(function() {
 <script id="results-tmpl" type="text/x-handlebars-template">
   <div class="row">
     <h2 id="nav-tabs">Results: {{count}}</h2>
-    <table id="samples-tbl" class="display" cellspacing="0" width="100%">
+    <table id="samples-tbl" class="table" cellspacing="0" width="100%">
       <thead>
         <tr>
           <th>Sample</th>

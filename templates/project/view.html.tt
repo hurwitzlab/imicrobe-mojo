@@ -199,7 +199,7 @@ $(document).ready(function() {
       <div class="tab-pane fade" id="assemblies">
         <br/>
         [% IF project.assemblies %]
-          <table id="assemblies-tbl" class="display" cellspacing="0" width="100%">
+          <table id="assemblies-tbl" class="table" cellspacing="0" width="100%">
            <thead>
            <tr>
              <th>Name</th>
@@ -240,7 +240,7 @@ $(document).ready(function() {
             <div class="pull-right">
               <a href="/download?url=/combined_assembly/list?project_id=[% project.id %]"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
             </div>
-            <table id="combined-assemblies-tbl" class="display" cellspacing="0" width="100%">
+            <table id="combined-assemblies-tbl" class="table" cellspacing="0" width="100%">
              <thead>
              <tr>
                <th>Name</th>
@@ -309,12 +309,13 @@ $(document).ready(function() {
           <div class="pull-right">
             <a href="/download?url=/sample/list?project_id=[% project.id %]"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
           </div>
-          <table id="samples-tbl" class="display" cellspacing="0" width="100%">
+          <table id="samples-tbl" class="table" cellspacing="0" width="100%">
            <thead>
            <tr>
               <th>Sample Name</th>
               <th>PI</th>
               <th>Desc</th>
+              <th>Cart</th>
            </tr>
            </thead>
 
@@ -336,9 +337,8 @@ $(document).ready(function() {
                   NA
                 [% END %]
               </td>
-              <td>
-                [% sample.sample_description %]
-              </td>
+              <td>[% sample.sample_description %]</td>
+              <td align="center"><a href="/cart/add/[% sample.id %]"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a></td>
              </tr>
            [% END %]
            </tbody>
@@ -370,7 +370,7 @@ $(document).ready(function() {
           <div class="pull-right">
             <a href="/download?url=/project/project_file_list/[% project.id %]"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
           </div>
-          <table id="downloads-tbl" class="display" cellspacing="0" width="100%">
+          <table id="downloads-tbl" class="table" cellspacing="0" width="100%">
             <thead>
               <tr>
                 <th>Type</th>

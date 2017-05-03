@@ -29,7 +29,7 @@ $(document).ready(function() {
     <div class="pull-right">
       <a href="/download"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
     </div>
-    <table id="samples-tbl" class="display" cellspacing="0" width="100%">
+    <table id="samples-tbl" class="table" cellspacing="0" width="100%">
      <thead>
      <tr>
        <th>Domain</th>
@@ -37,6 +37,7 @@ $(document).ready(function() {
        <th>Sample</th>
        <th>Type</th>
        <th># Files</th>
+       <th>Cart</th>
      </tr>
      </thead>
 
@@ -53,6 +54,7 @@ $(document).ready(function() {
          </td>
          <td>[% sample.sample_type OR 'NA' %]</td>
          <td>[% sample.num_files OR '0' %]</td>
+         <td align="center"><a href="/cart/add/[% sample.sample_id %]"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a></td>
        </tr>
      [% END %]
      </tbody>

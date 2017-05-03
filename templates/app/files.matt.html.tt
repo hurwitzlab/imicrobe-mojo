@@ -1,0 +1,113 @@
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/js/bower_components/jstree/dist/jstree.min.js"></script>
+<link rel="stylesheet" href="/js/bower_components/jstree/dist/themes/default/style.min.css"/>
+
+<script type="text/javascript">
+class AgaveFileBrowser {
+    constructor(params) {
+    	let self = this;
+
+        let element = $('#'+params.elementId);
+        if (!params.elementID && !element) {
+            console.error('InfoPanel: Missing required target element');
+            return;
+        }
+        this.element = element;
+
+        this.userName  = params.userName;
+        this.baseUrl   = params.baseUrl;
+        this.authToken = params.authToken;
+
+        this.busy().get_path().done(self.render.bind(self));
+	}
+
+	busy(enable) {
+		this.element.html("<div>Loading...</div>");
+		return this;
+	}
+
+	get_path(path) {
+		var self = this;
+
+		if (!path)
+			path = this.userName;
+		let url = this.baseUrl + '/' + path;
+
+		return $.ajax({
+			type: 'GET',
+			url: url,
+			beforeSend: function (xhr) {
+			    xhr.setRequestHeader('Authorization', 'Bearer ' + self.authToken);
+			},
+			data: {}
+		});
+	}
+
+	render(contents) {
+		let self = this;
+
+		console.log(contents);
+		
+		self.element.empty();
+
+		self.renderMenu();
+
+		let path = "";
+		contents.result.forEach(function(item) {
+			if (item.name == '.')
+				path = item.path;
+		});
+		self.element.append("<div><b>" + path + "</b></div>");
+		self.path = path;
+
+		contents.result.forEach(function(item) {
+			if (item.name == '.')
+				return;
+			if (item.type == 'dir') {
+				let el = $("<div style='margin-left:1em;'>" + item.name + "/</div>");
+				el.on("click", function() {
+					self.busy().get_path(item.path).done(self.render.bind(self));
+				});
+				self.element.append(el);
+			}
+			else if (item.type == 'file') {
+				self.element.append("<div style='margin-left:1em;'>" + item.name + "</div>");
+			}
+		});
+	}
+
+	renderMenu() {
+		let self = this;
+		let home    = $("<b>Home</b>").on("click", function() {
+			self.busy().get_path().done(self.render.bind(self));
+		});
+		let up      = $("<b>Up</b>").on("click", function() {
+			let path = self.path.substring(0, self.path.lastIndexOf("/"));
+			self.busy().get_path(path).done(self.render.bind(self));
+		});
+		let refresh = $("<b>Refresh</b>").on("click", function() {
+			self.busy().get_path(self.path).done(self.render.bind(self));
+		});
+		let spacer = $("<span> | </span>");
+		let div = $('<div></div>');
+		div.append(home).append(spacer.clone()).append(up).append(spacer.clone()).append(refresh).append('<hr>');
+		self.element.append(div);
+	}
+}
+
+let USER_NAME = "[% user.username %]";
+let AGAVE_FILE_URL = "https://agave.iplantc.org/files/v2/listings";
+let AGAVE_AUTH_TOKEN = "[% token.access_token %]";
+
+$(function() {
+  let browser = new AgaveFileBrowser({
+    elementId: "browser",
+    userName:  USER_NAME,
+    baseUrl:   AGAVE_FILE_URL,
+    authToken: AGAVE_AUTH_TOKEN
+  });
+});
+</script>
+
+<div id="browser"></div>
+<div id="tree"></div>

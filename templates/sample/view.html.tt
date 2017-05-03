@@ -210,7 +210,7 @@ $(document).ready(function() {
             <div class="pull-right">
               <a href="/download?url=/sample/sample_file_list/[% sample.id %]"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
             </div>
-            <table id="downloads-tbl" class="display" cellspacing="0" width="100%">
+            <table id="downloads-tbl" class="table" cellspacing="0" width="100%">
             <thead>
               <tr>
                 <th>Type</th>

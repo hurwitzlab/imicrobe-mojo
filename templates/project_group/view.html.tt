@@ -76,7 +76,7 @@ $(document).ready(function() {
       <div class="tab-pane fade active in" id="projects">
         <br/>
         [% IF group.project_to_project_groups_rs.count > 0 %]
-          <table id="projects-tbl" class="display" cellspacing="0" width="100%">
+          <table id="projects-tbl" class="table" cellspacing="0" width="100%">
             <thead>
               <tr>
                 <th>Project Name</th>

@@ -1,0 +1,61 @@
+[% IF result.status == 'success' %]
+<script type="text/javascript">
+$(document).ready(function() {
+  var dt_opts = {
+    "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    "iDisplayLength": 50,
+    "stateSave": true
+  };
+
+  $('#jobs-tbl').dataTable(dt_opts);
+});
+</script>
+
+[% USE Dumper %]
+[% jobs = result.result %]
+<h1>Job List ([% jobs.size %])</h1>
+<table class="table" id="jobs-tbl">
+  <thead>
+    <tr>
+      <th>App ID</th>
+      <th>Job ID</th>
+      <th>Status</th>
+      <th>Created</th>
+      <th>Finished</th>
+      <th>View</th>
+    </tr>
+  </thead>
+  <tbody>
+  [% FOREACH job IN jobs %]
+    <tr>
+      <td>[% job.appId %]</td>
+      <td>[% job.id %]</td>
+      <td>[% job.status %]</td>
+      <td>[% job.created %]</td>
+      <td>[% job.endTime %]</td>
+      <td align="center">
+        <a href="/job/view/[% job.id %]"><span class="glyphicon glyphicon-eye-open"></span></a>
+      </td>
+    </tr>
+  [% END %]
+  </tbody>
+</table>
+
+[% ELSE %]
+[% IF result.fault %]
+<h1>Error</h1>
+<table class="table">
+  <tr>
+    <th>Message</th>
+    <td>[% result.fault.message %]</th>
+  </tr>
+  <tr>
+    <th>Description</th>
+    <td>[% result.fault.description %]</th>
+  </tr>
+</table>
+[% ELSE %]
+Error getting jobs:
+<pre>[% USE Dumper; Dumper.dump(result) %]</pre>
+[% END %]
+[% END %]

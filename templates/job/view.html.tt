@@ -1,0 +1,48 @@
+<h1>Job &quot;[% job_id %]&quot;</h1>
+
+[% IF result.status == 'success' %]
+[% SET job = result.result %]
+<table class="table">
+  <tr>
+    <th>Job ID</th>
+    <td>[% job.id %]</td>
+  </tr>
+  <tr>
+    <th>App ID</th>
+    <td>[% job.appId %]</td>
+  </tr>
+  <tr>
+    <th>Status</th>
+    <td>[% job.status OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th>Created</th>
+    <td>[% job.created OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th>Started</th>
+    <td>[% job.startTime OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th>Finished</th>
+    <td>[% job.endTime OR 'NA' %]</td>
+  </tr>
+  <tr>
+    <th>Output</th>
+    <td>
+      [% 
+      SET url=job._links.archiveData.href;
+      IF url; 
+        url = url.replace("https://agave.iplantc.org/files/v2/listings/system/data.iplantcollaborative.org", "/iplant/home");
+      %]
+        <a target='_blank' href='https://de.cyverse.org/de/?type=data&folder=[% url %]'><span class='glyphicon glyphicon-eye-open'></span></a>
+      [% ELSE %]
+        NA
+      [% END %]
+    </td>
+  </tr>
+</table>
+[% ELSE %]
+<b>Error:</b>
+<pre>[% USE Dumper; Dumper.dump(result) %]</pre>
+[% END %]

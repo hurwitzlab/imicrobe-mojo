@@ -1,5 +1,3 @@
-<h1>Launch App</h1>
-
 [% IF result.status == 'success' %]
 <table id="app" class="table">
   <tr>
@@ -29,5 +27,6 @@
 </table>
 [% ELSE %]
   <b>Error launching app</b>
+  [% result.message %]
   <pre>[% USE Dumper; Dumper.dump(result) %]</pre>
 [% END %]
