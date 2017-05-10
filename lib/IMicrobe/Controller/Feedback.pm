@@ -37,7 +37,8 @@ sub form {
     my $self         = shift;
     my $captcha_keys = $self->captcha_keys;
     my $captcha      = Captcha::reCAPTCHA->new;
-    my $captcha_html = $captcha->get_html($captcha_keys->{'public'});
+    my $captcha_html = $captcha->get_html_v2($captcha_keys->{'public'});
+    say dump($captcha_html);
 
     $self->respond_to(
         json => sub {
@@ -64,16 +65,13 @@ sub submit {
         }
     }
 
-    my $problem_url    = $req->param('refer_from')   || '';
-    my $user_name      = $req->param('user_name')    || '';
-    my $user_email     = $req->param('user_email')
-            or push @errors, 'No email address';
-    my $comments       = $req->param('comments')
-            or push @errors, 'No comments';
-    my $captcha_guess  = $req->param('recaptcha_challenge_field')
-            or push @errors, 'Internal CAPTCHA error. Please try again.';
-    my $captcha_response = $req->param('recaptcha_response_field')
-            or push @errors, 'No text for image';
+    my $problem_url      = $req->param('refer_from')   || '';
+    my $user_name        = $req->param('user_name')    || '';
+    my $user_email       = $req->param('user_email')
+                           or push @errors, 'No email address';
+    my $comments         = $req->param('comments')
+                           or push @errors, 'No comments';
+    my $captcha_response = $req->param('g-recaptcha-response') || '';
 
     if ( $user_email &&
          !Email::Valid->address( -address => $user_email, -mxcheck=> 1 )
@@ -88,12 +86,11 @@ sub submit {
     #
     my $captcha_keys = $self->captcha_keys;
     my $captcha      = Captcha::reCAPTCHA->new;
-    my $result       = $captcha->check_answer(
+    my $result       = $captcha->check_answer_v2(
         $captcha_keys->{'private'}, 
+        $captcha_response,
         $self->req->headers->header('X-Forwarded-For') # remote IP
             || $self->tx->remote_address,
-        $captcha_guess, 
-        $captcha_response
     );
 
     if (!$result->{'is_valid'}) {

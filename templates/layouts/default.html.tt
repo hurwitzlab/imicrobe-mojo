@@ -20,61 +20,17 @@
 
     <script src="/js/bower_components/agave-file-browser/AgaveFileBrowser.js"></script>
 
-    <!-- script src="/js/bootstrap-css/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script -->
-
     <script src="/js/bower_components/jquery/src/sizzle/dist/sizzle.min.js" type="text/javascript" charset="utf-8"></script>
-
-    <!--
-    <script src="/js/bower_components/angular/angular.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/angular-translate/angular-translate.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/ng-file-upload/ng-file-upload.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/agave-angular-filemanager/dist/agave-angular-filemanager.min.js" type="text/javascript" charset="utf-8"></script>
-    -->
-
-    <!-- script src="/js/bower_components/bootstrap.youtubepopup.min.js" type="text/javascript" charset="utf-8"></script -->
 
     <script src="/js/bower_components/handlebars/handlebars.runtime.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/templates/templates.js" type="text/javascript" charset="utf-8"></script>
 
-    <!--
-    <script src="/js/handlebars/handlebars.runtime.amd.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/handlebars/handlebars.amd.min.js" type="text/javascript" charset="utf-8"></script>
-    -->
-
+    <!-- dataTables -->
     <script src="/js/bower_components/datatables/media/js/jquery.dataTables.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/bower_components/datatables/media/js/dataTables.jqueryui.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/datatables/media/js/dataTables.material.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/datatables/media/js/dataTables.semanticui.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/datatables/media/js/dataTables.uikit.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/datatables/media/js/dataTables.bootstrap4.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/datatables/media/js/dataTables.foundation.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/datatables/media/js/dataTables.bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-
-    <!-- script src="/js/bootstrap.youtubepopup.min.js"></script -->
+    <link href="/js/bower_components/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
 
     <link href="/js/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-
-    <!--
-    <link href="/js/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/dataTables.foundation.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/dataTables.material.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/dataTables.jqueryui.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/dataTables.uikit.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/datatables/media/css/dataTables.semanticui.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/angular-filemanager/dist/angular-filemanager.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/jquery-ui/jquery-ui.structure.min.css" rel="stylesheet" type="text/css" />
-    <link href="/js/jquery-ui/jquery-ui.theme.min.css" rel="stylesheet" type="text/css" />
-    -->
-
-    <!-- vex -->
-    <script src="/js/bower_components/vex/dist/js/vex.combined.min.js"></script>
-    <script>vex.defaultOptions.className = 'vex-theme-os'</script>
-    <link rel="stylesheet" href="/js/bower_components/vex/dist/css/vex.css" />
-    <link rel="stylesheet" href="/js/bower_components/vex/dist/css/vex-theme-os.css" />
 
     <!-- jstree -->
     <link rel="stylesheet" href="/js/bower_components/jstree/dist/themes/default/style.min.css" />

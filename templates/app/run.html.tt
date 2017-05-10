@@ -6,14 +6,15 @@ function fileBrowser(evt, elemId) {
   $('#browser-container').modal();
   $('#browser').html('Loading...');
   browser = new AgaveFileBrowser({
-    elementId: "browser",
-    userName:  "[% user.username %]",
-    authToken: "[% token.access_token %]",
-    baseUrl:   "https://agave.iplantc.org/files/v2/listings"
+    elementId:   "browser",
+    path:        "[% user.username %]",
+    authToken:   "[% token.access_token %]",
+    baseUrl:     "https://agave.iplantc.org/files/v2/listings"
+    busyIconUrl: "/js/bower_components/agave-file-browser/spinner.gif"
   });
 
   $('#input-select').click(function() {
-    let selected = browser.get_selected_nodes();
+    let selected = browser.getSelectedNodes();
     if (selected.length > 0) {
       $('#' + elemId).val(selected[0].id);
       $('#browser-container').modal('hide');
