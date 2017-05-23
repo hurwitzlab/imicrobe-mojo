@@ -288,15 +288,11 @@ sub startup {
         }
     );
 
-    my $db;
     $self->helper(
         db => sub {
             my $self   = shift;
             my $config = $self->config;
-            unless ($db || $db->ping) {
-                $db = IMicrobe::DB->new($config->{'db'});
-            }
-            return $db;
+            return IMicrobe::DB->new($config->{'db'});
         }
     );
 
