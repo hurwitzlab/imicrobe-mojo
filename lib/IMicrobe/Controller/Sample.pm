@@ -314,6 +314,23 @@ sub search_param_values {
 }
 
 # ----------------------------------------------------------------------
+# Each element of $coll->find->all() looks like this:
+#   {
+#     'percentContaining' => 100,
+#     'value' => {
+#       'types' => {
+#         'Number' => 0,
+#         'String' => 5034
+#       }
+#     },
+#     '_id' => {
+#       'key' => 'specimen__project_name'
+#     },
+#     'totalOccurrences' => 5034
+#   }
+# Each element of @types looks like this:
+#   ['specimen__project_name', 'string']
+# where the 'string' was chosen over 'number' because it occurs more often.
 sub _search_params {
     my $self   = shift;
     my $db     = $self->db;
@@ -324,7 +341,15 @@ sub _search_params {
         sort { $a->[0] cmp $b->[0] }
         grep { $_->[0] ne '_id' }
         grep { $_->[0] !~ /(\.floatApprox|\.bottom|\.top|text|none)/i }
-        map  { [$_->{'_id'}{'key'}, lc $_->{'value'}{'types'}[0]] }
+        map  {
+          [
+            $_->{'_id'}{'key'},
+            lc shift @{[
+              reverse sort {$_->{'value'}{'types'}{$a} <=> $_->{'value'}{'types'}{$b}}
+              keys $_->{'value'}{'types'}
+            ]}
+          ]
+        }
         $coll->find->all();
 
     return @types;
