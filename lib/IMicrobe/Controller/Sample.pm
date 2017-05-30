@@ -337,6 +337,7 @@ sub _search_params {
     my $mongo  = $db->mongo;
     my $mdb    = $mongo->get_database('imicrobe');
     my $coll   = $mdb->get_collection('sampleKeys');
+    my @data   = $coll->find->all();
     my @types  = 
         sort { $a->[0] cmp $b->[0] }
         grep { $_->[0] ne '_id' }
@@ -346,7 +347,7 @@ sub _search_params {
             $_->{'_id'}{'key'},
             lc shift @{[
               reverse sort {$_->{'value'}{'types'}{$a} <=> $_->{'value'}{'types'}{$b}}
-              keys $_->{'value'}{'types'}
+              keys %{ $_->{'value'}{'types'} }
             ]}
           ]
         }
