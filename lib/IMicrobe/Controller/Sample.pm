@@ -332,26 +332,11 @@ sub search_param_values {
 #   ['specimen__project_name', 'string']
 # where the 'string' was chosen over 'number' because it occurs more often.
 sub _search_params {
-    my $self   = shift;
-    my $db     = $self->db;
-    my $mongo  = $db->mongo;
-    my $mdb    = $mongo->get_database('imicrobe');
-    my $coll   = $mdb->get_collection('sampleKeys');
-    my @data   = $coll->find->all();
-    my @types  = 
-        sort { $a->[0] cmp $b->[0] }
-        grep { $_->[0] ne '_id' }
-        grep { $_->[0] !~ /(\.floatApprox|\.bottom|\.top|text|none)/i }
-        map  {
-          [
-            $_->{'_id'}{'key'},
-            lc shift @{[
-              reverse sort {$_->{'value'}{'types'}{$a} <=> $_->{'value'}{'types'}{$b}}
-              keys %{ $_->{'value'}{'types'} }
-            ]}
-          ]
-        }
-        $coll->find->all();
+    my $self  = shift;
+    my $db    = $self->db;
+    my $mongo = $db->mongo;
+    my $mdb   = $mongo->get_database('imicrobe');
+    my $coll  = $mdb->get_collection('sampleKeys');
 
     my %types;
     for my $fld ($coll->find->all) {
