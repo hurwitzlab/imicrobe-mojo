@@ -353,21 +353,34 @@ sub _search_params {
         }
         $coll->find->all();
 
-    return @types;
+    my %types;
+    for my $fld ($coll->find->all) {
+        my $name = $fld->{'_id'}{'key'} or next;
+        next if $name eq '_id';
+        my @types = 
+          reverse 
+          sort {
+              $fld->{'value'}{'types'}{$a} <=> $fld->{'value'}{'types'}{$b}
+          }
+          keys %{ $fld->{'value'}{'types'} };
+        $types{ $name } = lc $types[0];
+    }
+
+    return %types;
 }
 
 # ----------------------------------------------------------------------
 sub search_params {
     my $self   = shift;
-    my @params = $self->_search_params();
+    my %params = $self->_search_params();
 
     $self->respond_to(
         json => sub {
-            $self->render( json => \@params );
+            $self->render( json => \%params );
         },
 
         txt => sub {
-            $self->render( text => dump(\@params) );
+            $self->render( text => dump(\%params) );
         },
     );
 }
@@ -380,15 +393,27 @@ sub search_results {
     my $mongo       = $db->mongo;
     my $mdb         = $mongo->get_database('imicrobe');
     my $coll        = $mdb->get_collection('sample');
-    my @param_types = $self->_search_params();
+    my %param_types = $self->_search_params();
+    my $json        = $self->req->json();
 
     my %search;
-    for my $ptype (@param_types) {
-        my ($name, $type) = @$ptype;
+    while (my ($name, $type) = each %param_types) {
         if ($type eq 'string') {
-            if (my @vals = 
-                map { split /\s*,\s*/ } @{ $self->every_param($name) || [] }
-            ) {
+            my @vals;
+            if ( defined $json->{ $name } ) { 
+                if (ref $json->{ $name } eq 'ARRAY') {
+                    @vals = @{ $json->{ $name } };
+                }
+                else {
+                    @vals = split /\s*,\s*/, $json->{ $name } || '';
+                }
+            }
+            else {
+                @vals =
+                  map { split /\s*,\s*/ } @{ $self->every_param($name) || [] };
+            }
+
+            if (@vals) {
                 if (@vals == 1) {
                     $search{$name} = $vals[0];
                 }
@@ -398,8 +423,12 @@ sub search_results {
             }
         }
         else {
-            my $min = $self->param('min_'.$name);
-            my $max = $self->param('max_'.$name);
+            my $min_name = 'min__'.$name;
+            my $max_name = 'max__'.$name;
+            my $min = $json->{ $min_name } || $self->param($min_name) || '';
+            my $max = $json->{ $max_name } || $self->param($max_name) || '';
+
+            next if $min eq '' and $max eq '';
 
             if (defined $min && defined $max && $min == $max) {
                 $search{$name}{'$eq'} = $min;
@@ -420,9 +449,10 @@ sub search_results {
     if (%search) {
         @search_params = map { s/^(max|min)_//; $_ } keys %search;
         my @return_fields; 
+        my %param_types = $self->_search_params;
 
         if ($self->param('download')) {
-            @return_fields = map { $_->[0] } $self->_search_params;
+            @return_fields = sort keys %param_types;
         }
         else {
             @return_fields = (

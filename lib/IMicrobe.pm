@@ -233,7 +233,7 @@ sub startup {
 
     $r->get('/sample/search_param_values/:field')->to('sample#search_param_values');
 
-    $r->get('/sample/search_results')->to('sample#search_results');
+    $r->any('/sample/search_results')->to('sample#search_results');
 
     $r->get('/sample/search_results_map')->to('sample#search_results_map');
 

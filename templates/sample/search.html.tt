@@ -62,9 +62,12 @@ function loadSearchParams(keys) {
     .text("--Select--")); 
 
   $.get("/sample/search_params.json", function(data) {
-    $.each(data, function(key, value) {   
-      var pname = value[0];
-      var ptype = value[1];
+    fldNames = Object.keys(data).sort();
+    console.log(JSON.stringify(fldNames));
+
+    $.each(fldNames, function (i, pname) {
+      var ptype = data[pname];
+      console.log(pname + ' = ' + ptype);
       paramType[pname] = ptype;
 
       if (keys.length == 0 || (keys.length > 0 && pname in limit)) {
@@ -73,7 +76,7 @@ function loadSearchParams(keys) {
           .attr("value", pname)
           .text(prettyStr(pname.replace('__', ':_')))); 
       }
-    });    
+    });
   });
 }
 
@@ -136,8 +139,8 @@ function addOption(paramName) {
     tr  += '<td><div id="' +  valsDivId + '"></div></td></td><td>';
   }
   else {
-    tr  += '<td>Min: <input name="min_' + paramName + '"/></td>';
-    tr  += '<td>Max: <input name="max_' + paramName + '"/></td>';
+    tr  += '<td>Min: <input name="min__' + paramName + '"/></td>';
+    tr  += '<td>Max: <input name="max__' + paramName + '"/></td>';
   }
 
   tr += '<td><button type="submit" class="btn btn-primary">Search</button></td><td><button class="btn btn-default" onclick="removeTableRow(this)">Remove</button></td></tr>';
