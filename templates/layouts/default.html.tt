@@ -27,8 +27,7 @@
 
     <!-- dataTables -->
     <script src="/js/bower_components/datatables/media/js/jquery.dataTables.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/js/bower_components/datatables/media/js/dataTables.jqueryui.min.js" type="text/javascript" charset="utf-8"></script>
-    <link href="/js/bower_components/datatables/media/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="/js/bower_components/datatables/media/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
 
     <link href="/js/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 

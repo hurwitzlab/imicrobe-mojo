@@ -71,7 +71,7 @@ $(document).ready(function() {
         <table class="table">
           <tr>
             <th>Name</th>
-            <td>[% investigator.investigator_name OR 'NA' %]&nbsp;<a href="[% c.req.url %].json"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+            <td>[% IF investigator.url %]<a href="[% investigator.url %]">[% END %][% investigator.investigator_name OR 'NA' %][% IF investigator.url %]</a>[% END %]&nbsp;<a href="[% c.req.url %].json"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
             </td>
           </tr>
           <tr>
