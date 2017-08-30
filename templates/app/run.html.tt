@@ -9,7 +9,7 @@ function fileBrowser(evt, elemId) {
     elementId:   "browser",
     path:        "[% user.username %]",
     authToken:   "[% token.access_token %]",
-    baseUrl:     "https://agave.iplantc.org/files/v2/listings"
+    baseUrl:     "https://agave.iplantc.org/files/v2/listings",
     busyIconUrl: "/js/bower_components/agave-file-browser/spinner.gif"
   });
 
@@ -29,10 +29,11 @@ function cartBrowser(evt, elemId) {
 
   $.get('[% c.url_for("/cart/file_types.json") %]', function (data) {
     html = '';
+    console.log(data);
     $.each(data, function (index, item) {
       html += '<input type="checkbox" value="'
-           +  item.sample_file_type_id
-           +  '"> ' + item.sample_file_type
+           +  item.id
+           +  '"> ' + item.type
            + '</input><br/>';
     });
     $('#browser').html(html);
@@ -182,5 +183,3 @@ $(function() {
     </div>
   </div>
 </div>
-
-<pre>[% USE Dumper; Dumper.dump(app) %]</pre>

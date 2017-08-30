@@ -135,6 +135,8 @@ sub startup {
 
     $r->get('/cart/files')->to('cart#files');
 
+    $r->get('/cart/file_types')->to('cart#file_types');
+
     $r->get('/cart/icon')->to('cart#icon');
 
     $r->get('/cart/remove/:item')->to('cart#remove');

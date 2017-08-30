@@ -35,6 +35,11 @@
     <link rel="stylesheet" href="/js/bower_components/jstree/dist/themes/default/style.min.css" />
     <script src="/js/bower_components/jstree/dist/jstree.min.js" type="text/javascript" charset="utf-8"></script>
 
+    <!-- modal -->
+    <script src="/js/bower_components/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+    <script src="/js/bower_components/bootstrap-modal/js/bootstrap-modal.js"></script>
+    <link href="/js/bower_components/bootstrap-modal/css/bootstrap-modal.css" rel="stylesheet" />
+
     <link href="/css/readable.min.css" rel="stylesheet" type="text/css" />
     <link href="/css/carousel.css" rel="stylesheet" type="text/css" />
     <link href="/css/imicrobe.css" rel="stylesheet" type="text/css" />

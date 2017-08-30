@@ -32,25 +32,50 @@ sub icon {
 }
 
 # ----------------------------------------------------------------------
-sub files {
-    my $self       = shift;
-    my $file_type  = $self->param('file_type');
-    my $schema     = $self->db->schema;
-    my $session    = $self->session;
-    my ($FileType) = $schema->resultset('SampleFileType')->search({
-        type       => $file_type
-    });
+sub file_types {
+    my $self    = shift;
+    my $schema  = $self->db->schema;
+    my $session = $self->session;
 
-    if (!$FileType) {
-        return $self->reply->exception("Bad file_type ($file_type)");
+    my %file_types;
+    for my $sample_id (@{ $session->{'items'} || [] }) {
+        my @Files = $schema->resultset('SampleFile')->search({
+            sample_id => $sample_id
+        });
+
+        for my $File (@Files) {
+            $file_types{ $File->sample_file_type->type } = 
+                $File->sample_file_type_id;
+        }
     }
+
+    my @types = map { { type => $_, id => $file_types{ $_ } } } 
+                sort keys %file_types;
+
+    $self->respond_to(
+        json => sub {
+            $self->render( json => \@types );
+        },
+    );
+}
+
+# ----------------------------------------------------------------------
+sub files {
+    my $self          = shift;
+    my @file_type_ids = split(/\s*,\s*/, $self->param('file_type_id'));
+    my $schema        = $self->db->schema;
+    my $session       = $self->session;
+    my (@FileTypes)   = map { $schema->resultset('SampleFileType')->find($_) } 
+                        @file_type_ids;
 
     my @files;
     for my $sample_id (@{ $session->{'items'} || [] }) {
-        push @files, $schema->resultset('SampleFile')->search({
-            sample_id           => $sample_id,
-            sample_file_type_id => $FileType->id,
-        });
+        for my $Type (@FileTypes) {
+            push @files, $schema->resultset('SampleFile')->search({
+                sample_id           => $sample_id,
+                sample_file_type_id => $Type->id,
+            });
+        }
     }
 
     my $struct = sub {
